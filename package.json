@@ -14,7 +14,8 @@
     "check": "astro check",
     "test": "node --test --experimental-strip-types \"tests/unit/**/*.test.ts\"",
     "test:e2e": "node tests/e2e/run.mjs",
-    "launch-check": "node scripts/launch-check.mjs"
+    "launch-check": "node scripts/launch-check.mjs",
+    "demo": "node scripts/demo.mjs"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.12",
