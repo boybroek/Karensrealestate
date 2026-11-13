@@ -1,0 +1,14 @@
+---
+import type { Crumb } from '../lib/seo.ts';
+interface Props { crumbs: Crumb[]; label: string; onNavy?: boolean }
+const { crumbs, label, onNavy = false } = Astro.props;
+---
+<div class:list={[onNavy && 'bg-navy']}>
+  <nav class="breadcrumb container" aria-label={label}>
+    <ol>
+      {crumbs.map((c, i) => (
+        <li>{i < crumbs.length - 1 ? <a href={c.href}>{c.name}</a> : <span aria-current="page">{c.name}</span>}</li>
+      ))}
+    </ol>
+  </nav>
+</div>

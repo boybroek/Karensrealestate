@@ -1,0 +1,45 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { type Lang, path, t } from '../i18n/index.ts';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const d = t(lang);
+const nl = lang === 'nl';
+---
+<BaseLayout lang={lang} page="cookies">
+  <section class="container section">
+    <p class="eyebrow">Cookies</p>
+    <h1 class="display legal__t">{d.nav.cookies}</h1>
+    <div class="prose">
+      <p><em>{nl ? 'Laatst bijgewerkt: 13 november 2026' : 'Last updated: 13 November 2026'}</em></p>
+      {nl ? (
+        <>
+          <h2>Geen trackingcookies</h2>
+          <p>Deze website plaatst <strong>geen cookies</strong>: geen analysecookies, geen trackingcookies en geen advertentiecookies. Ook gebruiken we geen vergelijkbare technieken zoals fingerprinting of het opslaan van gegevens in je browser. Daarom vragen we je ook niet om toestemming via een cookiebanner.</p>
+          <h2>Externe inhoud</h2>
+          <p>Kaarten van OpenStreetMap worden pas geladen als je zelf op ‘Kaart laden’ of ‘Kaart’ klikt. OpenStreetMap ontvangt dan je IP-adres en kan technische gegevens verwerken volgens het eigen <a href="https://osmfoundation.org/wiki/Privacy_Policy" target="_blank" rel="noopener">privacybeleid</a>.</p>
+          <p>Klik je op een link naar een andere website (zoals Google Maps, Pararius of Funda), dan gelden daar de cookieregels van die website.</p>
+          <h2>Wijzigingen</h2>
+          <p>Gaan we in de toekomst toch cookies of statistieken gebruiken waarvoor toestemming nodig is, dan passen we dit cookiebeleid aan en vragen we vooraf je toestemming.</p>
+          <p>Meer over hoe we met persoonsgegevens omgaan, lees je in onze <a href={path('privacy', lang)}>privacyverklaring</a>.</p>
+        </>
+      ) : (
+        <>
+          <h2>No tracking cookies</h2>
+          <p>This website does <strong>not place any cookies</strong>: no analytics, tracking or advertising cookies. Nor do we use similar techniques such as fingerprinting or storing data in your browser. That is why we do not ask for your consent through a cookie banner.</p>
+          <h2>External content</h2>
+          <p>Maps from OpenStreetMap are only loaded when you click ‘Load map’ or ‘Map’ yourself. OpenStreetMap then receives your IP address and may process technical data according to its own <a href="https://osmfoundation.org/wiki/Privacy_Policy" target="_blank" rel="noopener">privacy policy</a>.</p>
+          <p>If you follow a link to another website (such as Google Maps, Pararius or Funda), that website's cookie rules apply.</p>
+          <h2>Changes</h2>
+          <p>Should we start using cookies or statistics that require consent in the future, we will update this policy and ask for your consent beforehand.</p>
+          <p>Read more about how we handle personal data in our <a href={path('privacy', lang)}>privacy statement</a>.</p>
+        </>
+      )}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .legal__t { font-size: clamp(40px, 5vw, 64px); }
+</style>

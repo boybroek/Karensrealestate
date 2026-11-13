@@ -1,0 +1,161 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Art from '../components/Art.astro';
+import ListingsGrid from '../components/ListingsGrid.astro';
+import Steps from '../components/Steps.astro';
+import ExpatSection from '../components/ExpatSection.astro';
+import Reviews from '../components/Reviews.astro';
+import { type Lang, path, t } from '../i18n/index.ts';
+import { getListings } from '../content/listings.ts';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const d = t(lang);
+const h = d.home;
+const featured = getListings().slice(0, 3);
+---
+<BaseLayout lang={lang} page="home">
+  <section class="container hero">
+    <div>
+      <p class="eyebrow hero__ey rise">{h.heroEy}</p>
+      <h1 class="display hero__t rise rise-1">{h.heroA}<em>{h.heroEm}</em>{h.heroB}</h1>
+      <p class="lead hero__sub rise rise-2">{h.heroSub}</p>
+      <ul class="hero__values rise rise-3" role="list">
+        {h.values.map((v, i) => <>{i > 0 && <li class="diamond" aria-hidden="true"></li>}<li>{v}</li></>)}
+      </ul>
+    </div>
+    <div class="hero__media rise rise-1">
+      <Art photo="hero" alt={h.heroAlt} ratio="4-5" eager sizes="(min-width: 1100px) 600px, 100vw" />
+      <div class="hero__card">
+        <span class="diamond hero__card-mark" aria-hidden="true"></span>
+        <div><p class="hero__card-t">Karens Real Estate</p><p class="hero__card-s">{h.heroCard}</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="container tiles" aria-label={`${d.nav.aanhuur} / ${d.nav.verhuren}`}>
+    <div data-reveal="0">
+      <a class="tile tile--navy" href={path('aanhuur', lang)}>
+        <span class="tile__ey">{h.findEy}</span>
+        <span class="tile__t"><span>{h.findT1}</span><span>{h.findT2}</span></span>
+        <span class="tile__d">{h.findD}</span>
+        <span class="tile__cta"><span class="arrow-circle tile__arrow" aria-hidden="true">→</span>{h.startSearch}</span>
+      </a>
+    </div>
+    <div data-reveal="120">
+      <a class="tile tile--mist" href={path('verhuren', lang)}>
+        <span class="tile__ey">{h.letEy}</span>
+        <span class="tile__t"><span>{h.letT1}</span><span>{h.letT2}</span></span>
+        <span class="tile__d">{h.letD}</span>
+        <span class="tile__cta"><span class="arrow-circle tile__arrow" aria-hidden="true">→</span>{h.register}</span>
+      </a>
+    </div>
+  </section>
+
+  <section class="bg-navy" aria-labelledby="home-band-title">
+    <div class="container section">
+      {featured.length > 0 ? (
+        <>
+          <div class="section-head">
+            <div data-reveal="0">
+              <p class="eyebrow">{h.listEy}</p>
+              <h2 class="h2" id="home-band-title">{h.listT}</h2>
+            </div>
+            <a class="btn btn--ghost-light" href={path('aanbod', lang)}>{h.listAll}</a>
+          </div>
+          <ListingsGrid listings={featured} lang={lang} />
+        </>
+      ) : (
+        <>
+          <div class="section-head">
+            <div data-reveal="0">
+              <p class="eyebrow">{h.howEy}</p>
+              <h2 class="h2" id="home-band-title">{h.howT}</h2>
+            </div>
+            <a class="btn btn--ghost-light" href={`${path('aanhuur', lang)}#zoekopdracht`}>{h.howCta}</a>
+          </div>
+          <Steps steps={d.steps.ahSteps} />
+        </>
+      )}
+    </div>
+  </section>
+
+  <section class="container section grid-2 align-center about" aria-labelledby="home-about-title">
+    <div data-reveal="0" class="about__media"><Art photo="over-ons" alt={h.aboutAlt} ratio="1-1" variant="dusk" /></div>
+    <div>
+      <p class="eyebrow" data-reveal="0" id="home-about-title">{h.aboutEy}</p>
+      <blockquote class="about__quote" data-reveal="80">“{h.quote}”</blockquote>
+      <p class="body about__p" data-reveal="160">{h.aboutP}</p>
+      <div data-reveal="220"><a class="link-underline" href={path('over', lang)}>{h.aboutLink}</a></div>
+    </div>
+  </section>
+
+  <ExpatSection lang={lang} />
+
+  <section class="bg-paper" aria-labelledby="services-title">
+    <div class="container section">
+      <div class="section-head">
+        <div data-reveal="0">
+          <p class="eyebrow">{h.servEy}</p>
+          <h2 class="h2 h2--sm" id="services-title">{h.servT}</h2>
+        </div>
+      </div>
+      <ul class="services" role="list">
+        {h.services.map((s, i) => (
+          <li data-reveal={i * 90}>
+            <a href={path(s.key as 'aanhuur', lang)}>
+              <span class="services__n" aria-hidden="true">{'0' + (i + 1)}</span>
+              <h3 class="services__t">{s.t} <span aria-hidden="true">→</span></h3>
+              <p class="services__d">{s.d}</p>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <Reviews lang={lang} />
+</BaseLayout>
+
+<style>
+  .hero { padding-top: clamp(48px, 7vw, 96px); padding-bottom: 56px; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 460px), 1fr)); gap: clamp(32px, 5vw, 72px); align-items: center; }
+  .hero__ey { margin-bottom: 24px; }
+  .hero__t { font-size: clamp(44px, 6.2vw, 88px); }
+  .hero__sub { max-width: 480px; margin-bottom: 36px; }
+  .hero__values { display: flex; gap: 28px; font-size: 14px; color: var(--muted); flex-wrap: wrap; align-items: center; list-style: none; margin: 0; padding: 0; }
+  .hero__media { position: relative; }
+  .hero__card { position: absolute; left: -24px; bottom: 40px; background: #fff; padding: 18px 22px; border-radius: var(--radius); box-shadow: 0 20px 50px rgba(2, 31, 54, .14); display: flex; gap: 14px; align-items: center; }
+  .hero__card-mark { width: 10px; height: 10px; flex-basis: 10px; margin: 0 6px; }
+  .hero__card-t { font-weight: 600; font-size: 15px; color: var(--navy); }
+  .hero__card-s { font-size: 13px; color: var(--muted); }
+  @media (max-width: 560px) { .hero__card { left: 12px; bottom: 16px; } }
+
+  .tiles { padding-bottom: clamp(64px, 8vw, 110px); display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 16px; }
+  .tile { height: 100%; text-align: left; border-radius: var(--radius); padding: clamp(32px, 4vw, 52px); display: flex; flex-direction: column; gap: 20px; min-height: 300px; transition: transform .45s var(--ease), box-shadow .45s var(--ease), background .3s; }
+  .tile--navy { background: var(--navy); color: #fff; }
+  .tile--navy:hover { color: #fff; transform: translateY(-6px); box-shadow: 0 30px 60px rgba(4, 58, 99, .3); background: var(--navy-hover); }
+  .tile--mist { background: var(--mist); color: var(--navy); }
+  .tile--mist:hover { color: var(--navy); transform: translateY(-6px); box-shadow: 0 30px 60px rgba(4, 58, 99, .16); background: var(--mist-hover); }
+  .tile__ey { font-size: 13px; letter-spacing: .16em; text-transform: uppercase; font-weight: 600; color: var(--blue-light); }
+  .tile--mist .tile__ey { color: var(--blue); }
+  .tile__t { font-family: var(--font-serif); font-size: clamp(34px, 3.6vw, 50px); line-height: 1.05; letter-spacing: -.01em; display: flex; flex-direction: column; }
+  .tile__d { font-size: 17px; line-height: 1.55; color: var(--on-navy); max-width: 420px; }
+  .tile--mist .tile__d { color: var(--muted-2); }
+  .tile__cta { margin-top: auto; display: inline-flex; align-items: center; gap: 12px; font-weight: 600; font-size: 16px; }
+  .tile--navy .tile__arrow { background: #fff; color: var(--navy); }
+  .tile--mist .tile__arrow { background: var(--navy); color: #fff; }
+
+  .about { gap: clamp(32px, 6vw, 96px); padding-top: clamp(64px, 8vw, 120px); padding-bottom: clamp(64px, 8vw, 120px); }
+  .about__media { max-width: 520px; width: 100%; }
+  .about .eyebrow { margin-bottom: 20px; }
+  .about__quote { font-family: var(--font-serif); font-style: italic; font-size: clamp(28px, 3vw, 42px); line-height: 1.2; color: var(--navy); margin: 0 0 28px; text-wrap: pretty; }
+  .about__p { margin-bottom: 32px; max-width: 520px; }
+
+  .services { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: 32px; list-style: none; margin: 0; padding: 0; }
+  .services a { display: block; border-top: 2px solid var(--navy); padding-top: 22px; height: 100%; }
+  .services__n { display: block; font-family: var(--font-serif); font-size: 15px; color: var(--blue); margin-bottom: 12px; }
+  .services__t { font-size: 19px; font-weight: 600; color: var(--navy); margin-bottom: 8px; }
+  .services__t span { display: inline-block; transition: transform .25s var(--ease); }
+  .services a:hover .services__t span { transform: translateX(4px); }
+  .services__d { font-size: 15px; line-height: 1.6; color: var(--muted); }
+</style>

@@ -1,0 +1,37 @@
+---
+/**
+ * The design's custom dropdowns ("Aantal slaapkamers", "Extra wensen" …),
+ * rebuilt on native radios/checkboxes inside a disclosure panel so they are
+ * keyboard- and screen-reader accessible and submit real values.
+ */
+interface Props {
+  form: string;
+  name: string;
+  title: string;
+  options: { value: string; label: string }[];
+  multi?: boolean;
+  placeholder: string;
+  /** Appended to the chosen label in the summary, e.g. "slaapkamer(s)". */
+  suffix?: string;
+  hint?: string;
+}
+const { form, name, title, options, multi = false, placeholder, suffix, hint } = Astro.props;
+const id = `${form}-${name}`;
+---
+<div class="wish field" data-field={name} data-wish data-placeholder={placeholder} data-suffix={suffix}>
+  <span class="wish__title" id={`${id}-label`}>{title}</span>
+  <button type="button" class="wish__btn" aria-expanded="false" aria-controls={`${id}-panel`} aria-labelledby={`${id}-label ${id}-summary`}>
+    <span class="wish__summary is-empty" id={`${id}-summary`}>{placeholder}</span>
+    <span class="wish__chev" aria-hidden="true">▾</span>
+  </button>
+  <fieldset class="wish__panel" id={`${id}-panel`} aria-describedby={`${id}-err`}>
+    <legend class="visually-hidden">{title}{hint && ` – ${hint}`}</legend>
+    {options.map((o) => (
+      <label class:list={['wish__opt', multi ? 'wish__opt--multi' : 'wish__opt--single']}>
+        <input type={multi ? 'checkbox' : 'radio'} name={name} value={o.value} data-label={o.label} />
+        <span class="wish__mark" aria-hidden="true"></span>{o.label}
+      </label>
+    ))}
+  </fieldset>
+  <p class="field__error" id={`${id}-err`} hidden></p>
+</div>

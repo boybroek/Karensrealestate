@@ -1,0 +1,15 @@
+# Example Caddy reverse proxy: automatic HTTPS (Let's Encrypt), compression,
+# apex → www redirect. Security headers are set by server.mjs.
+karensrealestate.nl {
+	redir https://www.karensrealestate.nl{uri} permanent
+}
+
+www.karensrealestate.nl {
+	encode zstd gzip
+	reverse_proxy 127.0.0.1:4321
+	log {
+		output file /var/log/caddy/karens-access.log {
+			roll_keep_for 336h
+		}
+	}
+}

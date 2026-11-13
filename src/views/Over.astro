@@ -1,0 +1,63 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Art from '../components/Art.astro';
+import { type Lang, path, t } from '../i18n/index.ts';
+import { site } from '../content/site.ts';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const d = t(lang);
+const o = d.over;
+const aboutPage = {
+  '@type': 'AboutPage',
+  '@id': `${new URL(path('over', lang), Astro.site).href}#about`,
+  mainEntity: { '@id': `${Astro.site!.origin}/#organization` },
+};
+---
+<BaseLayout lang={lang} page="over" schema={[aboutPage]}>
+  <section class="container section over grid-2">
+    <div class="rise"><Art photo="over-ons" alt={o.portraitAlt} ratio="4-5" variant="dusk" eager /></div>
+    <div>
+      <p class="eyebrow rise">{o.aboutEy}</p>
+      <h1 class="display over__t rise rise-1">{o.ovT}</h1>
+      <p class="body over__p rise rise-2">{d.home.aboutP}</p>
+      <p class="body over__p rise rise-2">{o.ovP2}</p>
+      <p class="body over__p rise rise-2">{o.ovP3}</p>
+      <div class="over__facts rise rise-3">
+        <div>
+          <h2 class="over__h">{o.ovSpec}</h2>
+          <ul class="over__specs" role="list">{o.specs.map((s) => <li>{s}</li>)}</ul>
+        </div>
+        <div>
+          <h2 class="over__h">{o.ovArea}</h2>
+          <ul class="pill-list" role="list">{site.neighbourhoods.map((w) => <li>{w}</li>)}</ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-navy">
+    <div class="container container--text section over-quote">
+      <blockquote data-reveal="0">“{d.home.quote}”</blockquote>
+      <p class="over-quote__sig" data-reveal="100">{o.signature}</p>
+      <div class="over-quote__ctas" data-reveal="160">
+        <a class="btn btn--white" href={path('aanhuur', lang)}>{d.common.ctaFind}</a>
+        <a class="btn btn--ghost-light" href={path('verhuren', lang)}>{d.common.ctaLet}</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .over { gap: clamp(32px, 6vw, 96px); padding-top: clamp(40px, 6vw, 80px); }
+  .over .eyebrow { margin-bottom: 20px; }
+  .over__t { font-size: clamp(40px, 5vw, 72px); line-height: 1.02; }
+  .over__p { line-height: 1.7; margin-bottom: 16px; max-width: none; }
+  .over__facts { border-top: 1px solid var(--border); margin-top: 36px; padding-top: 28px; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 28px; }
+  .over__h { font-size: 12px; letter-spacing: .16em; font-weight: 600; color: var(--blue); margin-bottom: 14px; }
+  .over__specs { display: flex; flex-direction: column; gap: 10px; font-size: 15px; color: var(--ink); line-height: 1.45; list-style: none; padding: 0; margin: 0; }
+  .over-quote { text-align: center; padding-top: clamp(64px, 8vw, 120px); padding-bottom: clamp(64px, 8vw, 120px); }
+  .over-quote blockquote { font-family: var(--font-serif); font-style: italic; font-size: clamp(30px, 3.6vw, 50px); line-height: 1.2; margin: 0 0 24px; text-wrap: balance; }
+  .over-quote__sig { font-size: 13px; letter-spacing: .16em; color: var(--blue-light); font-weight: 600; margin-bottom: 40px; }
+  .over-quote__ctas { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+</style>

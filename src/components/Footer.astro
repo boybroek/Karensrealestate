@@ -1,0 +1,53 @@
+---
+import { Image } from 'astro:assets';
+import logoWhite from '../assets/brand/logo-white.png';
+import { type Lang, NAV, path, t } from '../i18n/index.ts';
+import { site } from '../content/site.ts';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const d = t(lang);
+const services = ['aanhuur', 'verhuren', 'beheer', 'expats'] as const;
+const year = new Date().getFullYear();
+---
+<footer class="site-footer">
+  <div class="site-footer__grid">
+    <div class="site-footer__brand">
+      <Image src={logoWhite} alt="Karens Real Estate" width={200} densities={[1, 2]} format="webp" loading="lazy" />
+      <p>{d.footer.ftTag}</p>
+    </div>
+    <nav class="site-footer__col site-footer__col--menu" aria-labelledby="ft-menu">
+      <p class="site-footer__title" id="ft-menu">{d.footer.menu}</p>
+      {NAV.map((k) => <a href={path(k, lang)}>{d.nav[k]}</a>)}
+    </nav>
+    <nav class="site-footer__col site-footer__col--menu" aria-labelledby="ft-services">
+      <p class="site-footer__title" id="ft-services">{d.footer.services}</p>
+      {services.map((k) => <a href={path(k, lang)}>{d.home.services.find((s) => s.key === k)?.t}</a>)}
+    </nav>
+    <div class="site-footer__col">
+      <p class="site-footer__title">{d.footer.contact}</p>
+      <a href={`tel:${site.phone.e164}`}>{site.phone.display}</a>
+      <a href={`mailto:${site.email}`}>{site.email}</a>
+      <address>
+        <span>{site.address.street}</span>
+        <span>{site.address.postalCode} {d.common.city}</span>
+        <span>{d.common.byApptLong}</span>
+      </address>
+    </div>
+    <div class="site-footer__col">
+      <p class="site-footer__title">{d.footer.partners}</p>
+      {site.partners.map((p) => <a href={p.href} target="_blank" rel="noopener">{p.name} ↗<span class="visually-hidden"> {d.common.newWindow}</span></a>)}
+    </div>
+  </div>
+  <div class="site-footer__bottom">
+    <span>
+      © {year} {site.name}
+      {site.kvk && <> · {d.footer.kvk} {site.kvk}</>}
+      {site.vat && <> · {d.footer.vat} {site.vat}</>}
+    </span>
+    <ul>
+      <li><a href={path('privacy', lang)}>{d.nav.privacy}</a></li>
+      <li><a href={path('cookies', lang)}>{d.nav.cookies}</a></li>
+    </ul>
+  </div>
+</footer>

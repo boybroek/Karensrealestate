@@ -1,0 +1,76 @@
+---
+import { getReviews } from '../content/reviews.ts';
+import { type Lang, t } from '../i18n/index.ts';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const d = t(lang).reviews;
+const reviews = getReviews();
+---
+{reviews.length > 0 && (
+  <section class="reviews bg-paper" aria-labelledby="reviews-title" aria-roledescription="carousel" data-reviews>
+    <div class="container section">
+      <div class="section-head">
+        <div data-reveal="0">
+          <p class="eyebrow">{d.revEy}</p>
+          <h2 class="h2" id="reviews-title">{d.revT}</h2>
+        </div>
+        <div class="reviews__nav" data-reveal="80">
+          <button type="button" class="rbtn" data-prev aria-label={d.prev}>←</button>
+          <button type="button" class="rbtn rbtn--solid" data-next aria-label={d.next}>→</button>
+        </div>
+      </div>
+      <div class="reviews__viewport" data-reveal="120">
+        <ul class="reviews__track" role="list" data-track>
+          {reviews.map((r, i) => (
+            <li class="review" aria-roledescription="slide" aria-label={`${i + 1} / ${reviews.length}`}>
+              <figure>
+                <p class="review__stars" role="img" aria-label={d.stars}>★★★★★</p>
+                <blockquote>“{r.quote[lang]}”</blockquote>
+                <figcaption><span class="review__n">{r.name}</span><span class="review__m">{r.meta[lang]}</span></figcaption>
+              </figure>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div class="reviews__dots" data-dots data-label={d.goTo}></div>
+    </div>
+  </section>
+)}
+
+<script>
+  import '../scripts/reviews.ts';
+</script>
+
+<style>
+  .reviews { overflow: hidden; }
+  .reviews__nav { display: none; gap: 10px; }
+  :global(.js) .reviews__nav { display: flex; }
+  .rbtn { width: 52px; height: 52px; border-radius: 50%; border: 1.5px solid var(--navy); background: transparent; color: var(--navy); font-size: 20px; transition: all .25s; }
+  .rbtn:hover { background: var(--navy); color: #fff; }
+  .rbtn--solid { background: var(--navy); color: #fff; }
+  .rbtn--solid:hover { background: var(--navy-dark); transform: translateX(2px); }
+  .reviews__viewport { overflow: visible; }
+  .reviews__track { --per: 3; --gap: 20px; display: flex; gap: var(--gap); margin: 0; padding: 0; list-style: none; transition: transform .8s var(--ease-io); }
+  @media (max-width: 1099px) { .reviews__track { --per: 2; } }
+  @media (max-width: 759px) { .reviews__track { --per: 1; } }
+  .review { flex: 0 0 calc((100% - (var(--per) - 1) * var(--gap)) / var(--per)); background: #fff; color: var(--ink); border-radius: var(--radius); padding: clamp(28px, 3.4vw, 44px); min-height: 320px; transition: opacity .6s ease, background .6s ease, color .6s ease; }
+  :global(.js) .review { opacity: .35; }
+  :global(.js) .review.is-visible { opacity: 1; }
+  .review.is-first { background: var(--navy); color: #fff; }
+  .review figure { display: flex; flex-direction: column; gap: 24px; height: 100%; margin: 0; }
+  .review__stars { font-size: 16px; letter-spacing: 4px; color: var(--navy); }
+  .review.is-first .review__stars { color: var(--blue-light); }
+  .review blockquote { margin: 0; font-family: var(--font-serif); font-size: clamp(21px, 1.9vw, 26px); line-height: 1.4; text-wrap: pretty; }
+  .review figcaption { margin-top: auto; display: flex; flex-direction: column; gap: 3px; padding-top: 18px; border-top: 1px solid var(--line); }
+  .review.is-first figcaption { border-color: rgba(255, 255, 255, .18); }
+  .review__n { font-weight: 600; font-size: 15px; }
+  .review__m { font-size: 14px; color: var(--muted); }
+  .review.is-first .review__m { color: var(--on-navy); }
+  .reviews__dots { display: flex; gap: 8px; margin-top: 32px; align-items: center; }
+  .reviews__dots :global(button) { height: 8px; width: 8px; border-radius: 999px; border: 0; padding: 0; background: #c3d0dc; transition: width .5s var(--ease-io), background .4s; position: relative; }
+  .reviews__dots :global(button)::after { content: ''; position: absolute; inset: -12px -4px; }
+  .reviews__dots :global(button[aria-current='true']) { width: 32px; background: var(--navy); }
+  /* Without JS: horizontally scrollable list. */
+  :global(html:not(.js)) .reviews__viewport { overflow-x: auto; }
+</style>

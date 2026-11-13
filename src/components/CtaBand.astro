@@ -1,0 +1,11 @@
+---
+interface Props { title: string; text: string; href: string; label: string }
+const { title, text, href, label } = Astro.props;
+---
+<div class="cta-band" data-reveal="0">
+  <div>
+    <p class="cta-band__t">{title}</p>
+    <p class="cta-band__p">{text}</p>
+  </div>
+  <a class="btn btn--white btn--lg" href={href}>{label}</a>
+</div>

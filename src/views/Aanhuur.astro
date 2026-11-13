@@ -1,0 +1,64 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Steps from '../components/Steps.astro';
+import Faq from '../components/Faq.astro';
+import SearchRequestForm from '../components/forms/SearchRequestForm.astro';
+import { type Lang, path, t } from '../i18n/index.ts';
+import { service, faqPage } from '../lib/seo.ts';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const d = t(lang);
+const a = d.aanhuur;
+const url = new URL(path('aanhuur', lang), Astro.site).href;
+const schema = [
+  service(Astro.site!.origin, url, lang, lang === 'nl' ? 'Aanhuurmakelaar Den Haag' : 'Rental agent The Hague', lang === 'nl' ? 'Aanhuurmakelaar' : 'Rental search agent', d.seo.aanhuur.description),
+  faqPage(url, a.faq),
+];
+---
+<BaseLayout lang={lang} page="aanhuur" schema={schema} crumbsOnNavy>
+  <section class="bg-navy">
+    <div class="container ah-hero">
+      <p class="eyebrow rise">{a.ahEy}</p>
+      <h1 class="display ah-hero__t rise rise-1">{a.ahT}</h1>
+      <p class="lead ah-hero__p rise rise-2">{a.ahP}</p>
+      <Steps steps={d.steps.ahSteps} class="ah-hero__steps" heading="h2" />
+    </div>
+  </section>
+
+  <section class="container section grid-2" aria-labelledby="why-title">
+    <div data-reveal="0">
+      <p class="eyebrow">{a.whyEy}</p>
+      <h2 class="h2 h2--sm" id="why-title">{a.whyT}</h2>
+    </div>
+    <div data-reveal="80">
+      {a.whyP.map((p) => <p class="body">{p}</p>)}
+      <p class="ah-links"><a class="link-underline" href={path('expats', lang)}>{d.home.expMore}</a></p>
+    </div>
+  </section>
+
+  <section class="bg-mist" id="zoekopdracht" aria-labelledby="form-title">
+    <div class="container container--narrow section">
+      <div class="form-intro" data-reveal="0">
+        <p class="eyebrow">{a.fEy}</p>
+        <h2 class="h2" id="form-title">{a.fT}</h2>
+        <p class="form-intro__s">{a.fS}</p>
+      </div>
+      <SearchRequestForm lang={lang} />
+    </div>
+  </section>
+
+  <Faq items={a.faq} eyebrow={d.common.faqEy} />
+</BaseLayout>
+
+<style>
+  .ah-hero { padding-top: clamp(40px, 6vw, 88px); padding-bottom: clamp(56px, 6vw, 88px); }
+  .ah-hero .eyebrow { margin-bottom: 24px; }
+  .ah-hero__t { max-width: 960px; }
+  .ah-hero__p { max-width: 600px; }
+  .ah-hero :global(.ah-hero__steps) { margin-top: clamp(48px, 6vw, 80px); }
+  .ah-links { margin-top: 28px; }
+  .form-intro { text-align: center; margin-bottom: 40px; }
+  .form-intro .h2 { margin-bottom: 14px; }
+  .form-intro__s { font-size: 17px; color: var(--muted); }
+</style>

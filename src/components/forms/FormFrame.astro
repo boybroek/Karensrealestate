@@ -1,0 +1,61 @@
+---
+/**
+ * Shared wrapper for every form: error/validation messages for the client,
+ * hidden language + honeypot fields, live status region, noscript fallback
+ * and the success panel from the design.
+ */
+import '../../styles/forms.css';
+import { type Lang, t } from '../../i18n/index.ts';
+import type { FormId } from '../../lib/forms/schema.ts';
+
+interface Props {
+  id: FormId;
+  lang: Lang;
+  /** Number of steps (1 = single page form). */
+  steps?: number;
+  stepLabels?: readonly string[];
+  successTitle: string;
+  successText: string;
+  successTheme?: 'navy' | 'white';
+  class?: string;
+}
+const { id, lang, steps = 1, stepLabels = [], successTitle, successText, successTheme = 'navy', class: cls } = Astro.props;
+const f = t(lang).form;
+const messages = JSON.stringify({ errors: f.errors, sending: f.sending, errorTitle: f.errorTitle, sendError: f.sendError, rateError: f.rateError, stepOf: f.stepOf });
+---
+<div class:list={['form-wrap', cls]} data-form-wrap>
+  <form class="form" data-form={id} data-steps={steps} data-messages={messages} action={`/api/forms/${id}/`} method="post" novalidate aria-describedby={`${id}-required`}>
+    <input type="hidden" name="lang" value={lang} />
+    <div class="hp" aria-hidden="true">
+      <label for={`${id}-website`}>Website</label>
+      <input id={`${id}-website`} type="text" name="website" tabindex="-1" autocomplete="off" />
+    </div>
+
+    {steps > 1 && (
+      <ol class="stepper" role="list" aria-label={f.stepOf.replace('{n}', '1').replace('{total}', String(steps))} data-stepper>
+        {stepLabels.map((label, i) => (
+          <li class:list={['stepper__item', i === 0 && 'is-current']} aria-current={i === 0 ? 'step' : undefined}>
+            <span class="stepper__n" aria-hidden="true">{'0' + (i + 1)}</span><span class="stepper__l">{label}</span>
+          </li>
+        ))}
+      </ol>
+    )}
+
+    <p class="form__req" id={`${id}-required`}>{f.required}</p>
+    <div class="form__alert" role="alert" data-alert hidden></div>
+
+    <slot />
+
+    <noscript><p class="form__noscript">{f.noscript}</p></noscript>
+  </form>
+
+  <div class:list={['form-success', `form-success--${successTheme}`]} data-success hidden tabindex="-1">
+    <p class="form-success__t">{successTitle}</p>
+    <p class="form-success__p">{successText}</p>
+    <slot name="success" />
+  </div>
+</div>
+
+<script>
+  import '../../scripts/forms.ts';
+</script>

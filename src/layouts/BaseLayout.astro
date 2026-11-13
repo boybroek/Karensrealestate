@@ -1,0 +1,97 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
+import { type Lang, type PageKey, LANGS, alternates, htmlLang, t } from '../i18n/index.ts';
+import { organization, website, webPage, crumbsFor, jsonLd, type Crumb } from '../lib/seo.ts';
+import { DEMO } from '../content/listings.ts';
+import fontSans from '../assets/fonts/schibsted-grotesk-latin-wght-normal.woff2?url';
+import fontSerif from '../assets/fonts/newsreader-latin-wght-normal.woff2?url';
+
+interface Props {
+  lang: Lang;
+  /** Page key, or null for pages without a translation pair (404). */
+  page: PageKey | null;
+  title?: string;
+  description?: string;
+  /** Extra JSON-LD nodes for this page (Service, FAQPage …). */
+  schema?: Record<string, unknown>[];
+  noindex?: boolean;
+  /** Show the visible breadcrumb under the header (default: all pages except home). */
+  showCrumbs?: boolean;
+  crumbsOnNavy?: boolean;
+}
+
+const { lang, page, schema = [], showCrumbs = page !== null && page !== 'home', crumbsOnNavy = false } = Astro.props;
+const d = t(lang);
+const seo = page ? d.seo[page] : d.seo.notFound;
+const title = Astro.props.title ?? seo.title;
+const description = Astro.props.description ?? seo.description;
+const noindex = Astro.props.noindex || DEMO || page === null;
+
+const origin = Astro.site!.origin;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const alts = page ? alternates(page) : null;
+const ogImage = `${origin}/og/og-default.jpg`;
+const crumbs: Crumb[] = page ? crumbsFor(lang, page) : [];
+
+const graph = {
+  '@context': 'https://schema.org',
+  '@graph': [organization(origin), website(origin), webPage(origin, canonical, lang, title, description, crumbs), ...schema],
+};
+---
+<!doctype html>
+<html lang={htmlLang(lang)}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {noindex ? <meta name="robots" content="noindex, follow" /> : <meta name="robots" content="index, follow, max-image-preview:large" />}
+    {!noindex && <link rel="canonical" href={canonical} />}
+    {alts && !noindex && LANGS.map((l) => <link rel="alternate" hreflang={htmlLang(l)} href={new URL(alts[l], Astro.site).href} />)}
+    {alts && !noindex && <link rel="alternate" hreflang="x-default" href={new URL(alts.nl, Astro.site).href} />}
+
+    <link rel="preload" href={fontSerif} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={fontSans} as="font" type="font/woff2" crossorigin />
+
+    <meta name="theme-color" content="#043a63" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Karens Real Estate" />
+    <meta property="og:locale" content={d.locale} />
+    <meta property="og:locale:alternate" content={lang === 'nl' ? 'en_GB' : 'nl_NL'} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Karens Real Estate – Koop, Huur, Beheer" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <meta name="format-detection" content="telephone=no" />
+
+    <script type="application/ld+json" set:html={jsonLd(graph)} />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">{d.common.skip}</a>
+    {DEMO && <div class="demo-banner" role="note">{d.demo}</div>}
+    <Header lang={lang} page={page} />
+    <main id="main" tabindex="-1">
+      {showCrumbs && crumbs.length > 1 && <Breadcrumb crumbs={crumbs} label={d.common.breadcrumb} onNavy={crumbsOnNavy} />}
+      <slot />
+    </main>
+    <Footer lang={lang} />
+    <script>
+      import '../scripts/site.ts';
+    </script>
+  </body>
+</html>

@@ -1,0 +1,29 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { path, t } from '../i18n/index.ts';
+const nl = t('nl').notFound;
+const en = t('en').notFound;
+---
+<BaseLayout lang="nl" page={null} noindex>
+  <section class="container section nf">
+    <p class="eyebrow">{nl.ey}</p>
+    <h1 class="display">{nl.t}</h1>
+    <p class="lead">{nl.p}</p>
+    <div class="nf__ctas">
+      <a class="btn btn--primary btn--lg" href={path('home', 'nl')}>{nl.home}</a>
+      <a class="btn btn--outline btn--lg" href={path('contact', 'nl')}>{nl.contact}</a>
+    </div>
+    <div class="nf__en" lang="en">
+      <p class="nf__en-t">{en.t}</p>
+      <p>{en.p} <a href={path('home', 'en')}>{en.home} →</a></p>
+    </div>
+  </section>
+</BaseLayout>
+<style>
+  .nf { padding-top: clamp(64px, 10vw, 140px); }
+  .nf .lead { margin-bottom: 32px; }
+  .nf__ctas { display: flex; gap: 12px; flex-wrap: wrap; }
+  .nf__en { margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--border); color: var(--muted); max-width: 640px; }
+  .nf__en-t { font-family: var(--font-serif); font-size: 24px; color: var(--navy); margin-bottom: 6px; }
+  .nf__en a { font-weight: 600; }
+</style>

@@ -1,0 +1,113 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { type Lang, path, t } from '../i18n/index.ts';
+import { site } from '../content/site.ts';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const d = t(lang);
+const updated = lang === 'nl' ? '13 november 2026' : '13 November 2026';
+const nl = lang === 'nl';
+---
+<BaseLayout lang={lang} page="privacy">
+  <section class="container section">
+    <p class="eyebrow">{nl ? 'Privacy' : 'Privacy'}</p>
+    <h1 class="display legal__t">{d.nav.privacy}</h1>
+    <div class="prose">
+      <p><em>{nl ? 'Laatst bijgewerkt' : 'Last updated'}: {updated}</em></p>
+      {nl ? (
+        <>
+          <p>Karens Real Estate gaat zorgvuldig om met je persoonsgegevens. In deze privacyverklaring lees je welke gegevens we via deze website verwerken, waarom, hoe lang we ze bewaren en welke rechten je hebt. We houden ons daarbij aan de Algemene verordening gegevensbescherming (AVG).</p>
+          <h2>Wie is verantwoordelijk?</h2>
+          <p>{site.name}, {site.address.street}, {site.address.postalCode} {site.address.city}{site.kvk && <>, KvK {site.kvk}</>}.<br />E-mail: <a href={`mailto:${site.email}`}>{site.email}</a> · Telefoon: <a href={`tel:${site.phone.e164}`}>{site.phone.display}</a></p>
+          <h2>Welke gegevens verwerken we en waarom?</h2>
+          <table>
+            <thead><tr><th>Formulier / situatie</th><th>Gegevens</th><th>Doel</th><th>Grondslag</th></tr></thead>
+            <tbody>
+              <tr><td>Woningzoekopdracht</td><td>Naam, e-mail, telefoon (optioneel), studie of werk, inkomensindicatie, garantsteller, woonwensen, toelichting</td><td>Je zoekopdracht uitvoeren en je profiel bij verhuurders kunnen presenteren</td><td>Stappen op jouw verzoek vóór het sluiten van een overeenkomst (art. 6 lid 1 sub b AVG)</td></tr>
+              <tr><td>Woning aanmelden (verhuur)</td><td>Naam, e-mail, telefoon, adres en kenmerken van de woning, bericht</td><td>Contact opnemen voor een kennismaking en verhuuradvies</td><td>Art. 6 lid 1 sub b AVG</td></tr>
+              <tr><td>Contactformulier, e-mail, telefoon</td><td>Naam, e-mail, telefoon (optioneel), onderwerp, bericht</td><td>Je vraag beantwoorden</td><td>Gerechtvaardigd belang: je vraag kunnen beantwoorden (art. 6 lid 1 sub f AVG)</td></tr>
+            </tbody>
+          </table>
+          <p>Vul geen bijzondere persoonsgegevens (zoals gezondheid of religie) of een BSN in. Die hebben we niet nodig.</p>
+          <h2>Hoe lang bewaren we je gegevens?</h2>
+          <ul>
+            <li>De website zelf slaat ingevulde formulieren niet op in een database. Een inzending wordt direct per e-mail naar ons kantoor gestuurd.</li>
+            <li>Lukt het versturen tijdelijk niet, dan bewaren we de inzending beveiligd op de server en versturen we haar zodra dat weer kan. Dat duurt maximaal 14 dagen; daarna wordt ze automatisch verwijderd.</li>
+            <li>Aanvragen die niet tot een opdracht leiden, verwijderen we uiterlijk 12 maanden na het laatste contact.</li>
+            <li>Komt er een opdracht of overeenkomst tot stand, dan bewaren we de gegevens zolang dat nodig is voor de uitvoering, en daarna zolang de wet dat verplicht (bijvoorbeeld 7 jaar voor de fiscale administratie).</li>
+          </ul>
+          <h2>Met wie delen we gegevens?</h2>
+          <p>We verkopen je gegevens nooit. We delen gegevens alleen als dat nodig is voor onze dienstverlening:</p>
+          <ul>
+            <li>met een verhuurder of woningzoekende, maar alleen na overleg met jou en alleen de gegevens die daarvoor nodig zijn;</li>
+            <li>met ICT-dienstverleners die de website, de e-mail en eventueel onze klantadministratie verzorgen. Met hen hebben we afspraken gemaakt (verwerkersovereenkomst) en zij mogen je gegevens niet voor eigen doeleinden gebruiken;</li>
+            <li>als de wet ons daartoe verplicht.</li>
+          </ul>
+          <h2>Externe diensten op deze website</h2>
+          <ul>
+            <li><strong>Lettertypen</strong> worden vanaf onze eigen server geladen, niet van Google.</li>
+            <li><strong>Kaarten</strong> van OpenStreetMap worden pas geladen als je daar zelf op klikt. Je IP-adres wordt dan naar de OpenStreetMap Foundation gestuurd. Zie het <a href="https://osmfoundation.org/wiki/Privacy_Policy" target="_blank" rel="noopener">privacybeleid van OpenStreetMap</a>.</li>
+            <li><strong>Links naar Google Maps, Pararius, Funda en Huurwoningen.nl</strong> openen de website van die partij. Op die websites gelden hun eigen privacy- en cookieregels.</li>
+            <li>We gebruiken <strong>geen</strong> analyse-, tracking- of advertentiecookies en geen social-media-plugins. Zie ook ons <a href={path('cookies', lang)}>cookiebeleid</a>.</li>
+          </ul>
+          <h2>Beveiliging</h2>
+          <p>We nemen passende maatregelen om je gegevens te beschermen, waaronder een versleutelde verbinding (HTTPS), beveiligde verzending van e-mail, bescherming tegen misbruik van formulieren en beperkte toegang tot gegevens. Onze serverlogboeken bevatten geen inhoud van formulieren.</p>
+          <h2>Jouw rechten</h2>
+          <p>Je hebt het recht om je gegevens in te zien, te laten corrigeren of verwijderen, de verwerking te laten beperken, bezwaar te maken en je gegevens over te laten dragen. Stuur je verzoek naar <a href={`mailto:${site.email}`}>{site.email}</a>. We reageren binnen een maand. Om misbruik te voorkomen kunnen we je vragen je te identificeren.</p>
+          <p>Ben je het niet eens met hoe we met je gegevens omgaan? Laat het ons weten, dan zoeken we samen naar een oplossing. Je kunt ook een klacht indienen bij de <a href="https://autoriteitpersoonsgegevens.nl" target="_blank" rel="noopener">Autoriteit Persoonsgegevens</a>.</p>
+          <h2>Wijzigingen</h2>
+          <p>We kunnen deze privacyverklaring aanpassen. De datum bovenaan laat zien wanneer dat voor het laatst is gebeurd.</p>
+        </>
+      ) : (
+        <>
+          <p>Karens Real Estate handles your personal data with care. This privacy statement explains which data we process through this website, why, how long we keep it and what rights you have, in accordance with the General Data Protection Regulation (GDPR).</p>
+          <h2>Who is responsible?</h2>
+          <p>{site.name}, {site.address.street}, {site.address.postalCode} {site.address.city}, the Netherlands{site.kvk && <>, Chamber of Commerce {site.kvk}</>}.<br />E-mail: <a href={`mailto:${site.email}`}>{site.email}</a> · Phone: <a href={`tel:${site.phone.e164}`}>{site.phone.display}</a></p>
+          <h2>Which data do we process and why?</h2>
+          <table>
+            <thead><tr><th>Form / situation</th><th>Data</th><th>Purpose</th><th>Legal basis</th></tr></thead>
+            <tbody>
+              <tr><td>Search request</td><td>Name, e-mail, phone (optional), studies or work, income indication, guarantor, housing wishes, notes</td><td>Carrying out your search and presenting your profile to landlords</td><td>Steps at your request prior to entering into a contract (Art. 6(1)(b) GDPR)</td></tr>
+              <tr><td>Property registration (letting)</td><td>Name, e-mail, phone, address and features of the property, message</td><td>Contacting you for an introduction and letting advice</td><td>Art. 6(1)(b) GDPR</td></tr>
+              <tr><td>Contact form, e-mail, phone</td><td>Name, e-mail, phone (optional), topic, message</td><td>Answering your question</td><td>Legitimate interest in answering your question (Art. 6(1)(f) GDPR)</td></tr>
+            </tbody>
+          </table>
+          <p>Please do not enter special categories of personal data (such as health or religion) or your citizen service number (BSN). We do not need them.</p>
+          <h2>How long do we keep your data?</h2>
+          <ul>
+            <li>The website itself does not store submitted forms in a database. A submission is e-mailed directly to our office.</li>
+            <li>If sending temporarily fails, the submission is kept securely on the server and sent as soon as possible, for no more than 14 days.</li>
+            <li>Requests that do not lead to an assignment are deleted no later than 12 months after the last contact.</li>
+            <li>If an assignment or agreement is concluded, we keep the data for as long as necessary to perform it, and then for as long as the law requires (for example 7 years for tax records).</li>
+          </ul>
+          <h2>Who do we share data with?</h2>
+          <p>We never sell your data. We only share data where necessary for our services:</p>
+          <ul>
+            <li>with a landlord or home seeker, only after consulting you and only the data that is needed;</li>
+            <li>with IT service providers that host the website, e-mail and possibly our client administration. We have a data processing agreement with them and they may not use your data for their own purposes;</li>
+            <li>when we are legally required to do so.</li>
+          </ul>
+          <h2>External services on this website</h2>
+          <ul>
+            <li><strong>Fonts</strong> are loaded from our own server, not from Google.</li>
+            <li><strong>Maps</strong> from OpenStreetMap are only loaded when you click on them. Your IP address is then sent to the OpenStreetMap Foundation; see the <a href="https://osmfoundation.org/wiki/Privacy_Policy" target="_blank" rel="noopener">OpenStreetMap privacy policy</a>.</li>
+            <li><strong>Links to Google Maps, Pararius, Funda and Huurwoningen.nl</strong> open that party's website, where its own privacy and cookie rules apply.</li>
+            <li>We do <strong>not</strong> use analytics, tracking or advertising cookies, nor social media plug-ins. See our <a href={path('cookies', lang)}>cookie policy</a>.</li>
+          </ul>
+          <h2>Security</h2>
+          <p>We take appropriate measures to protect your data, including an encrypted connection (HTTPS), secure e-mail transmission, protection against form abuse and restricted access to data. Our server logs do not contain form content.</p>
+          <h2>Your rights</h2>
+          <p>You have the right to access, rectify or erase your data, to restrict or object to processing, and to data portability. Send your request to <a href={`mailto:${site.email}`}>{site.email}</a>. We respond within one month and may ask you to verify your identity to prevent misuse.</p>
+          <p>Not happy with how we handle your data? Let us know and we will look for a solution together. You may also lodge a complaint with the Dutch Data Protection Authority (<a href="https://autoriteitpersoonsgegevens.nl/en" target="_blank" rel="noopener">Autoriteit Persoonsgegevens</a>).</p>
+          <h2>Changes</h2>
+          <p>We may update this privacy statement. The date at the top shows when it was last changed.</p>
+        </>
+      )}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .legal__t { font-size: clamp(40px, 5vw, 64px); }
+</style>

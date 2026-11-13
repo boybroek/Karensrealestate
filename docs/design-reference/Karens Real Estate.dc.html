@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;background:#f8f7f4;color:#13212e;font-family:'Schibsted Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:#043a63;text-decoration:none}
+a:hover{color:#021f36}
+input,select,textarea,button{font-family:inherit}
+::selection{background:#043a63;color:#fff}
+</style>
+</helmet>
+
+<div style="min-height:100vh;display:flex;flex-direction:column">
+
+<div style="position:fixed;inset:0;z-index:200;background:#043a63;display:flex;align-items:center;justify-content:center;pointer-events:none;visibility:{{ curtainVis }};transform:{{ curtainTf }};transition:{{ curtainTr }}">
+  <img src="assets/logo-white.png" alt="" style="width:220px;max-width:50vw;opacity:{{ curtainLogoOp }};transition:opacity .3s ease">
+</div>
+
+<header style="position:sticky;top:0;z-index:50;background:rgba(248,247,244,.88);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid rgba(4,58,99,.1)">
+  <div style="max-width:1320px;margin:0 auto;padding:14px clamp(20px,4vw,48px);display:flex;align-items:center;gap:20px 28px;flex-wrap:wrap">
+    <img src="assets/logo.png" alt="Karens Real Estate – Koop, Huur, Beheer" onClick="{{ goHome }}" style="height:44px;width:auto;cursor:pointer">
+    <nav style="display:flex;gap:2px;flex-wrap:nowrap;flex:1 1 560px;min-width:0;overflow-x:auto;scrollbar-width:none;justify-content:safe center;order:{{ navOrder }}">
+      <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="6">
+        <button onClick="{{ n.onClick }}" style="white-space:nowrap;flex-shrink:0;background:{{ n.bg }};color:#043a63;border:0;padding:9px 13px;border-radius:999px;font-size:15px;font-weight:500;cursor:pointer;transition:background .25s ease" style-hover="background:rgba(4,58,99,.07)">{{ n.label }}</button>
+      </sc-for>
+    </nav>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-left:auto">
+      <button onClick="{{ goVerhuren }}" style="background:transparent;color:#043a63;border:1.5px solid #043a63;padding:11px 18px;border-radius:999px;font-size:15px;font-weight:600;cursor:pointer;transition:all .25s cubic-bezier(.2,.7,.2,1)" style-hover="background:#043a63;color:#fff">{{ t.ctaLet }}</button>
+      <button onClick="{{ goAanhuur }}" style="background:#043a63;color:#fff;border:1.5px solid #043a63;padding:11px 18px;border-radius:999px;font-size:15px;font-weight:600;cursor:pointer;transition:all .25s cubic-bezier(.2,.7,.2,1)" style-hover="background:#021f36;border-color:#021f36;transform:translateY(-2px);box-shadow:0 8px 20px rgba(4,58,99,.25)">{{ t.ctaFind }}</button>
+      <div role="group" aria-label="Taal / Language" style="display:flex;gap:4px;padding:4px;border-radius:999px;background:rgba(4,58,99,.06)">
+        <button onClick="{{ setNL }}" aria-label="Nederlands" title="Nederlands" style="width:38px;height:30px;border:0;border-radius:999px;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer;background:{{ nlBg }};box-shadow:{{ nlSh }};transition:all .3s cubic-bezier(.2,.7,.2,1)" style-hover="transform:scale(1.06)"><img src="https://flagcdn.com/nl.svg" alt="NL" style="width:22px;height:15px;border-radius:2px;object-fit:cover;opacity:{{ nlOp }};transition:opacity .3s"></button>
+        <button onClick="{{ setEN }}" aria-label="English" title="English" style="width:38px;height:30px;border:0;border-radius:999px;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer;background:{{ enBg }};box-shadow:{{ enSh }};transition:all .3s cubic-bezier(.2,.7,.2,1)" style-hover="transform:scale(1.06)"><img src="https://flagcdn.com/gb.svg" alt="ENG" style="width:22px;height:15px;border-radius:2px;object-fit:cover;opacity:{{ enOp }};transition:opacity .3s"></button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main style="flex:1;opacity:{{ mainOp }};transition:opacity .3s ease">
+
+<sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+  <section style="max-width:1320px;margin:0 auto;padding:clamp(48px,7vw,96px) clamp(20px,4vw,48px) 56px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,460px),1fr));gap:clamp(32px,5vw,72px);align-items:center">
+    <div>
+      <div data-reveal="0" style="font-size:13px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:#3d6d96;margin-bottom:24px">{{ t.heroEy }}</div>
+      <h1 data-reveal="80" style="font-family:'Newsreader',serif;font-weight:400;font-size:clamp(44px,6.2vw,88px);line-height:1;letter-spacing:-.02em;margin:0 0 28px;color:#043a63;text-wrap:balance">{{ t.heroA }}<em style="font-style:italic;color:#3d6d96">{{ t.heroEm }}</em>{{ t.heroB }}</h1>
+      <p data-reveal="160" style="font-size:19px;line-height:1.6;color:#50606e;max-width:480px;margin:0 0 36px;text-wrap:pretty">{{ t.heroSub }}</p>
+      <div data-reveal="240" style="display:flex;gap:28px;font-size:14px;color:#50606e;flex-wrap:wrap;align-items:center">
+        <span>{{ t.v1 }}</span><span style="width:6px;height:6px;background:#043a63;transform:rotate(45deg)"></span><span>{{ t.v2 }}</span><span style="width:6px;height:6px;background:#043a63;transform:rotate(45deg)"></span><span>{{ t.v3 }}</span>
+      </div>
+    </div>
+    <div data-reveal="120" style="position:relative">
+      <div style="aspect-ratio:4/5;border-radius:4px;background:repeating-linear-gradient(135deg,#e4eaf0 0 12px,#dbe3eb 12px 24px);display:flex;align-items:flex-end;padding:20px;font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#5b6e80">{{ t.heroPh }}</div>
+      <div style="position:absolute;left:-24px;bottom:40px;background:#fff;padding:18px 22px;border-radius:4px;box-shadow:0 20px 50px rgba(2,31,54,.14);display:flex;gap:14px;align-items:center">
+        <div style="width:10px;height:10px;background:#043a63;transform:rotate(45deg);margin:0 6px"></div>
+        <div><div style="font-weight:600;font-size:15px;color:#043a63">Karens Real Estate</div><div style="font-size:13px;color:#50606e">{{ t.heroCard }}</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section style="max-width:1320px;margin:0 auto;padding:0 clamp(20px,4vw,48px) clamp(64px,8vw,110px);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:16px">
+    <div data-reveal="0">
+      <button onClick="{{ goAanhuur }}" style="width:100%;text-align:left;background:#043a63;color:#fff;border:0;border-radius:4px;padding:clamp(32px,4vw,52px);cursor:pointer;display:flex;flex-direction:column;gap:20px;min-height:300px;transition:transform .45s cubic-bezier(.2,.7,.2,1),box-shadow .45s cubic-bezier(.2,.7,.2,1),background .3s" style-hover="transform:translateY(-6px);box-shadow:0 30px 60px rgba(4,58,99,.3);background:#06467a">
+        <span style="font-size:13px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:#9fc0de">{{ t.findEy }}</span>
+        <span style="font-family:'Newsreader',serif;font-size:clamp(34px,3.6vw,50px);line-height:1.05;letter-spacing:-.01em;display:flex;flex-direction:column"><span>{{ t.findT1 }}</span><span>{{ t.findT2 }}</span></span>
+        <span style="font-size:17px;line-height:1.55;color:#cfe0ee;max-width:420px">{{ t.findD }}</span>
+        <span style="margin-top:auto;display:inline-flex;align-items:center;gap:12px;font-weight:600;font-size:16px"><span style="width:44px;height:44px;border-radius:50%;background:#fff;color:#043a63;display:inline-flex;align-items:center;justify-content:center;font-size:20px">→</span>{{ t.startSearch }}</span>
+      </button>
+    </div>
+    <div data-reveal="120">
+      <button onClick="{{ goVerhuren }}" style="width:100%;text-align:left;background:#e6eef5;color:#043a63;border:0;border-radius:4px;padding:clamp(32px,4vw,52px);cursor:pointer;display:flex;flex-direction:column;gap:20px;min-height:300px;transition:transform .45s cubic-bezier(.2,.7,.2,1),box-shadow .45s cubic-bezier(.2,.7,.2,1),background .3s" style-hover="transform:translateY(-6px);box-shadow:0 30px 60px rgba(4,58,99,.16);background:#dce7f1">
+        <span style="font-size:13px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:#3d6d96">{{ t.letEy }}</span>
+        <span style="font-family:'Newsreader',serif;font-size:clamp(34px,3.6vw,50px);line-height:1.05;letter-spacing:-.01em;display:flex;flex-direction:column"><span>{{ t.letT1 }}</span><span>{{ t.letT2 }}</span></span>
+        <span style="font-size:17px;line-height:1.55;color:#40576b;max-width:420px">{{ t.letD }}</span>
+        <span style="margin-top:auto;display:inline-flex;align-items:center;gap:12px;font-weight:600;font-size:16px"><span style="width:44px;height:44px;border-radius:50%;background:#043a63;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:20px">→</span>{{ t.register }}</span>
+      </button>
+    </div>
+  </section>
+
+  <section style="background:#043a63;color:#fff">
+    <div style="max-width:1320px;margin:0 auto;padding:clamp(64px,8vw,110px) clamp(20px,4vw,48px)">
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;margin-bottom:44px">
+        <div data-reveal="0">
+          <div style="font-size:13px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:#9fc0de;margin-bottom:16px">{{ t.listEy }}</div>
+          <h2 style="font-family:'Newsreader',serif;font-weight:400;font-size:clamp(36px,4.4vw,60px);line-height:1.05;margin:0">{{ t.listT }}</h2>
+        </div>
+        <button onClick="{{ goAanbod }}" style="background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.4);padding:12px 20px;border-radius:999px;font-size:15px;font-weight:600;cursor:pointer;transition:all .25s" style-hover="background:#fff;color:#043a63;border-color:#fff">{{ t.listAll }}</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr));gap:20px">
+        <sc-for list="{{ featured }}" as="l" hint-placeholder-count="3">
+          <div data-reveal="{{ l.delay }}">
+            <article style="background:#fff;color:#13212e;border-radius:4px;overflow:hidden;transition:transform .45s cubic-bezier(.2,.7,.2,1),box-shadow .45s" style-hover="transform:translateY(-6px);box-shadow:0 30px 60px rgba(0,0,0,.25)">
+              <div style="position:relative;aspect-ratio:4/3;overflow:hidden;background:repeating-linear-gradient(135deg,#e4eaf0 0 12px,#dbe3eb 12px 24px)">
+                <div style="position:absolute;left:16px;bottom:14px;font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#5b6e80">{{ t.mainPh }}</div>
+                <sc-if value="{{ l.mapLoaded }}"><iframe src="{{ l.mapUrl }}" title="{{ l.adres }}" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;border:0;opacity:{{ l.mapOp }};transition:opacity .5s ease"></iframe></sc-if>
+                <span style="position:absolute;top:14px;left:14px;background:{{ l.statusBg }};color:#fff;font-size:11px;letter-spacing:.12em;font-weight:600;padding:6px 10px;border-radius:2px">{{ l.status }}</span>
+                <div style="position:absolute;top:12px;right:12px;display:flex;background:rgba(255,255,255,.95);border-radius:999px;padding:3px;box-shadow:0 4px 14px rgba(2,31,54,.15)">
+                  <button onClick="{{ l.toFoto }}" style="border:0;border-radius:999px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;background:{{ l.fotoBg }};color:{{ l.fotoFg }};transition:all .3s">{{ t.photo }}</button>
+                  <button onClick="{{ l.toMap }}" style="border:0;border-radius:999px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;background:{{ l.mapBg }};color:{{ l.mapFg }};transition:all .3s">{{ t.map }}</button>
+                </div>
+              </div>
+              <div style="padding:22px 22px 20px;display:flex;flex-direction:column;gap:6px">
+                <h3 style="font-family:'Newsreader',serif;font-weight:500;font-size:24px;margin:0;color:#043a63">{{ l.adres }}</h3>
+                <div style="font-size:15px;color:#50606e">{{ l.wijkCity }}</div>
+                <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-top:12px;padding-top:14px;border-top:1px solid #e6ebf0;flex-wrap:wrap">
+                  <span style="font-size:20px;font-weight:600;color:#043a63">{{ l.prijs }} <span style="font-size:14px;font-weight:400;color:#50606e">{{ t.pm }}</span></span>
+                  <span style="font-size:14px;color:#50606e">{{ l.meta }}</span>
+                </div>
+                <a href="{{ l.gmaps }}" target="_blank" rel="noopener" style="font-size:14px;font-weight:600;margin-top:8px">{{ t.route }}</a>
+              </div>
+            </article>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <section style="max-width:1320px;margin:0 auto;padding:clamp(64px,8vw,120px) clamp(20px,4vw,48px);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:clamp(32px,6vw,96px);align-items:center">
+    <div data-reveal="0" style="aspect-ratio:1/1;max-width:520px;width:100%;border-radius:4px;background:repeating-linear-gradient(135deg,#e4eaf0 0 12px,#dbe3eb 12px 24px);display:flex;align-items:flex-end;padding:20px;font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#5b6e80">{{ portraitPh }}</div>
+    <div>
+      <div data-reveal="0" style="font-size:13px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:#3d6d96;margin-bottom:20px">{{ t.aboutEy }}</div>
+      <blockquote data-reveal="80" style="font-family:'Newsreader',serif;font-style:italic;font-size:clamp(28px,3vw,42px);line-height:1.2;color:#043a63;margin:0 0 28px;text-wrap:pretty">“{{ t.quote }}”</blockquote>
+      <p data-reveal="160" style="font-size:17px;line-height:1.65;color:#50606e;margin:0 0 32px;max-width:520px">{{ t.aboutP }}</p>
+      <div data-reveal="220"><button onClick="{{ goOver }}" style="background:transparent;border:0;border-bottom:1.5px solid #043a63;color:#043a63;padding:0 0 4px;font-size:16px;font-weight:600;cursor:pointer;transition:all .25s" style-hover="color:#3d6d96;border-color:#3d6d96">{{ t.aboutLink }}</button></div>
+    </div>
+  </section>
+
+  <section style="background:#e6eef5">
+    <div style="max-width:1320px;margin:0 auto;padding:clamp(64px,8vw,110px) clamp(20px,4vw,48px);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:clamp(32px,5vw,80px)">
+      <div data-reveal="0">
+        <div style="font-size:13px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:#3d6d96;margin-bottom:16px">{{ t.expEy }}</div>
+        <h2 style="font-family:'Newsreader',serif;font-weight:400;font-size:clamp(36px,4.4vw,60px);line-height:1.05;margin:0 0 20px;color:#043a63">{{ t.expT }}</h2>
+        <p style="font-size:17px;line-height:1.65;color:#40576b;margin:0 0 12px;max-width:480px">{{ t.expP }}</p>
+        <p style="font-size:17px;line-height:1.65;color:#40576b;margin:0;font-style:italic">{{ t.expP2 }}</p>
+      </div>
+      <div style="display:flex;flex-direction:column">
+        <sc-for list="{{ expatItems }}" as="e" hint-placeholder-count="4">
+          <div data-reveal="{{ e.delay }}" style="display:flex;gap:18px;align-items:baseline;padding:20px 0;border-bottom:1px solid rgba(4,58,99,.15);font-size:17px;color:#043a63">
+            <span style="font-family:'Newsreader',serif;font-size:15px;color:#3d6d96;min-width:24px">{{ e.n }}</span><span>{{ e.t }}</span>
+          </div>
+        </sc-for>
+        <div data-reveal="300" style="margin-top:28px"><button onClick="{{ goAanhuur }}" style="background:#043a63;color:#fff;border:0;padding:14px 22px;border-radius:999px;font-size:15px;font-weight:600;cursor:pointer;transition:all .25s" style-hover="background:#021f36;transform:translateY(-2px)">{{ t.expCta }}</button></div>
+      </div>
+    </div>
+  </section>
+
+  <section style="background:#f8f7f4;overflow:hidden">
+    <div style="max-width:1320px;margin:0 auto;padding:clamp(64px,8vw,110px) clamp(20px,4vw,48px)">
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;margin-bottom:44px">
+        <div data-reveal="0">
+          <div style="font-size:13px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:#3d6d96;margin-bottom:16px">{{ t.revEy }}</div>
+          <h2 style="font-family:'Newsreader',serif;font-weight:400;font-size:clamp(36px,4.4vw,60px);line-height:1.05;margin:0;color:#043a63">{{ t.revT }}</h2>
+        </div>
+        <div data-reveal="80" style="display:flex;gap:10px">
+          <button onClick="{{ revPrev }}" aria-label="Vorige" style="width:52px;height:52px;border-radius:50%;border:1.5px solid #043a63;background:transparent;color:#043a63;font-size:20px;cursor:pointer;transition:all .25s" style-hover="background:#043a63;color:#fff">←</button>
+          <button onClick="{{ revNext }}" aria-label="Volgende" style="width:52px;height:52px;border-radius:50%;border:1.5px solid #043a63;background:#043a63;color:#fff;font-size:20px;cursor:pointer;transition:all .25s" style-hover="background:#021f36;transform:translateX(2px)">→</button>
+        </div>
+      </div>
+      <div data-reveal="120" onMouseEnter="{{ revPause }}" onMouseLeave="{{ revResume }}" style="overflow:visible">
+        <div style="display:flex;gap:20px;transform:{{ revTf }};transition:transform .8s cubic-bezier(.65,0,.25,1)">
+          <sc-for list="{{ reviews }}" as="r" hint-placeholder-count="3">
+            <figure style="flex:0 0 {{ revW }};margin:0;background:{{ r.bg }};color:{{ r.fg }};border-radius:4px;padding:clamp(28px,3.4vw,44px);display:flex;flex-direction:column;gap:24px;min-height:320px;opacity:{{ r.op }};transition:opacity .6s ease,background .6s ease,color .6s ease">
+              <div style="font-size:16px;letter-spacing:4px;color:{{ r.star }}">★★★★★</div>
+              <blockquote style="margin:0;font-family:'Newsreader',serif;font-size:clamp(21px,1.9vw,26px);line-height:1.4;text-wrap:pretty">“{{ r.q }}”</blockquote>
+              <figcaption style="margin-top:auto;display:flex;flex-direction:column;gap:3px;padding-top:18px;border-top:1px solid {{ r.line }}">
+                <span style="font-weight:600;font-size:15px">{{ r.n }}</span>
+                <span style="font-size:14px;color:{{ r.sub }}">{{ r.m }}</span>
+              </figcaption>
+            </figure>
+          </sc-for>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:32px;align-items:center">
+        <sc-for list="{{ revDots }}" as="d" hint-placeholder-count="5">
+          <button onClick="{{ d.onClick }}" aria-label="{{ d.label }}" style="height:8px;width:{{ d.w }};border-radius:999px;border:0;padding:0;background:{{ d.bg }};cursor:pointer;transition:width .5s cubic-bezier(.65,0,.25,1),background .4s"></button>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+</sc-if>
+
+<sc-if value="{{ isAanhuur }}" hint-placeholder-val="{{ false }}">
+  <section style="background:#043a63;color:#fff">
+    <div style="max-width:1320px;margin:0 auto;padding:clamp(64px,8vw,112px) clamp(20px,4vw,48px) clamp(56px,6vw,88px)">
+      <div data-reveal="0" style="font-size:13px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:#9fc0de;margin-bottom:24px">{{ t.ahEy }}</div>
+      <h1 data-reveal="80" style="font-family:'Newsreader',serif;font-weight:400;font-size:clamp(42px,5.8vw,84px);line-height:1;letter-spacing:-.02em;margin:0 0 28px;max-width:960px;text-wrap:balance">{{ t.ahT }}</h1>
+      <p data-reveal="160" style="font-size:19px;line-height:1.6;color:#cfe0ee;max-width:600px;margin:0">{{ t.ahP }}</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:1px;background:rgba(255,255,255,.15);margin-top:clamp(48px,6vw,80px);border:1px solid rgba(255,255,255,.15)">
+        <sc-for list="{{ aanhuurSteps }}" as="s" hint-placeholder-count="4">
+          <div data-reveal="{{ s.delay }}" style="background:#043a63;padding:28px 24px">
+            <div style="font-family:'Newsreader',serif;font-size:40px;color:#9fc0de;margin-bottom:18px">{{ s.n }}</div>
+            <div style="font-size:18px;font-weight:600;margin-bottom:8px">{{ s.t }}</div>
+            <div style="font-size:15px;line-height:1.55;color:#cfe0ee">{{ s.d }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <section style="max-width:1100px;margin:0 auto;padding:clamp(64px,8vw,110px) clamp(20px,4vw,48px)">
+    <div data-reveal="0" style="text-align:center;margin-bottom:40px">
+      <div style="font-size:13px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:#3d6d96;margin-bottom:16px">{{ t.fEy }}</div>
+      <h2 style="font-family:'Newsreader',serif;font-weight:400;font-size:clamp(36px,4.4vw,60px);line-height:1.05;margin:0 0 14px;color:#043a63">{{ t.fT }}</h2>
+      <p style="font-size:17px;color:#50606e;margin:0">{{ t.fS }}</p>
+    </div>
+
+    <sc-if value="{{ aanhuurOpen }}" hint-placeholder-val="{{ true }}">
+    <form onSubmit="{{ submitAanhuur }}" data-reveal="100" style="background:#fff;border-radius:4px;box-shadow:0 30px 80px rgba(2,31,54,.08);padding:clamp(24px,4vw,56px)">
+      <div style="font-size:14px;font-weight:600;color:#043a63;margin-bottom:12px">{{ t.fAs }}</div>
+      <div style="position:relative;display:grid;grid-template-columns:1fr 1fr;background:#eef3f7;border-radius:999px;padding:5px;margin-bottom:40px;max-width:520px">
+        <div style="position:absolute;top:5px;bottom:5px;left:5px;width:calc(50% - 5px);background:#043a63;border-radius:999px;box-shadow:0 6px 16px rgba(4,58,99,.3);transform:{{ pillTf }};transition:transform .55s cubic-bezier(.65,0,.25,1)"></div>
+        <button type="button" onClick="{{ setStudent }}" style="position:relative;z-index:1;background:transparent;border:0;padding:14px 10px;border-radius:999px;font-size:16px;font-weight:600;cursor:pointer;color:{{ studentTabFg }};transition:color .4s ease">{{ t.student }}</button>
+        <button type="button" onClick="{{ setWerkend }}" style="position:relative;z-index:1;background:transparent;border:0;padding:14px 10px;border-radius:999px;font-size:16px;font-weight:600;cursor:pointer;color:{{ werkendTabFg }};transition:color .4s ease">{{ t.werkend }}</button>
+      </div>
+
+      <div style="display:grid;overflow:hidden">
+        <div style="grid-area:1/1;opacity:{{ sOp }};transform:{{ sTf }};pointer-events:{{ sPe }};visibility:{{ sVis }};transition:opacity .45s ease,transform .55s cubic-bezier(.65,0,.25,1),visibility .55s">
+          <div style="font-family:'Newsreader',serif;font-size:26px;color:#043a63;margin-bottom:6px">{{ t.sT }}</div>
+          <div style="font-size:15px;color:#50606e;margin-bottom:24px">{{ t.sS }}</div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:18px 20px">
+            <label style="display:flex;flex-direction:column;gap:8px;font-size:14px;font-weight:600;color:#043a63">{{ t.sInst }}<input placeholder="{{ t.sInstPh }}" style="border:1.5px solid #d5dee6;border-radius:4px;padding:14px;font-size:16px;color:#13212e;background:#fbfcfd;outline:none;transition:border-color .25s,box-shadow .25s" style-focus="border-color:#043a63;box-shadow:0 0 0 4px rgba(4,58,99,.1)"></label>
+            <label style="display:flex;flex-direction:column;gap:8px;font-size:14px;font-weight:600;color:#043a63">{{ t.sStudy }}<input placeholder="{{ t.sStudyPh }}" style="border:1.5px solid #d5dee6;border-radius:4px;padding:14px;font-size:16px;color:#13212e;background:#fbfcfd;outline:none;transition:border-color .25s,box-shadow .25s" style-focus="border-color:#043a63;box-shadow:0 0 0 4px rgba(4,58,99,.1)"></label>
+          </div>
+          <div style="font-size:14px;font-weight:600;color:#043a63;margin:22px 0 10px">{{ t.sGar }}</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <sc-for list="{{ garantChips }}" as="c" hint-placeholder-count="3"><button type="button" onClick="{{ c.onClick }}" style="border:1.5px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }};padding:10px 18px;border-radius:999px;font-size:15px;font-weight:500;cursor:pointer;transition:all .3s cubic-bezier(.2,.7,.2,1)">{{ c.label }}</button></sc-for>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:18px 20px;margin-top:22px">
+            <label style="display:flex;flex-direction:column;gap:8px;font-size:14px;font-weight:600;color:#043a63">{{ t.sGarInc }}<input placeholder="€" style="border:1.5px solid #d5dee6;border-radius:4px;padding:14px;font-size:16px;color:#13212e;background:#fbfcfd;outline:none;transition:border-color .25s,box-shadow .25s" style-focus="border-color:#043a63;box-shadow:0 0 0 4px rgba(4,58,99,.1)"></label>
+            <label style="display:flex;flex-direction:column;gap:8px;font-size:14px;font-weight:600;color:#043a63">{{ t.sOwnInc }}<input placeholder="{{ t.perMonthPh }}" style="border:1.5px solid #d5dee6;border-radius:4px;padding:14px;font-size:16px;color:#13212e;background:#fbfcfd;outline:none;transition:border-color .25s,box-shadow .25s" style-focus="border-color:#043a63;box-shadow:0 0 0 4px rgba(4,58,99,.1)"></label>
+          </div>
+        </div>
+
+        <div style="grid-area:1/1;opacity:{{ wOp }};transform:{{ wTf }};pointer-events:{{ wPe }};visibility:{{ wVis }};transition:opacity .45s ease,transform .55s cubic-bezier(.65,0,.25,1),visibility .55s">
+          <div style="font-family:'Newsreader',serif;font-size:26px;color:#043a63;margin-bottom:6px">{{ t.wT }}</div>
+          <div style="font-size:15px;color:#50606e;margin-bottom:24px">{{ t.wS }}</div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:18px 20px">
+            <label style="display:flex;flex-direction:column;gap:8px;font-size:14px;font-weight:600;color:#043a63">{{ t.wEmp }}<input placeholder="{{ t.wEmpPh }}" style="border:1.5px solid #d5dee6;border-radius:4px;padding:14px;font-size:16px;color:#13212e;background:#fbfcfd;outline:none;transition:border-color .25s,box-shadow .25s" style-focus="border-color:#043a63;box-shadow:0 0 0 4px rgba(4,58,99,.1)"></label>
+            <label style="display:flex;flex-direction:column;gap:8px;font-size:14px;font-weight:600;color:#043a63">{{ t.wJob }}<input placeholder="{{ t.wJobPh }}" style="border:1.5px solid #d5dee6;border-radius:4px;padding:14px;font-size:16px;color:#13212e;background:#fbfcfd;outline:none;transition:border-color .25s,box-shadow .25s" style-focus="border-color:#043a63;box-shadow:0 0 0 4px rgba(4,58,99,.1)"></label>
+          </div>
+          <div style="font-size:14px;font-weight:600;color:#043a63;margin:22px 0 10px">{{ t.wCon }}</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <sc-for list="{{ contractChips }}" as="c" hint-placeholder-count="4"><button type="button" onClick="{{ c.onClick }}" style="border:1.5px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }};padding:10px 18px;border-radius:999px;font-size:15px;font-weight:500;cursor:pointer;transition:all .3s cubic-bezier(.2,.7,.2,1)">{{ c.label }}</button></sc-for>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:18px 20px;margin-top:22px">
+            <label style="display:flex;flex-direction:column;gap:8px;font-size:14px;font-weight:600;color:#043a63">{{ t.wInc }}<input placeholder="€" style="border:1.5px solid #d5dee6;border-radius:4px;padding:14px;font-size:16px;color:#13212e;background:#fbfcfd;outline:none;transition:border-color .25s,box-shadow .25s" style-focus="border-color:#043a63;box-shadow:0 0 0 4px rgba(4,58,99,.1)"></label>
+            <label style="display:flex;flex-direction:column;gap:8px;font-size:14px;font-weight:600;color:#043a63">{{ t.wAbroad }}<select style="border:1.5px solid #d5dee6;border-radius:4px;padding:14px;font-size:16px;color:#13212e;background:#fbfcfd;outline:none"><option>{{ t.no }}</option><option>{{ t.wAbroadYes }}</option></select></label>
+          </div>
+        </div>
+      </div>
+
+      <div style="height:1px;background:#e6ebf0;margin:40px 0 32px"></div>
+      <div style="font-family:'Newsreader',serif;font-size:26px;color:#043a63;margin-bottom:24px">{{ t.cT }}</div>
+      <div data-wish-dd="" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:18px 20px;margin-bottom:18px">
+        <sc-for list="{{ wishGroups }}" as="g" hint-placeholder-count="4">
+          <div style="display:flex;flex-direction:column;gap:8px;position:relative;z-index:{{ g.z }}">
+            <span style="font-size:14px;font-weight:600;color:#043a63">{{ g.title }}</span>
+            <button type="button" onClick="{{ g.toggle }}" aria-expanded="{{ g.open }}" aria-haspopup="listbox" style="display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:1.5px solid {{ g.bd }};border-radius:4px;padding:14px;font-size:16px;color:{{ g.sumFg }};background:#fbfcfd;cursor:pointer;box-shadow:{{ g.ring }};transition:border-color .25s,box-shadow .25s">
+              <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ g.summary }}</span>
+              <span style="font-size:12px;color:#043a63;transform:{{ g.chevTf }};transition:transform .35s cubic-bezier(.65,0,.25,1)">▾</span>
+            </button>
+            <div role="listbox" style="position:absolute;top:100%;left:0;right:0;margin-top:6px;background:#fff;border:1px solid #d5dee6;border-radius:6px;box-shadow:0 18px 40px rgba(2,31,54,.14);padding:6px;opacity:{{ g.bodyOp }};transform:{{ g.bodyTf }};visibility:{{ g.vis }};transform-origin:top;transition:opacity .25s ease,transform .3s cubic-bezier(.2,.7,.2,1),visibility .3s">
+              <sc-for list="{{ g.opts }}" as="o" hint-placeholder-count="4">
+                <button type="button" role="option" onClick="{{ o.onClick }}" style="display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:0;border-radius:4px;padding:11px 12px;font-size:15px;color:#13212e;background:{{ o.bg }};cursor:pointer;transition:background .2s" style-hover="background:#eef3f7">
+                  <span style="width:18px;height:18px;flex:0 0 18px;border-radius:{{ o.radius }};border:1.5px solid {{ o.bd }};background:{{ o.box }};color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;transition:all .2s">{{ o.mark }}</span>{{ o.label }}
+                </button>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:18px 20px">
+        <label style="display:flex;flex-direction:column;gap:8px;font-size:14px;font-weight:600;color:#043a63">{{ t.cMax }}<input placeholder="{{ t.perMonthPh }}" style="border:1.5px solid #d5dee6;border-radius:4px;padding:14px;font-size:16px;color:#13212e;background:#fbfcfd;outline:none;transition:border-color .25s,box-shadow .25s" style-focus="border-color:#043a63;box-shadow:0 0 0 4px rgba(4,58,99,.1)"></label>
+        <label style="display:flex;flex-direction:column;gap:8px;font-size:14px;font-weight:600;color:#043a63">{{ t.cStart }}<input type="date" style="border:1.5px solid #d5dee6;border-radius:4px;padding:13px 14px;font-size:16px;color:#13212e;background:#fbfcfd;outline:none"></label>
+        <label style="display:flex;flex-direction:column;gap:8px;font-size:14px;font-weight:600;color:#043a63">{{ t.cWijk }}<input placeholder="{{ t.cWijkPh }}" style="border:1.5px solid #d5dee6;border-radius:4px;padding:14px;font-size:16px;color:#13212e;background:#fbfcfd;outline:none;transition:border-color .25s,box-shadow .25s" style-focus="border-color:#043a63;box-shadow:0 0 0 4px rgba(4,58,99,.1)"></label>
+        <label style="display:flex;flex-direction:column;gap:8px;font-size:14px;font-weight:600;color:#043a63">{{ t.name }}<input required="" style="border:1.5px solid #d5dee6;border-radius:4px;padding:14px;font-size:16px;color:#13212e;background:#fbfcfd;outline:none;transition:border-color .25s,box-shadow .25s" style-focus="border-color:#043a63;box-shadow:0 0 0 4px rgba(4,58,99,.1)"></label>
+        <label style="display:flex;flex-direction:column;gap:8px;font-size:14px;font-weight:600;color:#043a63">E-mail *<input required="" type="email" style="border:1.5px solid #d5dee6;border-radius:4px;padding:14px;font-size:16px;color:#13212e;background:#fbfcfd;outline:none;transition:border-color .25s,box-shadow .25s" style-focus="border-color:#043a63;box-shadow:0 0 0 4px rgba(4,58,99,.1)"></label>
+        <label style="display:flex;flex-direction:column;gap:8px;font-size:14px;font-weight:600;color:#043a63">{{ t.phone }}<input type="tel" style="border:1.5px solid #d5dee6;border-radius:4px;padding:14px;font-size:16px;color:#13212e;background:#fbfcfd;outline:none;transition:border-color .25s,box-shadow .25s" style-focus="border-color:#043a63;box-shadow:0 0 0 4px rgba(4,58,99,.1)"></label>
+      </div>
+      <label style="display:flex;flex-direction:column;gap:8px;font-size:14px;font-weight:600;color:#043a63;margin-top:18px">{{ t.cNote }}<textarea rows="3" placeholder="{{ t.cNotePh }}" style="border:1.5px solid #d5dee6;border-radius:4px;padding:14px;font-size:16px;color:#13212e;background:#fbfcfd;outline:none;resize:vertical;transition:border-color .25s,box-shadow .25s" style-focus="border-color:#043a63;box-shadow:0 0 0 4px rgba(4,58,99,.1)"></textarea></label>
+      <label style="display:flex;gap:10px;align-items:flex-start;font-size:14px;color:#50606e;margin-top:22px;line-height:1.5"><input type="checkbox" required="" style="margin-top:3px;accent-color:#043a63">{{ t.consent }}</label>
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-top:32px">
+        <span style="font-size:14px;color:#50606e">{{ t.callFirst }} <a href="tel:0624506105" style="font-weight:600">06 - 24 50 61 05</a></span>
+        <button type="submit" style="background:#043a63;color:#fff;border:0;padding:16px 28px;border-radius:999px;font-size:16px;font-weight:600;cursor:pointer;transition:all .25s" style-hover="background:#021f36;transform:translateY(-2px);box-shadow:0 10px 24px rgba(4,58,99,.3)">{{ submitAhLabel }}</button>
+      </div>
+    </form>
+    </sc-if>
+    <sc-if value="{{ aanhuurSent }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#043a63;color:#fff;border-radius:4px;padding:clamp(40px,6vw,80px);text-align:center">
+        <div style="font-family:'Newsreader',serif;font-size:clamp(34px,4vw,52px);margin-bottom:14px">{{ t.thanks }}</div>
+        <p style="font-size:18px;color:#cfe0ee;margin:0 0 28px">{{ t.thanksP }}</p>
+        <button onClick="{{ goAanbod }}" style="background:#fff;color:#043a63;border:0;padding:14px 22px;border-radius:999px;font-size:15px;font-weight:600;cursor:pointer">{{ t.browse }}</button>
+      </div>
+    </sc-if>
+  </section>
+</sc-if>
+
+<sc-if value="{{ isVerhuren }}" hint-placeholder-val="{{ false }}">
+  <section style="background:#e6eef5">
+    <div style="max-width:1320px;margin:0 auto;padding:clamp(64px,8vw,112px) clamp(20px,4vw,48px);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr));gap:clamp(32px,5vw,72px);align-items:center">
+      <div>
+        <div data-reveal="0" style="font-size:13px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:#3d6d96;margin-bottom:24px">{{ t.vhEy }}</div>
+        <h1 data-reveal="80" style="font-family:'Newsreader',serif;font-weight:400;font-size:clamp(42px,5.6vw,80px);line-height:1;letter-spacing:-.02em;margin:0 0 28px;color:#043a63;text-wrap:balance">{{ t.vhT }}</h1>
+        <p data-reveal="160" style="font-size:19px;line-height:1.6;color:#40576b;max-width:520px;margin:0 0 32px">{{ t.vhP }}</p>
+        <div data-reveal="240" style="display:flex;gap:18px;align-items:center;flex-wrap:wrap">
+          <button onClick="{{ scrollToForm }}" style="background:#043a63;color:#fff;border:0;padding:15px 24px;border-radius:999px;font-size:16px;font-weight:600;cursor:pointer;transition:all .25s" style-hover="background:#021f36;transform:translateY(-2px)">{{ t.register }} ↓</button>
+          <a href="tel:0624506105" style="font-size:15px;font-weight:600">{{ t.orCall }}</a>
+        </div>
+      </div>
+      <div data-reveal="120" style="aspect-ratio:5/4;border-radius:4px;background:repeating-linear-gradient(135deg,#d7e2ec 0 12px,#cedbe7 12px 24px);display:flex;align-items:flex-end;padding:20px;font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#4f6579">{{ t.vhPh }}</div>
+    </div>
+  </section>
+  <section style="max-width:1320px;margin:0 auto;padding:clamp(64px,8vw,110px) clamp(20px,4vw,48px)">
+    <h2 data-reveal="0" style="font-family:'Newsreader',serif;font-weight:400;font-size:clamp(34px,4vw,54px);line-height:1.05;margin:0 0 48px;color:#043a63;max-width:640px">{{ t.vhProc }}</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:32px">
+      <sc-for list="{{ verhuurSteps }}" as="s" hint-placeholder-count="4">
+        <div data-reveal="{{ s.delay }}" style="border-top:2px solid #043a63;padding-top:22px">
+          <div style="font-family:'Newsreader',serif;font-size:15px;color:#3d6d96;margin-bottom:12px">{{ s.n }}</div>
+          <div style="font-size:19px;font-weight:600;color:#043a63;margin-bottom:8px">{{ s.t }}</div>
+          <div style="font-size:15px;line-height:1.6;color:#50606e">{{ s.d }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+  <section id="verhuurform" style="background:#043a63">
+    <div style="max-width:1100px;margin:0 auto;padding:clamp(64px,8vw,110px) clamp(20px,4vw,48px)">
+      <div data-reveal="0" style="color:#fff;margin-bottom:40px">
+        <div style="font-size:13px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:#9fc0de;margin-bottom:16px">{{ t.vfEy }}</div>
+        <h2 style="font-family:'Newsreader',serif;font-weight:400;font-size:clamp(36px,4.4vw,60px);line-height:1.05;margin:0 0 14px">{{ t.vfT }}</h2>
+        <p style="font-size:17px;color:#cfe0ee;margin:0">{{ t.vfS }}</p>
+      </div>
+      <sc-if value="{{ verhuurOpen }}" hint-placeholder-val="{{ true }}">
+      <form onSubmit="{{ submitVerhuur }}" data-reveal="100" style="background:#fff;border-radius:4px;padding:clamp(24px,4vw,56px)">
+        <div style="font-family:'Newsreader',serif;font-size:26px;color:#043a63;margin-bottom:24px">{{ t.vfHome }}</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:18px 20px">
+          <label style="display:flex;flex-direction:column;gap:8px;font-size:14px;font-weight:600;color:#043a63">{{ t.vfAddr }}<input required="" placeholder="{{ t.vfAddrPh }}" style="border:1.5px solid #d5dee6;border-radius:4px;padding:14px;font-size:16px;color:#13212e;background:#fbfcfd;outline:none;transition:border-color .25s,box-shadow .25s" style-focus="border-color:#043a63;box-shadow:0 0 0 4px rgba(4,58,99,.1)"></label>
+          <label style="display:flex;flex-direction:column;gap:8px;font-size:14px;font-weight:600;color:#043a63">{{ t.vfZip }}<input required="" placeholder="2583 EM" style="border:1.5px solid #d5dee6;border-radius:4px;padding:14px;font-size:16px;color:#13212e;background:#fbfcfd;outline:none;transition:border-color .25s,box-shadow .25s" style-focus="border-color:#043a63;box-shadow:0 0 0 4px rgba(4,58,99,.1)"></label>
+          <label style="display:flex;flex-direction:column;gap:8px;font-size:14px;font-weight:600;color:#043a63">{{ t.vfArea }}<input placeholder="m²" style="border:1.5px solid #d5dee6;border-radius:4px;padding:14px;font-size:16px;color:#13212e;background:#fbfcfd;outline:none;transition:border-color .25s,box-shadow .25s" style-focus="border-color:#043a63;box-shadow:0 0 0 4px rgba(4,58,99,.1)"></label>
+          <label style="display:flex;flex-direction:column;gap:8px;font-size:14px;font-weight:600;color:#043a63">{{ t.vfBed }}<select style="border:1.5px solid #d5dee6;border-radius:4px;padding:14px;font-size:16px;color:#13212e;background:#fbfcfd;outline:none"><option>1</option><option>2</option><option>3</option><option>{{ t.fourPlus }}</option></select></label>
+        </div>
+        <div style="font-size:14px;font-weight:600;color:#043a63;margin:22px 0 10px">{{ t.vfType }}</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <sc-for list="{{ typeChips }}" as="c" hint-placeholder-count="4"><button type="button" onClick="{{ c.onClick }}" style="border:1.5px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }};padding:10px 18px;border-radius:999px;font-size:15px;font-weight:500;cursor:pointer;transition:all .3s cubic-bezier(.2,.7,.2,1)">{{ c.label }}</button></sc-for>
+        </div>
+        <div style="font-size:14px;font-weight:600;color:#043a63;margin:22px 0 10px">{{ t.vfDel }}</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <sc-for list="{{ opleverChips }}" as="c" hint-placeholder-count="3"><button type="button" onClick="{{ c.onClick }}" style="border:1.5px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }};padding:10px 18px;border-radius:999px;font-size:15px;font-weight:500;cursor:pointer;transition:all .3s cubic-bezier(.2,.7,.2,1)">{{ c.label }}</button></sc-for>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:18px 20px;margin-top:22px">
+          <label style="display:flex;flex-direction:column;gap:8px;font-size:14px;font-weight:600;color:#043a63">{{ t.vfAvail }}<input type="date" style="border:1.5px solid #d5dee6;border-radius:4px;padding:13px 14px;font-size:16px;color:#13212e;background:#fbfcfd;outline:none"></label>
+          <label style="display:flex;flex-direction:column;gap:8px;font-size:14px;font-weight:600;color:#043a63">{{ t.vfRent }}<input placeholder="{{ t.vfRentPh }}" style="border:1.5px solid #d5dee6;border-radius:4px;padding:14px;font-size:16px;color:#13212e;background:#fbfcfd;outline:none;transition:border-color .25s,box-shadow .25s" style-focus="border-color:#043a63;box-shadow:0 0 0 4px rgba(4,58,99,.1)"></label>
+        </div>
+        <div style="height:1px;background:#e6ebf0;margin:40px 0 32px"></div>
+        <div style="font-family:'Newsreader',serif;font-size:26px;color:#043a63;margin-bottom:24px">{{ t.vfYou }}</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:18px 20px">
+          <label style="display:flex;flex-direction:column;gap:8px;font-size:14px;font-weight:600;color:#043a63">{{ t.name }}<input required="" style="border:1.5px solid #d5dee6;border-radius:4px;padding:14px;font-size:16px;color:#13212e;background:#fbfcfd;outline:none;transition:border-color .25s,box-shadow .25s" style-focus="border-color:#043a63;box-shadow:0 0 0 4px rgba(4,58,99,.1)"></label>
+          <label style="display:flex;flex-direction:column;gap:8px;font-size:14px;font-weight:600;color:#043a63">E-mail *<input required="" type="email" style="border:1.5px solid #d5dee6;border-radius:4px;padding:14px;font-size:16px;color:#13212e;background:#fbfcfd;outline:none;transition:border-color .25s,box-shadow .25s" style-focus="border-color:#043a63;box-shadow:0 0 0 4px rgba(4,58,99,.1)"></label>
+          <label style="display:flex;flex-direction:column;gap:8px;font-size:14px;font-weight:600;color:#043a63">{{ t.phoneReq }}<input required="" type="tel" style="border:1.5px solid #d5dee6;border-radius:4px;padding:14px;font-size:16px;color:#13212e;background:#fbfcfd;outline:none;transition:border-color .25s,box-shadow .25s" style-focus="border-color:#043a63;box-shadow:0 0 0 4px rgba(4,58,99,.1)"></label>
+        </div>
+        <label style="display:flex;flex-direction:column;gap:8px;font-size:14px;font-weight:600;color:#043a63;margin-top:18px">{{ t.msg }}<textarea rows="3" placeholder="{{ t.vfMsgPh }}" style="border:1.5px solid #d5dee6;border-radius:4px;padding:14px;font-size:16px;color:#13212e;background:#fbfcfd;outline:none;resize:vertical;transition:border-color .25s,box-shadow .25s" style-focus="border-color:#043a63;box-shadow:0 0 0 4px rgba(4,58,99,.1)"></textarea></label>
+        <label style="display:flex;gap:10px;align-items:flex-start;font-size:14px;color:#50606e;margin-top:22px;line-height:1.5"><input type="checkbox" required="" style="margin-top:3px;accent-color:#043a63">{{ t.consent }}</label>
+        <div style="display:flex;justify-content:flex-end;margin-top:32px">
+          <button type="submit" style="background:#043a63;color:#fff;border:0;padding:16px 28px;border-radius:999px;font-size:16px;font-weight:600;cursor:pointer;transition:all .25s" style-hover="background:#021f36;transform:translateY(-2px);box-shadow:0 10px 24px rgba(4,58,99,.3)">{{ t.vfSubmit }}</button>
+        </div>
+      </form>
+      </sc-if>
+      <sc-if value="{{ verhuurSent }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#fff;border-radius:4px;padding:clamp(40px,6vw,80px);text-align:center">
+          <div style="font-family:'Newsreader',serif;font-size:clamp(34px,4vw,52px);color:#043a63;margin-bottom:14px">{{ t.vfThanks }}</div>
+          <p style="font-size:18px;color:#50606e;margin:0">{{ t.vfThanksP }}</p>
+        </div>
+      </sc-if>
+    </div>
+  </section>
+</sc-if>
+
+<sc-if value="{{ isAanbod }}" hint-placeholder-val="{{ false }}">
+  <section style="max-width:1320px;margin:0 auto;padding:clamp(56px,7vw,96px) clamp(20px,4vw,48px) clamp(64px,8vw,110px)">
+    <div data-reveal="0" style="font-size:13px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:#3d6d96;margin-bottom:20px">{{ t.listEy }}</div>
+    <h1 data-reveal="80" style="font-family:'Newsreader',serif;font-weight:400;font-size:clamp(42px,5.6vw,80px);line-height:1;letter-spacing:-.02em;margin:0 0 32px;color:#043a63">{{ t.abT }}</h1>
+    <div data-reveal="160" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px">
+      <sc-for list="{{ wijkFilters }}" as="c" hint-placeholder-count="5"><button onClick="{{ c.onClick }}" style="border:1.5px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }};padding:9px 16px;border-radius:999px;font-size:14px;font-weight:500;cursor:pointer;transition:all .3s cubic-bezier(.2,.7,.2,1)">{{ c.label }}</button></sc-for>
+      <span style="margin-left:auto;font-size:14px;color:#50606e">{{ resultCount }}</span>
+    </div>
+    <sc-if value="{{ showNotes }}" hint-placeholder-val="{{ true }}">
+      <div data-reveal="200" style="border:1.5px dashed #9fb6ca;border-radius:4px;padding:18px 20px;margin:24px 0 8px;font-size:14px;line-height:1.6;color:#40576b;background:#f1f5f9;display:grid;grid-template-columns:auto 1fr;gap:14px">
+        <span style="font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:.08em;color:#3d6d96;padding-top:2px">NOTITIE BOUW</span>
+        <span><strong style="color:#043a63">Koppeling Pararius Office:</strong> het aanbod wordt automatisch gevuld vanuit de Pararius Office-export (XML-feed/API). Zodra een woning in Pararius Office wordt gepubliceerd, verschijnt die hier met foto's, prijs en een kaart met pin op basis van het adres of de coördinaten uit de feed. Wordt de woning offline gehaald of verhuurd, dan volgt de site automatisch. De webbouwer zet deze feed aan; de huidige woningen zijn voorbeeldaanbod.</span>
+      </div>
+    </sc-if>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr));gap:24px;margin-top:32px">
+      <sc-for list="{{ filtered }}" as="l" hint-placeholder-count="6">
+        <div data-reveal="{{ l.delay }}">
+          <article style="background:#fff;border-radius:4px;overflow:hidden;box-shadow:0 1px 0 rgba(4,58,99,.08);transition:transform .45s cubic-bezier(.2,.7,.2,1),box-shadow .45s" style-hover="transform:translateY(-6px);box-shadow:0 30px 60px rgba(2,31,54,.14)">
+            <div style="position:relative;aspect-ratio:4/3;overflow:hidden;background:repeating-linear-gradient(135deg,#e4eaf0 0 12px,#dbe3eb 12px 24px)">
+              <div style="position:absolute;left:16px;bottom:14px;font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#5b6e80">{{ t.mainPh }}</div>
+              <sc-if value="{{ l.mapLoaded }}"><iframe src="{{ l.mapUrl }}" title="{{ l.adres }}" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;border:0;opacity:{{ l.mapOp }};transition:opacity .5s ease"></iframe></sc-if>
+              <span style="position:absolute;top:14px;left:14px;background:{{ l.statusBg }};color:#fff;font-size:11px;letter-spacing:.12em;font-weight:600;padding:6px 10px;border-radius:2px">{{ l.status }}</span>
+              <div style="position:absolute;top:12px;right:12px;display:flex;background:rgba(255,255,255,.95);border-radius:999px;padding:3px;box-shadow:0 4px 14px rgba(2,31,54,.15)">
+                <button onClick="{{ l.toFoto }}" style="border:0;border-radius:999px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;background:{{ l.fotoBg }};color:{{ l.fotoFg }};transition:all .3s">{{ t.photo }}</button>
+                <button onClick="{{ l.toMap }}" style="border:0;border-radius:999px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;background:{{ l.mapBg }};color:{{ l.mapFg }};transition:all .3s">{{ t.map }}</button>
+              </div>
+            </div>
+            <div style="padding:22px 22px 20px;display:flex;flex-direction:column;gap:6px">
+              <h3 style="font-family:'Newsreader',serif;font-weight:500;font-size:24px;margin:0;color:#043a63">{{ l.adres }}</h3>
+              <div style="font-size:15px;color:#50606e">{{ l.wijkCity }}</div>
+              <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-top:12px;padding-top:14px;border-top:1px solid #e6ebf0;flex-wrap:wrap">
+                <span style="font-size:20px;font-weight:600;color:#043a63">{{ l.prijs }} <span style="font-size:14px;font-weight:400;color:#50606e">{{ t.pm }}</span></span>
+                <span style="font-size:14px;color:#50606e">{{ l.meta }}</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;gap:12px;margin-top:8px;flex-wrap:wrap">
+                <a href="{{ l.gmaps }}" target="_blank" rel="noopener" style="font-size:14px;font-weight:600">{{ t.route }}</a>
+                <span style="font-size:13px;color:#7a8996">{{ l.per }}</span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </sc-for>
+    </div>
+    <div data-reveal="0" style="margin-top:64px;background:#043a63;color:#fff;border-radius:4px;padding:clamp(32px,5vw,56px);display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap">
+      <div>
+        <div style="font-family:'Newsreader',serif;font-size:clamp(28px,3vw,40px);margin-bottom:8px">{{ t.abMiss }}</div>
+        <div style="font-size:16px;color:#cfe0ee">{{ t.abMissP }}</div>
+      </div>
+      <button onClick="{{ goAanhuur }}" style="background:#fff;color:#043a63;border:0;padding:15px 24px;border-radius:999px;font-size:16px;font-weight:600;cursor:pointer;transition:all .25s" style-hover="transform:translateY(-2px);box-shadow:0 10px 24px rgba(0,0,0,.25)">{{ t.startSearch }}</button>
+    </div>
+  </section>
+</sc-if>
+
+<sc-if value="{{ isOver }}" hint-placeholder-val="{{ false }}">
+  <section style="max-width:1320px;margin:0 auto;padding:clamp(56px,7vw,96px) clamp(20px,4vw,48px);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:clamp(32px,6vw,96px)">
+    <div data-reveal="0" style="aspect-ratio:4/5;border-radius:4px;background:repeating-linear-gradient(135deg,#e4eaf0 0 12px,#dbe3eb 12px 24px);display:flex;align-items:flex-end;padding:20px;font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#5b6e80">{{ portraitPh }}</div>
+    <div>
+      <div data-reveal="0" style="font-size:13px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:#3d6d96;margin-bottom:20px">{{ t.aboutEy }}</div>
+      <h1 data-reveal="80" style="font-family:'Newsreader',serif;font-weight:400;font-size:clamp(40px,5vw,72px);line-height:1.02;letter-spacing:-.02em;margin:0 0 28px;color:#043a63">{{ t.ovT }}</h1>
+      <p data-reveal="140" style="font-size:17px;line-height:1.7;color:#50606e;margin:0 0 16px">{{ t.aboutP }}</p>
+      <p data-reveal="180" style="font-size:17px;line-height:1.7;color:#50606e;margin:0 0 36px">{{ t.ovP2 }}</p>
+      <div data-reveal="220" style="border-top:1px solid #d5dee6;padding-top:28px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:28px">
+        <div>
+          <div style="font-size:12px;letter-spacing:.16em;font-weight:600;color:#3d6d96;margin-bottom:14px">{{ t.ovSpec }}</div>
+          <div style="display:flex;flex-direction:column;gap:10px;font-size:15px;color:#13212e;line-height:1.45"><sc-for list="{{ specs }}" as="sp" hint-placeholder-count="4"><span>{{ sp }}</span></sc-for></div>
+        </div>
+        <div>
+          <div style="font-size:12px;letter-spacing:.16em;font-weight:600;color:#3d6d96;margin-bottom:14px">{{ t.ovArea }}</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px"><sc-for list="{{ wijken }}" as="w" hint-placeholder-count="6"><span style="background:#e6eef5;color:#043a63;font-size:13px;padding:6px 11px;border-radius:999px">{{ w }}</span></sc-for></div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section style="background:#043a63;color:#fff">
+    <div style="max-width:1000px;margin:0 auto;padding:clamp(64px,8vw,120px) clamp(20px,4vw,48px);text-align:center">
+      <blockquote data-reveal="0" style="font-family:'Newsreader',serif;font-style:italic;font-size:clamp(30px,3.6vw,50px);line-height:1.2;margin:0 0 24px;text-wrap:balance">“{{ t.quote }}”</blockquote>
+      <div data-reveal="100" style="font-size:13px;letter-spacing:.16em;color:#9fc0de;font-weight:600;margin-bottom:40px">— KARENS REAL ESTATE</div>
+      <div data-reveal="160" style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+        <button onClick="{{ goAanhuur }}" style="background:#fff;color:#043a63;border:0;padding:14px 22px;border-radius:999px;font-size:15px;font-weight:600;cursor:pointer;transition:all .25s" style-hover="transform:translateY(-2px)">{{ t.ctaFind }}</button>
+        <button onClick="{{ goVerhuren }}" style="background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:14px 22px;border-radius:999px;font-size:15px;font-weight:600;cursor:pointer;transition:all .25s" style-hover="background:#fff;color:#043a63">{{ t.ctaLet }}</button>
+      </div>
+    </div>
+  </section>
+</sc-if>
+
+<sc-if value="{{ isContact }}" hint-placeholder-val="{{ false }}">
+  <section style="max-width:1320px;margin:0 auto;padding:clamp(56px,7vw,96px) clamp(20px,4vw,48px);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:clamp(32px,5vw,80px)">
+    <div>
+      <div data-reveal="0" style="font-size:13px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:#3d6d96;margin-bottom:20px">Contact</div>
+      <h1 data-reveal="80" style="font-family:'Newsreader',serif;font-weight:400;font-size:clamp(42px,5.4vw,76px);line-height:1;letter-spacing:-.02em;margin:0 0 24px;color:#043a63">{{ t.coT }}</h1>
+      <p data-reveal="140" style="font-size:18px;line-height:1.6;color:#50606e;margin:0 0 36px">{{ t.coP }}</p>
+      <div data-reveal="200" style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:#d5dee6;border:1px solid #d5dee6;border-radius:4px;overflow:hidden;margin-bottom:24px">
+        <a href="tel:0624506105" style="background:#fff;padding:22px;display:flex;flex-direction:column;gap:6px;transition:background .25s" style-hover="background:#e6eef5"><span style="font-size:12px;letter-spacing:.14em;font-weight:600;color:#3d6d96">{{ t.callUs }}</span><span style="font-size:17px;font-weight:600;color:#043a63">06 - 24 50 61 05</span></a>
+        <a href="mailto:info@karensrealestate.nl" style="background:#fff;padding:22px;display:flex;flex-direction:column;gap:6px;transition:background .25s" style-hover="background:#e6eef5"><span style="font-size:12px;letter-spacing:.14em;font-weight:600;color:#3d6d96">E-MAIL</span><span style="font-size:17px;font-weight:600;color:#043a63;word-break:break-all">info@karensrealestate.nl</span></a>
+      </div>
+      <div data-reveal="240" style="border-radius:4px;overflow:hidden;position:relative;aspect-ratio:16/10;background:#e6eef5">
+        <iframe src="{{ officeMap }}" title="Westduinweg 90" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;border:0"></iframe>
+      </div>
+      <div style="display:flex;justify-content:space-between;gap:12px;margin-top:14px;font-size:15px;color:#50606e;flex-wrap:wrap">
+        <span>Westduinweg 90, 2583 EM {{ t.city }} · {{ t.byAppt }}</span>
+        <a href="{{ officeGmaps }}" target="_blank" rel="noopener" style="font-weight:600">{{ t.routeShort }}</a>
+      </div>
+    </div>
+    <div>
+      <sc-if value="{{ contactOpen }}" hint-placeholder-val="{{ true }}">
+      <form onSubmit="{{ submitContact }}" data-reveal="120" style="background:#fff;border-radius:4px;box-shadow:0 30px 80px rgba(2,31,54,.08);padding:clamp(24px,4vw,48px);display:flex;flex-direction:column;gap:18px">
+        <label style="display:flex;flex-direction:column;gap:8px;font-size:14px;font-weight:600;color:#043a63">{{ t.name }}<input required="" style="border:1.5px solid #d5dee6;border-radius:4px;padding:14px;font-size:16px;color:#13212e;background:#fbfcfd;outline:none;transition:border-color .25s,box-shadow .25s" style-focus="border-color:#043a63;box-shadow:0 0 0 4px rgba(4,58,99,.1)"></label>
+        <label style="display:flex;flex-direction:column;gap:8px;font-size:14px;font-weight:600;color:#043a63">E-mail *<input required="" type="email" style="border:1.5px solid #d5dee6;border-radius:4px;padding:14px;font-size:16px;color:#13212e;background:#fbfcfd;outline:none;transition:border-color .25s,box-shadow .25s" style-focus="border-color:#043a63;box-shadow:0 0 0 4px rgba(4,58,99,.1)"></label>
+        <label style="display:flex;flex-direction:column;gap:8px;font-size:14px;font-weight:600;color:#043a63">{{ t.phone }}<input type="tel" style="border:1.5px solid #d5dee6;border-radius:4px;padding:14px;font-size:16px;color:#13212e;background:#fbfcfd;outline:none;transition:border-color .25s,box-shadow .25s" style-focus="border-color:#043a63;box-shadow:0 0 0 4px rgba(4,58,99,.1)"></label>
+        <label style="display:flex;flex-direction:column;gap:8px;font-size:14px;font-weight:600;color:#043a63">{{ t.coHelp }}<select style="border:1.5px solid #d5dee6;border-radius:4px;padding:14px;font-size:16px;color:#13212e;background:#fbfcfd;outline:none"><option>{{ t.coO1 }}</option><option>{{ t.coO2 }}</option><option>{{ t.coO3 }}</option></select></label>
+        <label style="display:flex;flex-direction:column;gap:8px;font-size:14px;font-weight:600;color:#043a63">{{ t.msg }}<textarea rows="5" style="border:1.5px solid #d5dee6;border-radius:4px;padding:14px;font-size:16px;color:#13212e;background:#fbfcfd;outline:none;resize:vertical;transition:border-color .25s,box-shadow .25s" style-focus="border-color:#043a63;box-shadow:0 0 0 4px rgba(4,58,99,.1)"></textarea></label>
+        <button type="submit" style="align-self:flex-start;background:#043a63;color:#fff;border:0;padding:16px 28px;border-radius:999px;font-size:16px;font-weight:600;cursor:pointer;transition:all .25s;margin-top:6px" style-hover="background:#021f36;transform:translateY(-2px);box-shadow:0 10px 24px rgba(4,58,99,.3)">{{ t.coSend }}</button>
+      </form>
+      </sc-if>
+      <sc-if value="{{ contactSent }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#043a63;color:#fff;border-radius:4px;padding:clamp(40px,6vw,64px)">
+          <div style="font-family:'Newsreader',serif;font-size:40px;margin-bottom:12px">{{ t.coThanks }}</div>
+          <p style="font-size:17px;color:#cfe0ee;margin:0">{{ t.thanksP }}</p>
+        </div>
+      </sc-if>
+    </div>
+  </section>
+</sc-if>
+
+</main>
+
+<footer style="background:#021f36;color:#cfe0ee">
+  <div style="max-width:1320px;margin:0 auto;padding:clamp(56px,7vw,88px) clamp(20px,4vw,48px) 32px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:40px">
+    <div style="display:flex;flex-direction:column;gap:18px">
+      <img src="assets/logo-white.png" alt="Karens Real Estate" style="width:200px;height:auto">
+      <p style="font-size:15px;line-height:1.6;margin:0;max-width:280px">{{ t.ftTag }}</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="font-size:12px;letter-spacing:.16em;font-weight:600;color:#9fc0de;margin-bottom:6px">MENU</div>
+      <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="6"><button onClick="{{ n.onClick }}" style="background:none;border:0;padding:0;text-align:left;color:#cfe0ee;font-size:15px;cursor:pointer;transition:color .2s" style-hover="color:#fff">{{ n.label }}</button></sc-for>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;font-size:15px">
+      <div style="font-size:12px;letter-spacing:.16em;font-weight:600;color:#9fc0de;margin-bottom:6px">CONTACT</div>
+      <a href="tel:0624506105" style="color:#fff">06 - 24 50 61 05</a>
+      <a href="mailto:info@karensrealestate.nl" style="color:#fff">info@karensrealestate.nl</a>
+      <span style="display:flex;flex-direction:column;line-height:1.6"><span>Westduinweg 90</span><span>2583 EM {{ t.city }}</span><span>{{ t.byApptLong }}</span></span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;font-size:15px">
+      <div style="font-size:12px;letter-spacing:.16em;font-weight:600;color:#9fc0de;margin-bottom:6px">PARTNERS</div>
+      <a href="https://www.pararius.nl/makelaars/den-haag/karens-real-estate" target="_blank" rel="noopener" style="color:#fff">Pararius ↗</a>
+      <a href="https://www.funda.nl/" target="_blank" rel="noopener" style="color:#fff">Funda ↗</a>
+      <a href="https://www.huurwoningen.nl" target="_blank" rel="noopener" style="color:#fff">Huurwoningen.nl ↗</a>
+    </div>
+  </div>
+  <div style="max-width:1320px;margin:0 auto;padding:20px clamp(20px,4vw,48px) 32px;border-top:1px solid rgba(255,255,255,.1);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:13px;color:#8fa7bd">
+    <span>© 2026 Karens Real Estate</span>
+    <span style="display:flex;gap:18px;flex-wrap:wrap"><a href="#" style="color:#8fa7bd">{{ t.privacy }}</a><a href="#" style="color:#8fa7bd">{{ t.cookies }}</a><a href="#" style="color:#8fa7bd">{{ t.terms }}</a></span>
+  </div>
+</footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;defaultLang&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;nl&quot;,&quot;en&quot;],&quot;default&quot;:&quot;nl&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;showPortrait&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;},&quot;transition&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Gordijn&quot;,&quot;Fade&quot;],&quot;default&quot;:&quot;Gordijn&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;showNotes&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;},&quot;startPage&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;home&quot;,&quot;aanhuur&quot;,&quot;verhuren&quot;,&quot;aanbod&quot;,&quot;over&quot;,&quot;contact&quot;],&quot;default&quot;:&quot;home&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+const LISTINGS = [
+  { id: 1, adres: 'Frederik Hendriklaan 120', wijk: 'Statenkwartier', prijs: 1950, m2: 78, slpk: 2, status: 'avail', per: 0, lat: 52.0937, lon: 4.2846 },
+  { id: 2, adres: 'Prinsessegracht 18', wijk: 'Centrum', prijs: 2450, m2: 96, slpk: 2, status: 'avail', per: 1, lat: 52.0838, lon: 4.3155 },
+  { id: 3, adres: 'Weimarstraat 210', wijk: 'Regentessekwartier', prijs: 1475, m2: 62, slpk: 1, status: 'new', per: 0, lat: 52.0718, lon: 4.2880 },
+  { id: 4, adres: 'Gevers Deynootweg 50', wijk: 'Scheveningen', prijs: 2100, m2: 85, slpk: 2, status: 'avail', per: 2, lat: 52.1105, lon: 4.2775 },
+  { id: 5, adres: 'Laan van Meerdervoort 412', wijk: 'Duinoord', prijs: 1725, m2: 70, slpk: 2, status: 'option', per: 4, lat: 52.0795, lon: 4.2905 },
+  { id: 6, adres: 'Van Boetzelaerlaan 88', wijk: 'Statenkwartier', prijs: 2800, m2: 120, slpk: 3, status: 'avail', per: 3, lat: 52.0905, lon: 4.2905 }
+];
+const osm = (lat, lon, dx = 0.006, dy = 0.0035) => `https://www.openstreetmap.org/export/embed.html?bbox=${lon - dx}%2C${lat - dy}%2C${lon + dx}%2C${lat + dy}&layer=mapnik&marker=${lat}%2C${lon}`;
+const gm = (q) => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`;
+const eur = (n) => '€ ' + n.toLocaleString('nl-NL');
+const PAGES = ['home', 'aanhuur', 'verhuren', 'aanbod', 'over', 'contact'];
+
+const T = {
+  nl: {
+    nav: ['Home', 'Aanhuur', 'Verhuren', 'Woningaanbod', 'Over ons', 'Contact'],
+    ctaLet: 'Woning verhuren', ctaFind: 'Ik zoek een woning',
+    heroEy: 'Huur- & aanhuurmakelaar · Den Haag', heroA: 'Een woning vinden die ', heroEm: 'écht', heroB: ' bij je past.',
+    heroSub: 'Persoonlijke begeleiding bij het huren, verhuren en vinden van een woning in Den Haag en omgeving.',
+    v1: 'Persoonlijk', v2: 'Deskundig', v3: 'Betrokken',
+    heroPh: 'hero-foto — karakteristieke Haagse straat, warm daglicht', heroCard: 'Eén vast aanspreekpunt',
+    findEy: 'Voor woningzoekers & expats', findT1: 'Ik zoek een', findT2: 'huurwoning',
+    findD: 'Wij zoeken gericht naar een huurwoning die bij je past, ook buiten het openbare aanbod.', startSearch: 'Start mijn woningzoekopdracht',
+    letEy: 'Voor verhuurders', letT1: 'Ik wil mijn', letT2: 'woning verhuren', letD: 'Van verhuurstrategie tot screening en huurovereenkomst.', register: 'Woning aanmelden',
+    listEy: 'Woningaanbod', listT: 'Nu te huur in Den Haag', listAll: 'Bekijk het volledige aanbod →',
+    photo: 'Foto', map: 'Kaart', pm: 'p/m', route: 'Route in Google Maps ↗', routeShort: 'Route ↗', mainPh: 'hoofdfoto woning', city: 'Den Haag',
+    status: { avail: 'TE HUUR', new: 'NIEUW', option: 'ONDER OPTIE' },
+    per: ['Per direct', 'Per 1 januari', 'Per 1 februari', 'Per 1 maart', 'In optie'], bed: 'slpk', all: 'Alle', home1: 'woning', homeN: 'woningen',
+    aboutEy: 'Over ons', quote: 'Geen woningzoektocht is hetzelfde. Daarom luisteren we eerst goed naar wat iemand écht zoekt.',
+    aboutP: 'Karens Real Estate is een persoonlijk makelaarskantoor in Den Haag. Met persoonlijke aandacht, kennis van de Haagse woningmarkt en een betrokken aanpak begeleiden we woningzoekers en verhuurders bij iedere stap.',
+    aboutLink: 'Maak kennis met Karens Real Estate →', portraitOn: 'portret — makelaar Karens Real Estate', portraitOff: 'foto — kantoor of licht Haags interieur',
+    expEy: 'Service voor expats', expT: 'Nieuw in Den Haag?', expP: 'Verhuizen naar Den Haag voor werk? Wij helpen je graag bij het vinden van een woning die past bij jouw wensen en situatie.',
+    expP2: 'Moving to The Hague? We’re happy to help you in English.',
+    exp: ['Persoonlijke intake, in het Nederlands of Engels', 'Zoeken naar een woning die past bij je werk, gezin en budget', 'Uitleg over de documenten die verhuurders vragen', 'Begeleiding bij bezichtigingen en de huurovereenkomst'],
+    expCta: 'Ik ben expat en zoek een woning',
+    ahEy: 'Aanhuur · Woning zoeken', ahT: 'Op zoek naar een huurwoning in Den Haag?',
+    ahP: 'Een geschikte huurwoning vinden kan tijdrovend zijn. Karens Real Estate begeleidt je persoonlijk tijdens het volledige zoek- en huurproces.',
+    ahSteps: [['Kennismaking', 'Een persoonlijke intake over je wensen, situatie en budget.'], ['Gericht zoeken', 'We zoeken actief, ook in het aanbod dat niet online staat.'], ['Bezichtigen', 'Samen bezichtigen en je profiel sterk presenteren bij de verhuurder.'], ['Tot de sleutel', 'Controle van de huurovereenkomst en begeleiding bij oplevering.']],
+    fEy: 'Woningzoekopdracht', fT: 'Vertel ons wat je zoekt.', fS: 'Je aanvraag komt rechtstreeks bij ons terecht.', fAs: 'Ik zoek een woning als',
+    student: 'Student', werkend: 'Werkende',
+    sT: 'Over je studie', sS: 'Verhuurders vragen bij studenten vaak om een garantsteller.', sInst: 'Onderwijsinstelling', sInstPh: 'bijv. Haagse Hogeschool',
+    sStudy: 'Studie & studiejaar', sStudyPh: 'bijv. Rechten, 2e jaar', sGar: 'Heb je een garantsteller?', garant: ['Ja', 'Nee', 'Weet ik nog niet'],
+    sGarInc: 'Bruto maandinkomen garantsteller', sOwnInc: 'Eigen inkomen (bijbaan, studiefinanciering)', perMonthPh: '€ per maand',
+    wT: 'Over je werk', wS: 'Hiermee kunnen we je profiel goed presenteren aan verhuurders.', wEmp: 'Werkgever', wEmpPh: 'Naam organisatie', wJob: 'Functie', wJobPh: 'bijv. Beleidsmedewerker',
+    wCon: 'Soort dienstverband', contract: ['Vast contract', 'Tijdelijk contract', 'Zelfstandige / zzp', 'Via relocatie'],
+    wInc: 'Bruto maandinkomen (huishouden)', wAbroad: 'Verhuis je vanuit het buitenland?', no: 'Nee', wAbroadYes: 'Ja, expat / relocatie',
+    wBedT: 'Aantal slaapkamers', wBed: ['1', '2', '3', '4+'], wIntT: 'Interieur', wInt: ['Kaal', 'Gestoffeerd', 'Gemeubileerd', 'Geen voorkeur'],
+    wTypeT: 'Type woning', wType: ['Woonhuis', 'Appartement', 'Geen voorkeur'],
+    wExtraT: 'Extra wensen', wExtra: ['Balkon of tuin', 'Huisdieren', 'Parkeerplaats', 'Lift', 'Energielabel A/B'], multiHint: 'Meerdere keuzes mogelijk', oneHint: 'Kies één optie', bedWord: 'slaapkamer(s)', occWord: 'bewoner(s)', choose: 'Maak een keuze', noneYet: 'Nog niets gekozen',
+    revEy: 'Ervaringen', revT: 'Wat klanten zeggen',
+    revs: [
+      ['Binnen drie weken hadden we een prachtig appartement in het Statenkwartier. Fijn dat er echt werd meegedacht.', 'Sanne & Joris', 'Huurders · Statenkwartier'],
+      ['Als expat wist ik niet waar ik moest beginnen. Alles werd helder uitgelegd, ook in het Engels.', 'Michael R.', 'Expat · Benoordenhout'],
+      ['Snel een betrouwbare huurder gevonden en het contract was tot in de puntjes geregeld.', 'Familie de Vries', 'Verhuurder · Scheveningen'],
+      ['Als student met een garantsteller is het lastig zoeken. Dankzij de begeleiding lukte het toch.', 'Lotte', 'Student · Centrum'],
+      ['Persoonlijk, bereikbaar en eerlijk advies over de huurprijs. Een aanrader.', 'Peter van D.', 'Verhuurder · Duinoord']
+    ],
+    cT: 'Je woonwensen & gegevens', cMax: 'Maximale huurprijs', cStart: 'Gewenste ingangsdatum', cOcc: 'Aantal bewoners', fourPlus: '4 of meer',
+    cWijk: 'Voorkeurswijken', cWijkPh: 'bijv. Statenkwartier, Centrum', name: 'Naam *', phone: 'Telefoon', phoneReq: 'Telefoon *',
+    cNote: 'Toelichting', cNotePh: 'Wat is belangrijk voor je in een woning?',
+    consent: 'Ik ga akkoord met de verwerking van mijn gegevens volgens de privacyverklaring.', callFirst: 'Liever eerst bellen?',
+    submitAh: (p) => `Verstuur zoekopdracht als ${p} →`, profS: 'student', profW: 'werkende',
+    thanks: 'Bedankt!', thanksP: 'We nemen zo snel mogelijk persoonlijk contact met je op.', browse: 'Bekijk alvast het aanbod',
+    vhEy: 'Verhuren', vhT: 'Uw woning verhuren in Den Haag?', vhP: 'Een woning verhuren vraagt om een goede voorbereiding, marktkennis en een zorgvuldige selectie van huurders.',
+    orCall: 'of bel 06 - 24 50 61 05', vhPh: 'professionele woningfotografie — gestylede woonkamer', vhProc: 'Zorgvuldig, van advies tot oplevering',
+    vhSteps: [['Advies & huurprijs', 'Een realistische huurprijs en verhuurstrategie op basis van de Haagse markt.'], ['Presentatie', 'Professionele fotografie en publicatie op Pararius, Funda en de eigen site.'], ['Selectie & screening', 'Bezichtigingen en zorgvuldige screening van kandidaat-huurders.'], ['Contract & oplevering', 'Huurovereenkomst, inspectierapport en sleuteloverdracht.']],
+    vfEy: 'Woning aanmelden', vfT: 'Benieuwd wat uw woning kan opbrengen?', vfS: 'We komen graag langs voor een vrijblijvende kennismaking en verhuuradvies.',
+    vfHome: 'De woning', vfAddr: 'Adres *', vfAddrPh: 'Straat en huisnummer', vfZip: 'Postcode *', vfArea: 'Woonoppervlakte', vfBed: 'Slaapkamers',
+    vfType: 'Type woning', types: ['Appartement', 'Eengezinswoning', 'Benedenwoning', 'Studio'], vfDel: 'Oplevering', oplever: ['Kaal', 'Gestoffeerd', 'Gemeubileerd'],
+    vfAvail: 'Beschikbaar per', vfRent: 'Indicatie gewenste huurprijs', vfRentPh: '€ per maand (optioneel)', vfYou: 'Uw gegevens', msg: 'Bericht',
+    vfMsgPh: 'Bijzonderheden, vragen of een voorkeur voor een moment om langs te komen', vfSubmit: 'Plan een vrijblijvend gesprek →',
+    vfThanks: 'Bedankt voor uw aanmelding.', vfThanksP: 'We nemen zo snel mogelijk persoonlijk contact met u op.',
+    abT: 'Huurwoningen in Den Haag', abMiss: 'Niet gevonden wat je zoekt?', abMissP: 'Laat ons gericht voor je zoeken, ook buiten het openbare aanbod.',
+    ovT: 'Persoonlijk contact maakt het verschil.', ovP2: 'Bij Karens Real Estate heb je één vast aanspreekpunt. Korte lijnen, heldere afspraken en een makelaar die je situatie kent.',
+    ovSpec: 'SPECIALISATIES', ovArea: 'WERKGEBIED', specs: ['Aanhuur & begeleiding van woningzoekenden', 'Verhuur & begeleiding van verhuurders', 'Woningzoekers en expats die naar Den Haag verhuizen', 'Ook: aan- en verkoop'],
+    coT: 'Even kennismaken?', coP: 'Heb je een vraag over huren, aanhuur of verhuur? Neem gerust contact op.', callUs: 'BEL ONS',
+    byAppt: 'bezoek op afspraak', byApptLong: 'Bezoek uitsluitend op afspraak', coHelp: 'Waar kunnen we mee helpen?',
+    coO1: 'Ik zoek een woning', coO2: 'Ik wil mijn woning verhuren', coO3: 'Ik heb een andere vraag', coSend: 'Verstuur bericht', coThanks: 'Bedankt voor je bericht.',
+    ftTag: 'Persoonlijke begeleiding bij het vinden, huren en verhuren van een woning in Den Haag.', privacy: 'Privacyverklaring', cookies: 'Cookiebeleid', terms: 'Algemene voorwaarden'
+  },
+  en: {
+    nav: ['Home', 'Find a home', 'Let your home', 'Listings', 'About us', 'Contact'],
+    ctaLet: 'Let my home', ctaFind: 'I’m looking for a home',
+    heroEy: 'Rental agent · The Hague', heroA: 'Find a home that ', heroEm: 'truly', heroB: ' suits you.',
+    heroSub: 'Personal guidance in renting, letting and finding a home in The Hague and the surrounding area.',
+    v1: 'Personal', v2: 'Expert', v3: 'Committed',
+    heroPh: 'hero photo — characteristic Hague street, warm daylight', heroCard: 'One dedicated point of contact',
+    findEy: 'For home seekers & expats', findT1: 'I’m looking for', findT2: 'a rental home',
+    findD: 'We search specifically for a rental home that suits you, including homes that are not publicly listed.', startSearch: 'Start my home search',
+    letEy: 'For landlords', letT1: 'I want to', letT2: 'let my home', letD: 'From letting strategy to tenant screening and the lease agreement.', register: 'Register my property',
+    listEy: 'Listings', listT: 'Now for rent in The Hague', listAll: 'View all listings →',
+    photo: 'Photo', map: 'Map', pm: '/month', route: 'Directions in Google Maps ↗', routeShort: 'Directions ↗', mainPh: 'main photo', city: 'The Hague',
+    status: { avail: 'FOR RENT', new: 'NEW', option: 'UNDER OPTION' },
+    per: ['Available now', 'From 1 January', 'From 1 February', 'From 1 March', 'Under option'], bed: 'bed', all: 'All', home1: 'home', homeN: 'homes',
+    aboutEy: 'About us', quote: 'No home search is the same. That’s why we first listen carefully to what someone is really looking for.',
+    aboutP: 'Karens Real Estate is a personal real estate agency in The Hague. With personal attention, knowledge of the local housing market and a committed approach, we guide home seekers and landlords through every step.',
+    aboutLink: 'Get to know Karens Real Estate →', portraitOn: 'portrait — Karens Real Estate agent', portraitOff: 'photo — office or bright Hague interior',
+    expEy: 'Expat service', expT: 'New to The Hague?', expP: 'Moving to The Hague for work? We’re happy to help you find a home that fits your wishes and situation.',
+    expP2: 'Liever in het Nederlands? Dat kan natuurlijk ook.',
+    exp: ['Personal intake, in Dutch or English', 'A search for a home that fits your work, family and budget', 'Explanation of the documents landlords ask for', 'Guidance with viewings and the lease agreement'],
+    expCta: 'I’m an expat looking for a home',
+    ahEy: 'Rental search · Finding a home', ahT: 'Looking for a rental home in The Hague?',
+    ahP: 'Finding a suitable rental home can take a lot of time. Karens Real Estate guides you personally through the entire search and rental process.',
+    ahSteps: [['Introduction', 'A personal intake about your wishes, situation and budget.'], ['Targeted search', 'We search actively, including homes that are not listed online.'], ['Viewings', 'We view homes together and present your profile strongly to the landlord.'], ['Up to the keys', 'Review of the lease agreement and guidance at handover.']],
+    fEy: 'Search request', fT: 'Tell us what you’re looking for.', fS: 'Your request comes straight to us.', fAs: 'I’m looking for a home as a',
+    student: 'Student', werkend: 'Working professional',
+    sT: 'About your studies', sS: 'Landlords often ask students for a guarantor.', sInst: 'Educational institution', sInstPh: 'e.g. The Hague University',
+    sStudy: 'Programme & year', sStudyPh: 'e.g. Law, 2nd year', sGar: 'Do you have a guarantor?', garant: ['Yes', 'No', 'Not sure yet'],
+    sGarInc: 'Guarantor’s gross monthly income', sOwnInc: 'Own income (side job, student finance)', perMonthPh: '€ per month',
+    wT: 'About your work', wS: 'This helps us present your profile well to landlords.', wEmp: 'Employer', wEmpPh: 'Organisation name', wJob: 'Job title', wJobPh: 'e.g. Policy advisor',
+    wCon: 'Type of employment', contract: ['Permanent contract', 'Fixed-term contract', 'Self-employed', 'Via relocation'],
+    wInc: 'Gross monthly income (household)', wAbroad: 'Are you moving from abroad?', no: 'No', wAbroadYes: 'Yes, expat / relocation',
+    wBedT: 'Number of bedrooms', wBed: ['1', '2', '3', '4+'], wIntT: 'Interior', wInt: ['Unfurnished', 'Upholstered', 'Furnished', 'No preference'],
+    wTypeT: 'Property type', wType: ['House', 'Apartment', 'No preference'],
+    wExtraT: 'Extra wishes', wExtra: ['Balcony or garden', 'Pets', 'Parking space', 'Lift', 'Energy label A/B'], multiHint: 'Select as many as you like', oneHint: 'Choose one', bedWord: 'bedroom(s)', occWord: 'occupant(s)', choose: 'Select an option', noneYet: 'Nothing selected yet',
+    revEy: 'Reviews', revT: 'What our clients say',
+    revs: [
+      ['Within three weeks we had a beautiful apartment in Statenkwartier. It was great that they really thought along with us.', 'Sanne & Joris', 'Tenants · Statenkwartier'],
+      ['As an expat I didn’t know where to start. Everything was clearly explained, in English too.', 'Michael R.', 'Expat · Benoordenhout'],
+      ['A reliable tenant was found quickly and the contract was arranged down to the last detail.', 'The De Vries family', 'Landlord · Scheveningen'],
+      ['Finding a place as a student with a guarantor is hard. Thanks to the guidance it worked out.', 'Lotte', 'Student · City Centre'],
+      ['Personal, approachable and honest advice on the rent. Highly recommended.', 'Peter van D.', 'Landlord · Duinoord']
+    ],
+    cT: 'Your wishes & details', cMax: 'Maximum rent', cStart: 'Preferred start date', cOcc: 'Number of occupants', fourPlus: '4 or more',
+    cWijk: 'Preferred neighbourhoods', cWijkPh: 'e.g. Statenkwartier, City Centre', name: 'Name *', phone: 'Phone', phoneReq: 'Phone *',
+    cNote: 'Additional information', cNotePh: 'What matters to you in a home?',
+    consent: 'I agree to the processing of my data in accordance with the privacy statement.', callFirst: 'Prefer to call first?',
+    submitAh: (p) => `Send search request as ${p} →`, profS: 'student', profW: 'professional',
+    thanks: 'Thank you!', thanksP: 'We’ll get in touch with you personally as soon as possible.', browse: 'Browse the listings',
+    vhEy: 'Letting', vhT: 'Letting your home in The Hague?', vhP: 'Letting a home requires good preparation, market knowledge and a careful selection of tenants.',
+    orCall: 'or call 06 - 24 50 61 05', vhPh: 'professional property photography — styled living room', vhProc: 'Careful, from advice to handover',
+    vhSteps: [['Advice & rent', 'A realistic rent and letting strategy based on the Hague market.'], ['Presentation', 'Professional photography and listing on Pararius, Funda and our own website.'], ['Selection & screening', 'Viewings and careful screening of prospective tenants.'], ['Contract & handover', 'Lease agreement, inspection report and key handover.']],
+    vfEy: 'Register your property', vfT: 'Curious what your home could earn?', vfS: 'We’re happy to visit for a no-obligation introduction and letting advice.',
+    vfHome: 'The property', vfAddr: 'Address *', vfAddrPh: 'Street and number', vfZip: 'Postcode *', vfArea: 'Living area', vfBed: 'Bedrooms',
+    vfType: 'Property type', types: ['Apartment', 'Family house', 'Ground-floor flat', 'Studio'], vfDel: 'Furnishing', oplever: ['Unfurnished', 'Upholstered', 'Furnished'],
+    vfAvail: 'Available from', vfRent: 'Indicative rent', vfRentPh: '€ per month (optional)', vfYou: 'Your details', msg: 'Message',
+    vfMsgPh: 'Details, questions or a preferred time for a visit', vfSubmit: 'Schedule a no-obligation meeting →',
+    vfThanks: 'Thank you for registering.', vfThanksP: 'We’ll get in touch with you personally as soon as possible.',
+    abT: 'Rental homes in The Hague', abMiss: 'Didn’t find what you’re looking for?', abMissP: 'Let us search for you, including homes that are not publicly listed.',
+    ovT: 'Personal contact makes the difference.', ovP2: 'At Karens Real Estate you have one dedicated point of contact. Short lines, clear agreements and an agent who knows your situation.',
+    ovSpec: 'SPECIALISATIONS', ovArea: 'AREA', specs: ['Rental search & guidance for home seekers', 'Letting & guidance for landlords', 'Home seekers and expats moving to The Hague', 'Also: buying and selling'],
+    coT: 'Shall we meet?', coP: 'Have a question about renting, finding a home or letting? Feel free to get in touch.', callUs: 'CALL US',
+    byAppt: 'visits by appointment', byApptLong: 'Visits by appointment only', coHelp: 'How can we help?',
+    coO1: 'I’m looking for a home', coO2: 'I want to let my home', coO3: 'I have another question', coSend: 'Send message', coThanks: 'Thank you for your message.',
+    ftTag: 'Personal guidance in finding, renting and letting a home in The Hague.', privacy: 'Privacy statement', cookies: 'Cookie policy', terms: 'Terms and conditions'
+  }
+};
+
+class Component extends DCLogic {
+  state = { page: null, lang: null, curtain: 'idle', fade: 1, profile: 'werkend', garant: null, contract: null, type: null, oplever: null, ahBed: null, ahInt: null, ahType: null, ahExtras: [], ahOcc: null, openWish: -1, rev: 0, vw: 1400, wijk: 'all', maps: {}, loaded: {}, aanhuurSent: false, verhuurSent: false, contactSent: false };
+
+  componentDidMount() {
+    let l = null; try { l = localStorage.getItem('kre-lang'); } catch (e) {}
+    if (l === 'nl' || l === 'en') this.setState({ lang: l });
+    this.reveal();
+    this.onResize = () => { const n = window.innerWidth < 1240; this.setState({ narrow: n, vw: window.innerWidth }); };
+    this.revTimer = setInterval(() => { if (!this.revPaused && document.visibilityState === 'visible') this.setState((s) => ({ rev: (s.rev + 1) % 5 })); }, 6000);
+    this.onResize(); window.addEventListener('resize', this.onResize);
+    this.onDocDown = (e) => { if (this.state.openWish !== -1 && !e.target.closest('[data-wish-dd]')) this.setState({ openWish: -1 }); };
+    document.addEventListener('pointerdown', this.onDocDown);
+  }
+  componentDidUpdate(pp, ps) {
+    if (ps.page !== this.state.page || ps.wijk !== this.state.wijk) setTimeout(() => this.reveal(), 40);
+    document.documentElement.lang = this.lang();
+  }
+  componentWillUnmount() { clearInterval(this.revTimer); this.io && this.io.disconnect(); window.removeEventListener('resize', this.onResize); document.removeEventListener('pointerdown', this.onDocDown); }
+
+  reveal() {
+    const show = (el) => { el.style.opacity = 1; el.style.transform = 'none'; };
+    if (document.visibilityState !== 'visible') { document.querySelectorAll('[data-reveal]').forEach(show); return; }
+    if (!this.io) this.io = new IntersectionObserver((es) => (this.ioFired = true, es).forEach((e) => {
+      if (e.isIntersecting) { show(e.target); this.io.unobserve(e.target); }
+    }), { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    clearTimeout(this.safety);
+    this.safety = setTimeout(() => { if (!this.ioFired) document.querySelectorAll('[data-reveal]').forEach(show); }, 1600);
+    document.querySelectorAll('[data-reveal]').forEach((el) => {
+      if (el.__rv) return; el.__rv = 1;
+      const d = +el.getAttribute('data-reveal') || 0;
+      el.style.transition = `opacity .9s cubic-bezier(.2,.7,.2,1) ${d}ms, transform 1s cubic-bezier(.2,.7,.2,1) ${d}ms`;
+      el.style.opacity = 0; el.style.transform = 'translateY(32px)';
+      if (el.getBoundingClientRect().top < window.innerHeight) { requestAnimationFrame(() => requestAnimationFrame(() => show(el))); return; }
+      this.io.observe(el);
+    });
+  }
+
+  page() { return this.state.page || this.props.startPage || 'home'; }
+  lang() { return this.state.lang || this.props.defaultLang || 'nl'; }
+
+  setLang(l) {
+    if (l === this.lang()) return;
+    try { localStorage.setItem('kre-lang', l); } catch (e) {}
+    this.setState({ fade: 0 });
+    setTimeout(() => { this.setState({ lang: l }); requestAnimationFrame(() => this.setState({ fade: 1 })); }, 300);
+  }
+
+  go(p) {
+    if (p === this.page() || this.busy) return;
+    const top = () => window.scrollTo({ top: 0, behavior: 'instant' });
+    this.busy = true;
+    if ((this.props.transition ?? 'Gordijn') === 'Fade') {
+      this.setState({ fade: 0 });
+      setTimeout(() => { top(); this.setState({ page: p }); requestAnimationFrame(() => { this.setState({ fade: 1 }); this.busy = false; }); }, 320);
+      return;
+    }
+    this.setState({ curtain: 'cover' });
+    setTimeout(() => {
+      top(); this.setState({ page: p });
+      setTimeout(() => this.setState({ curtain: 'reveal' }), 120);
+      setTimeout(() => { this.setState({ curtain: 'idle' }); this.busy = false; }, 820);
+    }, 600);
+  }
+
+  chips(key, labels) {
+    return labels.map((label, i) => {
+      const on = this.state[key] === i;
+      return { label, bg: on ? '#043a63' : '#fff', fg: on ? '#fff' : '#043a63', bd: on ? '#043a63' : '#d5dee6', onClick: () => this.setState({ [key]: i }) };
+    });
+  }
+
+  card(l, i, t) {
+    const on = !!this.state.maps[l.id];
+    return {
+      adres: l.adres, prijs: eur(l.prijs), delay: (i % 3) * 90,
+      wijkCity: `${l.wijk}, ${t.city}`, meta: `${l.m2} m² · ${l.slpk} ${t.bed}`,
+      status: t.status[l.status], per: t.per[l.per],
+      mapUrl: osm(l.lat, l.lon), gmaps: gm(`${l.adres}, Den Haag`),
+      mapLoaded: !!this.state.loaded[l.id], mapOp: on ? 1 : 0,
+      statusBg: l.status === 'option' ? '#6b7c8a' : '#043a63',
+      fotoBg: on ? 'transparent' : '#043a63', fotoFg: on ? '#043a63' : '#fff',
+      mapBg: on ? '#043a63' : 'transparent', mapFg: on ? '#fff' : '#043a63',
+      toMap: () => this.setState((s) => ({ maps: { ...s.maps, [l.id]: true }, loaded: { ...s.loaded, [l.id]: true } })),
+      toFoto: () => this.setState((s) => ({ maps: { ...s.maps, [l.id]: false } }))
+    };
+  }
+
+  renderVals() {
+    const s = this.state, p = this.page(), lang = this.lang(), t = T[lang], stu = s.profile === 'student', c = s.curtain;
+    const wijkNames = Array.from(new Set(LISTINGS.map((l) => l.wijk)));
+    const filtered = LISTINGS.filter((l) => s.wijk === 'all' || l.wijk === s.wijk);
+    const submit = (k) => (e) => { e.preventDefault(); this.setState({ [k]: true }); };
+    const flag = (on) => ({ bg: on ? '#fff' : 'transparent', sh: on ? '0 2px 8px rgba(4,58,99,.18)' : 'none', op: on ? 1 : .55 });
+    const fn = flag(lang === 'nl'), fe = flag(lang === 'en');
+    const steps = (arr) => arr.map(([tt, d], i) => ({ n: '0' + (i + 1), t: tt, d, delay: i * 90 }));
+    return {
+      t,
+      isHome: p === 'home', isAanhuur: p === 'aanhuur', isVerhuren: p === 'verhuren', isAanbod: p === 'aanbod', isOver: p === 'over', isContact: p === 'contact',
+      navItems: PAGES.map((k, i) => ({ label: t.nav[i], bg: p === k ? 'rgba(4,58,99,.09)' : 'transparent', onClick: () => this.go(k) })),
+      goHome: () => this.go('home'), goAanhuur: () => this.go('aanhuur'), goVerhuren: () => this.go('verhuren'), goAanbod: () => this.go('aanbod'), goOver: () => this.go('over'),
+      setNL: () => this.setLang('nl'), setEN: () => this.setLang('en'),
+      nlBg: fn.bg, nlSh: fn.sh, nlOp: fn.op, enBg: fe.bg, enSh: fe.sh, enOp: fe.op,
+      scrollToForm: () => { const el = document.getElementById('verhuurform'); if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 70, behavior: 'smooth' }); },
+      curtainVis: c === 'idle' ? 'hidden' : 'visible',
+      curtainTf: c === 'idle' ? 'translateY(100%)' : c === 'cover' ? 'translateY(0)' : 'translateY(-100%)',
+      curtainTr: c === 'idle' ? 'none' : 'transform .6s cubic-bezier(.76,0,.24,1)',
+      curtainLogoOp: c === 'cover' ? 1 : 0,
+      navOrder: s.narrow ? 3 : 0,
+      mainOp: s.fade,
+      portraitPh: (this.props.showPortrait ?? false) ? t.portraitOn : t.portraitOff,
+      featured: LISTINGS.slice(0, 3).map((l, i) => this.card(l, i, t)),
+      filtered: filtered.map((l, i) => this.card(l, i, t)),
+      resultCount: `${filtered.length} ${filtered.length === 1 ? t.home1 : t.homeN}`,
+      wijkFilters: ['all', ...wijkNames].map((w) => {
+        const on = s.wijk === w;
+        return { label: w === 'all' ? t.all : w, bg: on ? '#043a63' : '#fff', fg: on ? '#fff' : '#043a63', bd: on ? '#043a63' : '#d5dee6', onClick: () => this.setState({ wijk: w }) };
+      }),
+      showNotes: this.props.showNotes ?? true,
+      expatItems: t.exp.map((x, i) => ({ t: x, n: '0' + (i + 1), delay: i * 80 })),
+      aanhuurSteps: steps(t.ahSteps), verhuurSteps: steps(t.vhSteps),
+      specs: t.specs,
+      wijken: ['Statenkwartier', 'Centrum', 'Scheveningen', 'Duinoord', 'Regentessekwartier', 'Archipelbuurt', 'Zeeheldenkwartier', 'Benoordenhout', 'Bezuidenhout', 'Voorburg', 'Rijswijk'],
+      pillTf: stu ? 'translateX(0)' : 'translateX(100%)',
+      studentTabFg: stu ? '#fff' : '#043a63', werkendTabFg: stu ? '#043a63' : '#fff',
+      setStudent: () => this.setState({ profile: 'student' }), setWerkend: () => this.setState({ profile: 'werkend' }),
+      sOp: stu ? 1 : 0, sTf: stu ? 'translateX(0)' : 'translateX(-48px)', sPe: stu ? 'auto' : 'none', sVis: stu ? 'visible' : 'hidden',
+      wOp: stu ? 0 : 1, wTf: stu ? 'translateX(48px)' : 'translateX(0)', wPe: stu ? 'none' : 'auto', wVis: stu ? 'hidden' : 'visible',
+      submitAhLabel: t.submitAh(stu ? t.profS : t.profW),
+      ...(() => {
+        const n = t.revs.length, per = s.vw < 760 ? 1 : s.vw < 1100 ? 2 : 3, gap = 20;
+        const maxStart = n - per, start = Math.min(s.rev, maxStart);
+        const go = (i) => this.setState({ rev: ((i % n) + n) % n > maxStart ? (i < 0 ? maxStart : 0) : ((i % n) + n) % n });
+        return {
+          revW: `calc((100% - ${(per - 1) * gap}px) / ${per})`,
+          revTf: `translateX(calc(${-start} * ((100% - ${(per - 1) * gap}px) / ${per} + ${gap}px)))`,
+          reviews: t.revs.map(([q, nm, m], i) => {
+            const vis = i >= start && i < start + per, hi = i === start;
+            return { q, n: nm, m, op: vis ? 1 : .35, bg: hi ? '#043a63' : '#fff', fg: hi ? '#fff' : '#13212e', star: hi ? '#9fc0de' : '#043a63', sub: hi ? '#cfe0ee' : '#50606e', line: hi ? 'rgba(255,255,255,.18)' : '#e6ebf0' };
+          }),
+          revDots: Array.from({ length: maxStart + 1 }, (_, i) => ({ label: String(i + 1), w: i === start ? '32px' : '8px', bg: i === start ? '#043a63' : '#c3d0dc', onClick: () => this.setState({ rev: i }) })),
+          revPrev: () => go(start - 1), revNext: () => go(start + 1),
+          revPause: () => { this.revPaused = true; }, revResume: () => { this.revPaused = false; }
+        };
+      })(),
+      wishGroups: [
+        { title: t.wBedT, key: 'ahBed', list: t.wBed, empty: s.ahBed == null, summary: s.ahBed == null ? t.choose : t.wBed[s.ahBed] + ' ' + t.bedWord },
+        { title: t.cOcc, key: 'ahOcc', list: ['1', '2', '3', t.fourPlus], empty: s.ahOcc == null, summary: s.ahOcc == null ? t.choose : ['1', '2', '3', t.fourPlus][s.ahOcc] + ' ' + t.occWord },
+        { title: t.wIntT, key: 'ahInt', list: t.wInt, empty: s.ahInt == null, summary: s.ahInt == null ? t.choose : t.wInt[s.ahInt] },
+        { title: t.wTypeT, key: 'ahType', list: t.wType, empty: s.ahType == null, summary: s.ahType == null ? t.choose : t.wType[s.ahType] },
+        { title: t.wExtraT, key: 'ahExtras', multi: true, list: t.wExtra, empty: !s.ahExtras.length, summary: s.ahExtras.length ? s.ahExtras.map((i) => t.wExtra[i]).join(', ') : t.noneYet }
+      ].map((g, i) => {
+        const open = s.openWish === i;
+        const opts = g.list.map((label, j) => {
+          const on = g.multi ? s.ahExtras.includes(j) : s[g.key] === j;
+          return { label, bg: on && !g.multi ? '#eef3f7' : 'transparent', radius: g.multi ? '3px' : '50%', bd: on ? '#043a63' : '#b9c7d3', box: on ? '#043a63' : '#fff', mark: on ? '✓' : '',
+            onClick: () => g.multi
+              ? this.setState((st) => ({ ahExtras: st.ahExtras.includes(j) ? st.ahExtras.filter((x) => x !== j) : [...st.ahExtras, j] }))
+              : this.setState({ [g.key]: j, openWish: -1 }) };
+        });
+        return { title: g.title, summary: g.summary, opts, open: String(open), z: open ? 20 : 1,
+          bd: open ? '#043a63' : '#d5dee6', ring: open ? '0 0 0 4px rgba(4,58,99,.1)' : 'none',
+          sumFg: g.empty ? '#9aa7b2' : '#13212e', bodyOp: open ? 1 : 0, bodyTf: open ? 'none' : 'translateY(-8px) scale(.98)', vis: open ? 'visible' : 'hidden',
+          chevTf: open ? 'rotate(180deg)' : 'none',
+          toggle: () => this.setState((st) => ({ openWish: st.openWish === i ? -1 : i })) };
+      }),
+      garantChips: this.chips('garant', t.garant), contractChips: this.chips('contract', t.contract),
+      typeChips: this.chips('type', t.types), opleverChips: this.chips('oplever', t.oplever),
+      aanhuurOpen: !s.aanhuurSent, aanhuurSent: s.aanhuurSent, submitAanhuur: submit('aanhuurSent'),
+      verhuurOpen: !s.verhuurSent, verhuurSent: s.verhuurSent, submitVerhuur: submit('verhuurSent'),
+      contactOpen: !s.contactSent, contactSent: s.contactSent, submitContact: submit('contactSent'),
+      officeMap: osm(52.0989, 4.2662, 0.008, 0.0045), officeGmaps: gm('Westduinweg 90, 2583 EM Den Haag')
+    };
+  }
+}
+</script>
+</body>
+</html>

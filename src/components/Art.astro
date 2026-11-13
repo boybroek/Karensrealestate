@@ -1,0 +1,79 @@
+---
+/**
+ * Shows the client's photo when present in src/assets/photos/, otherwise a
+ * designed line illustration of Hague canal houses in the house style.
+ */
+import { Picture } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import { getPhoto, type PhotoKey } from '../content/photos.ts';
+
+interface Props {
+  photo?: PhotoKey;
+  /** Explicit image (e.g. a listing photo) instead of a named site photo. */
+  image?: ImageMetadata;
+  alt: string;
+  ratio: '4-5' | '5-4' | '1-1' | '4-3';
+  variant?: 'day' | 'dusk';
+  eager?: boolean;
+  sizes?: string;
+  class?: string;
+}
+const { photo, image, alt, ratio, variant = 'day', eager = false, sizes = '(min-width: 1100px) 600px, 100vw', class: cls } = Astro.props;
+const img = image ?? (photo ? getPhoto(photo) : undefined);
+const widths = [480, 720, 960, 1280];
+
+// --- Illustration geometry (viewBox 400×500) ---
+const ground = 430;
+const houses = [
+  { x: 10, w: 78, top: 200, kind: 'step' },
+  { x: 88, w: 82, top: 145, kind: 'neck' },
+  { x: 170, w: 68, top: 118, kind: 'flat' },
+  { x: 238, w: 78, top: 168, kind: 'bell' },
+  { x: 316, w: 76, top: 214, kind: 'step' },
+];
+function outline(h: (typeof houses)[number]) {
+  const { x, w, top } = h, r = x + w, s = w / 6.5;
+  switch (h.kind) {
+    case 'step': return `M${x} ${ground}V${top}H${x + s}V${top - 18}H${x + 2 * s}V${top - 36}H${r - 2 * s}V${top - 18}H${r - s}V${top}H${r}V${ground}Z`;
+    case 'neck': return `M${x} ${ground}V${top + 25}H${x + 16}Q${x + 16} ${top + 5} ${x + 28} ${top}V${top - 34}H${r - 28}V${top}Q${r - 16} ${top + 5} ${r - 16} ${top + 25}H${r}V${ground}Z`;
+    case 'bell': return `M${x} ${ground}V${top + 22}C${x} ${top - 8} ${x + 24} ${top - 8} ${x + 24} ${top - 33}V${top - 52}H${r - 24}V${top - 33}C${r - 24} ${top - 8} ${r} ${top - 8} ${r} ${top + 22}V${ground}Z`;
+    default: return `M${x} ${ground}V${top}H${r}V${ground}Z`;
+  }
+}
+const windows: { x: number; y: number; w: number; h: number; lit: boolean }[] = [];
+let seed = 7;
+const rnd = () => ((seed = (seed * 9301 + 49297) % 233280) / 233280);
+for (const h of houses) {
+  const cols = h.w > 75 ? 3 : 2;
+  const ww = 13, gap = (h.w - cols * ww) / (cols + 1);
+  for (let y = Math.max(h.top + 30, 190); y < ground - 70; y += 58) {
+    for (let c = 0; c < cols; c++) windows.push({ x: h.x + gap + c * (ww + gap), y, w: ww, h: 26, lit: rnd() > 0.55 });
+  }
+}
+const doors = houses.map((h, i) => ({ x: h.x + (i % 2 ? h.w - 30 : 14), y: ground - 44, w: 16, h: 44 }));
+const dusk = variant === 'dusk';
+const pal = dusk
+  ? { bg: '#043a63', sky: '#06467a', fill: ['#0a4b7d', '#0d5288', '#08426f'], stroke: '#9fc0de', win: '#0a3d64', lit: '#f2d9a6', water: '#3d6d96', sun: '#cfe0ee' }
+  : { bg: '#e6eef5', sky: '#eef3f7', fill: ['#d7e2ec', '#cedbe7', '#dfe8f0'], stroke: '#043a63', win: '#fbfcfd', lit: '#fbfcfd', water: '#9fc0de', sun: '#ffffff' };
+---
+<div class:list={['art', `ratio-${ratio}`, cls]}>
+  {img ? (
+    <Picture src={img} alt={alt} widths={widths} sizes={sizes} formats={['avif', 'webp']} fallbackFormat="jpg" loading={eager ? 'eager' : 'lazy'} fetchpriority={eager ? 'high' : 'auto'} />
+  ) : (
+    <svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMax slice" role="img" aria-label={alt}>
+      <rect width="400" height="500" fill={pal.bg} />
+      <circle cx="318" cy="96" r="42" fill={pal.sun} opacity={dusk ? 0.9 : 0.85} />
+      {[0, 1, 2].map((i) => <path d={`M${40 + i * 90} ${70 + i * 18}h${46 - i * 8}`} stroke={pal.stroke} stroke-width="1" opacity=".18" stroke-linecap="round" />)}
+      <g stroke={pal.stroke} stroke-width="1.4" stroke-linejoin="round">
+        {houses.map((h, i) => <path d={outline(h)} fill={pal.fill[i % 3]} />)}
+        {windows.map((w) => <rect x={w.x} y={w.y} width={w.w} height={w.h} fill={dusk && w.lit ? pal.lit : pal.win} />)}
+        {doors.map((d) => <path d={`M${d.x} ${d.y + d.h}V${d.y + 8}a${d.w / 2} ${d.w / 2} 0 0 1 ${d.w} 0V${d.y + d.h}`} fill={pal.win} />)}
+        {houses.map((h) => <path d={`M${h.x + 6} ${h.top + (h.kind === 'flat' ? 14 : 30)}h${h.w - 12}`} fill="none" opacity=".5" />)}
+      </g>
+      <rect x="0" y={ground} width="400" height={500 - ground} fill={pal.bg} />
+      <path d={`M0 ${ground}H400`} stroke={pal.stroke} stroke-width="1.6" />
+      {[14, 28, 42, 56].map((y, i) => <path d={`M${20 + i * 23} ${ground + y}h${110 - i * 14}M${200 + i * 17} ${ground + y}h${130 - i * 18}`} stroke={pal.water} stroke-width="1.6" stroke-linecap="round" opacity={0.9 - i * 0.18} />)}
+    </svg>
+  )}
+  <slot />
+</div>

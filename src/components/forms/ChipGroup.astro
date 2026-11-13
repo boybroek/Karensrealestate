@@ -1,0 +1,18 @@
+---
+/** Single-choice pills from the design, built on native radio buttons (keyboard + form data for free). */
+interface Props { form: string; name: string; legend: string; options: { value: string; label: string }[]; checked?: string }
+const { form, name, legend, options, checked } = Astro.props;
+const id = `${form}-${name}`;
+---
+<fieldset class="chipset field" data-field={name} aria-describedby={`${id}-err`}>
+  <legend class="field__legend">{legend}</legend>
+  <div class="chipset__opts">
+    {options.map((o) => (
+      <label class="chipopt">
+        <input type="radio" name={name} value={o.value} checked={o.value === checked} />
+        <span>{o.label}</span>
+      </label>
+    ))}
+  </div>
+  <p class="field__error" id={`${id}-err`} hidden></p>
+</fieldset>

@@ -1,0 +1,31 @@
+---
+import { type Lang, path, t } from '../i18n/index.ts';
+interface Props { lang: Lang; showMore?: boolean; headingLevel?: 'h2' | 'h3' }
+const { lang, showMore = true } = Astro.props;
+const d = t(lang);
+---
+<section class="bg-mist" aria-labelledby="expat-title">
+  <div class="container section grid-2">
+    <div data-reveal="0">
+      <p class="eyebrow">{d.home.expEy}</p>
+      <h2 class="h2 expat__t" id="expat-title">{d.home.expT}</h2>
+      <p class="body">{d.home.expP}</p>
+      <p class="body expat__alt" lang={lang === 'nl' ? 'en' : 'nl'}>{d.home.expP2}</p>
+      {showMore && <p class="expat__more"><a class="link-underline" href={path('expats', lang)}>{d.home.expMore}</a></p>}
+    </div>
+    <div>
+      <ol class="numbered" role="list">
+        {d.home.exp.map((x, i) => <li data-reveal={i * 80}><span aria-hidden="true">{'0' + (i + 1)}</span>{x}</li>)}
+      </ol>
+      <div data-reveal="300" class="expat__cta">
+        <a class="btn btn--primary" href={`${path('aanhuur', lang)}?situatie=expat#zoekopdracht`}>{d.home.expCta}</a>
+      </div>
+    </div>
+  </div>
+</section>
+<style>
+  .expat__t { margin-bottom: 20px; }
+  .expat__alt { font-style: italic; }
+  .expat__more { margin-top: 28px; }
+  .expat__cta { margin-top: 28px; }
+</style>

@@ -1,0 +1,29 @@
+{
+  "name": "karens-real-estate",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "start": "node server.mjs",
+    "preview": "npm run build && npm start",
+    "check": "astro check",
+    "test": "node --test --experimental-strip-types \"tests/unit/**/*.test.ts\"",
+    "test:e2e": "node tests/e2e/run.mjs",
+    "launch-check": "node scripts/launch-check.mjs"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.12",
+    "@types/nodemailer": "^8.0.2",
+    "typescript": "^6.0.3"
+  },
+  "dependencies": {
+    "@astrojs/node": "^11.1.12",
+    "astro": "^7.4.11",
+    "nodemailer": "^10.5.0"
+  }
+}

@@ -1,0 +1,38 @@
+---
+/** Labelled input/textarea/select with an error slot wired up via aria-describedby. */
+interface Option { value: string; label: string }
+interface Props {
+  form: string;
+  name: string;
+  label: string;
+  type?: 'text' | 'email' | 'tel' | 'date' | 'textarea' | 'select';
+  required?: boolean;
+  placeholder?: string;
+  autocomplete?: string;
+  inputmode?: 'text' | 'numeric' | 'decimal' | 'tel' | 'email';
+  maxlength?: number;
+  rows?: number;
+  options?: Option[];
+  value?: string;
+  hint?: string;
+  class?: string;
+}
+const { form, name, label, type = 'text', required = false, placeholder, autocomplete, inputmode, maxlength, rows = 3, options = [], value, hint, class: cls } = Astro.props;
+const id = `${form}-${name}`;
+const describedBy = [hint && `${id}-hint`, `${id}-err`].filter(Boolean).join(' ');
+const today = new Date().toISOString().slice(0, 10);
+---
+<div class:list={['field', cls]} data-field={name}>
+  <label for={id}>{label}{required && <span class="req" aria-hidden="true"> *</span>}</label>
+  {type === 'textarea' ? (
+    <textarea id={id} name={name} rows={rows} placeholder={placeholder} required={required} maxlength={maxlength} aria-describedby={describedBy} autocomplete={autocomplete}></textarea>
+  ) : type === 'select' ? (
+    <select id={id} name={name} required={required} aria-describedby={describedBy}>
+      {options.map((o) => <option value={o.value} selected={o.value === value}>{o.label}</option>)}
+    </select>
+  ) : (
+    <input id={id} name={name} type={type} placeholder={placeholder} required={required} autocomplete={autocomplete} inputmode={inputmode} maxlength={maxlength} aria-describedby={describedBy} min={type === 'date' ? today : undefined} value={value} />
+  )}
+  {hint && <p class="field__hint" id={`${id}-hint`}>{hint}</p>}
+  <p class="field__error" id={`${id}-err`} hidden></p>
+</div>

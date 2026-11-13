@@ -1,0 +1,14 @@
+services:
+  web:
+    build:
+      context: .
+      args:
+        SITE_URL: ${SITE_URL:-https://www.karensrealestate.nl}
+    env_file: .env
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:4321:4321"
+    volumes:
+      - kre-data:/app/data
+volumes:
+  kre-data:

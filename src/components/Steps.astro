@@ -1,0 +1,14 @@
+---
+interface Props { steps: readonly (readonly string[])[]; variant?: 'navy' | 'light'; class?: string; heading?: 'h3' | 'h2' }
+const { steps, variant = 'navy', class: cls, heading = 'h3' } = Astro.props;
+const H = heading;
+---
+<ol class:list={[variant === 'navy' ? 'steps' : 'steps-light', cls]} role="list">
+  {steps.map(([title, text], i) => (
+    <li data-reveal={i * 90}>
+      <div class="steps__n" aria-hidden="true">{'0' + (i + 1)}</div>
+      <H class="steps__t">{title}</H>
+      <p class="steps__d">{text}</p>
+    </li>
+  ))}
+</ol>

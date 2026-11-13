@@ -1,0 +1,78 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Faq from '../components/Faq.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { type Lang, path, t } from '../i18n/index.ts';
+import { service, faqPage } from '../lib/seo.ts';
+import { site } from '../content/site.ts';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const d = t(lang);
+const b = d.beheer;
+const url = new URL(path('beheer', lang), Astro.site).href;
+const schema = [
+  service(Astro.site!.origin, url, lang, lang === 'nl' ? 'Vastgoedbeheer Den Haag' : 'Property management The Hague', lang === 'nl' ? 'Vastgoedbeheer' : 'Property management', d.seo.beheer.description),
+  faqPage(url, b.faq),
+];
+---
+<BaseLayout lang={lang} page="beheer" schema={schema}>
+  <section class="bg-mist">
+    <div class="container page-hero">
+      <p class="eyebrow rise">{b.ey}</p>
+      <h1 class="display rise rise-1">{b.t}</h1>
+      <p class="lead page-hero__p rise rise-2">{b.p}</p>
+      <div class="page-hero__ctas rise rise-3">
+        <a class="btn btn--primary btn--lg" href={`${path('contact', lang)}?onderwerp=manage`}>{b.cta}</a>
+        <a class="page-hero__call" href={`tel:${site.phone.e164}`}>{d.common.orCall}</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="container section" aria-labelledby="tasks-title">
+    <div class="section-head">
+      <div data-reveal="0">
+        <p class="eyebrow">{b.tasksEy}</p>
+        <h2 class="h2 h2--sm" id="tasks-title">{b.tasksT}</h2>
+        <p class="body tasks-p">{b.tasksP}</p>
+      </div>
+    </div>
+    <ul class="steps-light" role="list">
+      {b.tasks.map(([title, text], i) => (
+        <li data-reveal={(i % 3) * 90}>
+          <div class="steps__n" aria-hidden="true">{'0' + (i + 1)}</div>
+          <h3 class="steps__t">{title}</h3>
+          <p class="steps__d">{text}</p>
+        </li>
+      ))}
+    </ul>
+    <div class="tasks-cta">
+      <CtaBand title={b.ctaT} text={b.ctaP} href={`${path('contact', lang)}?onderwerp=manage`} label={b.cta} />
+    </div>
+  </section>
+
+  <section class="bg-paper container section grid-2" aria-labelledby="let-title">
+    <div data-reveal="0">
+      <p class="eyebrow">{d.nav.verhuren}</p>
+      <h2 class="h2 h2--sm" id="let-title">{d.verhuren.vfT}</h2>
+    </div>
+    <div data-reveal="80">
+      <p class="body">{d.home.letD}</p>
+      <p class="tasks-link"><a class="link-underline" href={path('verhuren', lang)}>{d.home.register} →</a></p>
+    </div>
+  </section>
+
+  <Faq items={b.faq} eyebrow={d.common.faqEy} />
+</BaseLayout>
+
+<style>
+  .page-hero { padding-top: clamp(40px, 6vw, 88px); padding-bottom: clamp(64px, 8vw, 112px); }
+  .page-hero .eyebrow { margin-bottom: 24px; }
+  .page-hero .display { max-width: 980px; }
+  .page-hero__p { color: var(--muted-2); max-width: 640px; margin-bottom: 32px; }
+  .page-hero__ctas { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; }
+  .page-hero__call { font-size: 15px; font-weight: 600; }
+  .tasks-p { margin-top: 16px; }
+  .tasks-cta { margin-top: 64px; }
+  .tasks-link { margin-top: 24px; }
+</style>

@@ -1,0 +1,67 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ListingsGrid from '../components/ListingsGrid.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { type Lang, path, t } from '../i18n/index.ts';
+import { getListings } from '../content/listings.ts';
+import { site } from '../content/site.ts';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const d = t(lang);
+const a = d.aanbod;
+const listings = getListings();
+---
+<BaseLayout lang={lang} page="aanbod">
+  <section class="container ab">
+    <p class="eyebrow rise">{d.home.listEy}</p>
+    <h1 class="display ab__t rise rise-1">{a.abT}</h1>
+    {listings.length > 0 ? (
+      <ListingsGrid listings={listings} lang={lang} filter showAvailability headingLevel="h2" />
+    ) : (
+      <div class="ab-empty rise rise-2">
+        <h2 class="ab-empty__t">{a.emptyT}</h2>
+        <p class="ab-empty__p">{a.emptyP}</p>
+        <div class="ab-empty__ctas">
+          <a class="btn btn--primary btn--lg" href={`${path('aanhuur', lang)}#zoekopdracht`}>{d.home.startSearch}</a>
+          <a class="btn btn--outline btn--lg" href={site.parariusProfile} target="_blank" rel="noopener">{a.emptyPararius}<span class="visually-hidden"> {d.common.newWindow}</span></a>
+        </div>
+      </div>
+    )}
+    <div class="ab__cta">
+      <CtaBand title={a.abMiss} text={a.abMissP} href={`${path('aanhuur', lang)}#zoekopdracht`} label={d.home.startSearch} />
+    </div>
+  </section>
+
+  <section class="bg-mist" aria-labelledby="areas-title">
+    <div class="container section">
+      <div class="ab-areas__head" data-reveal="0">
+        <p class="eyebrow">{a.areasEy}</p>
+        <h2 class="h2 h2--sm" id="areas-title">{a.areasT}</h2>
+        <p class="body">{a.areasP}</p>
+      </div>
+      <ul class="ab-areas" role="list">
+        {a.areas.map(([name, text], i) => (
+          <li data-reveal={(i % 3) * 80}><h3>{name}</h3><p>{text}</p></li>
+        ))}
+      </ul>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .ab { padding-top: clamp(40px, 6vw, 80px); padding-bottom: clamp(64px, 8vw, 110px); }
+  .ab .eyebrow { margin-bottom: 20px; }
+  .ab__t { font-size: clamp(42px, 5.6vw, 80px); margin-bottom: 32px; }
+  .ab__cta { margin-top: 64px; }
+  .ab-empty { background: #fff; border-radius: var(--radius); padding: clamp(28px, 4vw, 56px); box-shadow: 0 30px 80px rgba(2, 31, 54, .06); }
+  .ab-empty__t { font-family: var(--font-serif); font-weight: 400; font-size: clamp(26px, 3vw, 36px); color: var(--navy); line-height: 1.15; margin-bottom: 12px; }
+  .ab-empty__p { font-size: 17px; line-height: 1.65; color: var(--muted); max-width: 640px; margin-bottom: 28px; }
+  .ab-empty__ctas { display: flex; gap: 12px; flex-wrap: wrap; }
+  .ab-areas__head { max-width: 720px; margin-bottom: 44px; }
+  .ab-areas__head .h2 { margin-bottom: 16px; }
+  .ab-areas { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 28px 32px; list-style: none; margin: 0; padding: 0; }
+  .ab-areas li { border-top: 2px solid var(--navy); padding-top: 18px; }
+  .ab-areas h3 { font-size: 18px; color: var(--navy); margin-bottom: 6px; }
+  .ab-areas p { font-size: 15px; line-height: 1.6; color: var(--muted-2); }
+</style>

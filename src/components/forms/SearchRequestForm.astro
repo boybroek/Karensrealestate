@@ -1,0 +1,109 @@
+---
+import FormFrame from './FormFrame.astro';
+import Field from './Field.astro';
+import ChipGroup from './ChipGroup.astro';
+import WishSelect from './WishSelect.astro';
+import Consent from './Consent.astro';
+import { type Lang, fill, path, t } from '../../i18n/index.ts';
+import { OPTIONS } from '../../lib/forms/schema.ts';
+import { site } from '../../content/site.ts';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const f = t(lang).form;
+const id = 'zoekopdracht';
+const opts = <K extends keyof typeof f.options>(k: K, keys: readonly string[]) =>
+  keys.map((v) => ({ value: v, label: (f.options[k] as Record<string, string>)[v] }));
+---
+<FormFrame id={id} lang={lang} steps={3} stepLabels={f.steps.zoekopdracht} successTitle={f.thanks} successText={f.thanksP}>
+  <!-- Step 1: profile -->
+  <div class="step" data-step="0">
+    <fieldset class="segment field" data-field="profile">
+      <legend data-step-title>{f.fAs}</legend>
+      <div class="segment__track">
+        <span class="segment__pill" aria-hidden="true"></span>
+        <label><input type="radio" name="profile" value="student" /><span>{f.student}</span></label>
+        <label><input type="radio" name="profile" value="working" checked /><span>{f.werkend}</span></label>
+      </div>
+      <p class="field__error" id="zoekopdracht-profile-err" hidden></p>
+    </fieldset>
+
+    <div class="panels">
+      <div class="panel panel--student" data-when-profile="student" data-off inert>
+        <h3 class="form__title">{f.sT}</h3>
+        <p class="form__sub">{f.sS}</p>
+        <div class="form__grid form__grid--wide">
+          <Field form={id} name="institution" label={f.sInst} placeholder={f.sInstPh} maxlength={120} autocomplete="organization" />
+          <Field form={id} name="study" label={f.sStudy} placeholder={f.sStudyPh} maxlength={120} />
+        </div>
+        <ChipGroup form={id} name="guarantor" legend={f.sGar} options={opts('guarantor', OPTIONS.guarantor)} />
+        <div class="form__grid form__grid--wide mt">
+          <Field form={id} name="guarantorIncome" label={f.sGarInc} placeholder="€" inputmode="decimal" maxlength={15} />
+          <Field form={id} name="ownIncome" label={f.sOwnInc} placeholder={f.perMonthPh} inputmode="decimal" maxlength={15} />
+        </div>
+      </div>
+
+      <div class="panel panel--working" data-when-profile="working">
+        <h3 class="form__title">{f.wT}</h3>
+        <p class="form__sub">{f.wS}</p>
+        <div class="form__grid form__grid--wide">
+          <Field form={id} name="employer" label={f.wEmp} placeholder={f.wEmpPh} maxlength={120} autocomplete="organization" />
+          <Field form={id} name="jobTitle" label={f.wJob} placeholder={f.wJobPh} maxlength={120} autocomplete="organization-title" />
+        </div>
+        <ChipGroup form={id} name="contract" legend={f.wCon} options={opts('contract', OPTIONS.contract)} />
+        <div class="form__grid form__grid--wide mt">
+          <Field form={id} name="income" label={f.wInc} placeholder="€" inputmode="decimal" maxlength={15} />
+          <Field form={id} name="abroad" label={f.wAbroad} type="select" options={opts('abroad', OPTIONS.abroad)} />
+        </div>
+      </div>
+    </div>
+
+    <div class="form__actions">
+      <span class="form__call">{t(lang).common.callFirst} <a href={`tel:${site.phone.e164}`}>{site.phone.display}</a></span>
+      <div class="form__nav"><button type="button" class="btn btn--primary btn--lg" data-next>{f.next}</button></div>
+    </div>
+  </div>
+
+  <!-- Step 2: wishes -->
+  <div class="step" data-step="1">
+    <h3 class="form__title" data-step-title>{f.cT}</h3>
+    <div class="form__grid">
+      <WishSelect form={id} name="bedrooms" title={f.wBedT} options={opts('bedrooms', OPTIONS.bedrooms)} placeholder={f.choose} suffix={f.bedWord} />
+      <WishSelect form={id} name="occupants" title={f.cOcc} options={opts('occupants', OPTIONS.occupants)} placeholder={f.choose} suffix={f.occWord} />
+      <WishSelect form={id} name="interior" title={f.wIntT} options={opts('interior', OPTIONS.interior)} placeholder={f.choose} />
+      <WishSelect form={id} name="propertyType" title={f.wTypeT} options={opts('wishType', OPTIONS.wishType)} placeholder={f.choose} />
+      <WishSelect form={id} name="extras" title={f.wExtraT} options={opts('extras', OPTIONS.extras)} placeholder={f.noneYet} multi hint={f.multiHint} />
+    </div>
+    <div class="form__grid mt">
+      <Field form={id} name="maxRent" label={f.cMax} placeholder={f.perMonthPh} inputmode="decimal" maxlength={15} />
+      <Field form={id} name="startDate" label={f.cStart} type="date" />
+      <Field form={id} name="neighbourhoods" label={f.cWijk} placeholder={f.cWijkPh} maxlength={200} />
+    </div>
+    <div class="form__actions">
+      <button type="button" class="btn btn--outline btn--lg" data-back>{f.back}</button>
+      <div class="form__nav"><button type="button" class="btn btn--primary btn--lg" data-next>{f.next}</button></div>
+    </div>
+  </div>
+
+  <!-- Step 3: contact details -->
+  <div class="step" data-step="2">
+    <h3 class="form__title" data-step-title>{f.cT2}</h3>
+    <div class="form__grid">
+      <Field form={id} name="name" label={f.name} required autocomplete="name" maxlength={100} />
+      <Field form={id} name="email" label={f.email} type="email" required autocomplete="email" maxlength={254} inputmode="email" />
+      <Field form={id} name="phone" label={f.phone} type="tel" autocomplete="tel" maxlength={25} inputmode="tel" />
+    </div>
+    <div class="form__stack mt">
+      <Field form={id} name="note" label={f.cNote} type="textarea" placeholder={f.cNotePh} maxlength={2000} />
+    </div>
+    <Consent form={id} lang={lang} />
+    <div class="form__actions">
+      <button type="button" class="btn btn--outline btn--lg" data-back>{f.back}</button>
+      <div class="form__nav">
+        <button type="submit" class="btn btn--primary btn--lg"><span data-submit-label data-student={fill(f.submitAh, { p: f.profS })} data-working={fill(f.submitAh, { p: f.profW })}>{fill(f.submitAh, { p: f.profW })}</span></button>
+      </div>
+    </div>
+  </div>
+
+  <a slot="success" class="btn btn--white" href={path('aanbod', lang)}>{f.browse}</a>
+</FormFrame>

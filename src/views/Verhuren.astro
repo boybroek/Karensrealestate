@@ -1,0 +1,86 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Art from '../components/Art.astro';
+import Steps from '../components/Steps.astro';
+import Faq from '../components/Faq.astro';
+import LettingForm from '../components/forms/LettingForm.astro';
+import { type Lang, path, t } from '../i18n/index.ts';
+import { service, faqPage } from '../lib/seo.ts';
+import { site } from '../content/site.ts';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const d = t(lang);
+const v = d.verhuren;
+const url = new URL(path('verhuren', lang), Astro.site).href;
+const schema = [
+  service(Astro.site!.origin, url, lang, lang === 'nl' ? 'Verhuurmakelaar Den Haag' : 'Letting agent The Hague', lang === 'nl' ? 'Verhuurmakelaar' : 'Letting agent', d.seo.verhuren.description),
+  faqPage(url, v.faq),
+];
+---
+<BaseLayout lang={lang} page="verhuren" schema={schema}>
+  <section class="bg-mist">
+    <div class="container vh-hero grid-2 align-center">
+      <div>
+        <p class="eyebrow rise">{v.vhEy}</p>
+        <h1 class="display rise rise-1">{v.vhT}</h1>
+        <p class="lead vh-hero__p rise rise-2">{v.vhP}</p>
+        <div class="vh-hero__ctas rise rise-3">
+          <a class="btn btn--primary btn--lg" href="#aanmelden">{d.home.register} ↓</a>
+          <a class="vh-hero__call" href={`tel:${site.phone.e164}`}>{d.common.orCall}</a>
+        </div>
+      </div>
+      <div class="rise rise-1"><Art photo="verhuren" alt={v.vhAlt} ratio="5-4" eager /></div>
+    </div>
+  </section>
+
+  <section class="container section" aria-labelledby="proc-title">
+    <h2 class="h2 h2--sm vh-proc" id="proc-title" data-reveal="0">{v.vhProc}</h2>
+    <Steps steps={d.steps.vhSteps} variant="light" />
+  </section>
+
+  <section class="bg-white" aria-labelledby="rules-title">
+    <div class="container section grid-2">
+      <div data-reveal="0">
+        <p class="eyebrow">{v.rulesEy}</p>
+        <h2 class="h2 h2--sm" id="rules-title">{v.rulesT}</h2>
+      </div>
+      <div data-reveal="80">
+        <p class="body">{v.rulesP}</p>
+        <div class="vh-beheer">
+          <p class="vh-beheer__t">{v.beheerT}</p>
+          <p class="body">{v.beheerP}</p>
+          <a class="link-underline" href={path('beheer', lang)}>{v.beheerLink}</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-navy" id="aanmelden" aria-labelledby="vf-title">
+    <div class="container container--narrow section">
+      <div class="vf-intro" data-reveal="0">
+        <p class="eyebrow">{v.vfEy}</p>
+        <h2 class="h2" id="vf-title">{v.vfT}</h2>
+        <p class="lead">{v.vfS}</p>
+      </div>
+      <LettingForm lang={lang} />
+    </div>
+  </section>
+
+  <Faq items={v.faq} eyebrow={d.common.faqEy} />
+</BaseLayout>
+
+<style>
+  .vh-hero { padding-top: clamp(40px, 6vw, 88px); padding-bottom: clamp(64px, 8vw, 112px); gap: clamp(32px, 5vw, 72px); }
+  .vh-hero .eyebrow { margin-bottom: 24px; }
+  .vh-hero .display { font-size: clamp(42px, 5.6vw, 80px); }
+  .vh-hero__p { color: var(--muted-2); margin-bottom: 32px; }
+  .vh-hero__ctas { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; }
+  .vh-hero__call { font-size: 15px; font-weight: 600; }
+  .vh-proc { margin-bottom: 48px; max-width: 640px; }
+  .vh-beheer { margin-top: 32px; padding: 28px; background: var(--mist); border-radius: var(--radius); }
+  .vh-beheer__t { font-family: var(--font-serif); font-size: 24px; color: var(--navy); margin-bottom: 8px; }
+  .vh-beheer .body { margin-bottom: 16px; }
+  .vf-intro { margin-bottom: 40px; }
+  .vf-intro .h2 { margin-bottom: 14px; }
+</style>

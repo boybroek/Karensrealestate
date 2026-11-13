@@ -1,0 +1,80 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Faq from '../components/Faq.astro';
+import { type Lang, path, t } from '../i18n/index.ts';
+import { service, faqPage } from '../lib/seo.ts';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const d = t(lang);
+const x = d.expats;
+const url = new URL(path('expats', lang), Astro.site).href;
+const formHref = `${path('aanhuur', lang)}?situatie=expat#zoekopdracht`;
+const schema = [
+  service(Astro.site!.origin, url, lang, lang === 'nl' ? 'Huisvesting voor expats in Den Haag' : 'Expat housing The Hague', lang === 'nl' ? 'Woningzoekservice voor expats' : 'Expat home search service', d.seo.expats.description),
+  faqPage(url, x.faq),
+];
+---
+<BaseLayout lang={lang} page="expats" schema={schema} crumbsOnNavy>
+  <section class="bg-navy">
+    <div class="container ex-hero">
+      <p class="eyebrow rise">{x.ey}</p>
+      <h1 class="display ex-hero__t rise rise-1">{x.t}</h1>
+      <p class="lead rise rise-2">{x.p}</p>
+      <p class="ex-hero__alt rise rise-2" lang={lang === 'nl' ? 'en' : 'nl'}>{d.home.expP2}</p>
+      <div class="rise rise-3"><a class="btn btn--white btn--lg" href={formHref}>{x.cta} →</a></div>
+    </div>
+  </section>
+
+  <section class="container section" aria-labelledby="how-title">
+    <h2 class="h2 h2--sm ex-how" id="how-title" data-reveal="0">{x.howT}</h2>
+    <ol class="numbered ex-list" role="list">
+      {d.home.exp.map((item, i) => <li data-reveal={i * 80}><span aria-hidden="true">{'0' + (i + 1)}</span>{item}</li>)}
+    </ol>
+  </section>
+
+  <section class="bg-mist" aria-labelledby="docs-title">
+    <div class="container section grid-2">
+      <div data-reveal="0">
+        <p class="eyebrow">{x.docsEy}</p>
+        <h2 class="h2 h2--sm" id="docs-title">{x.docsT}</h2>
+        <p class="body ex-docs-p">{x.docsP}</p>
+      </div>
+      <ol class="numbered" role="list">
+        {x.docs.map((doc, i) => <li data-reveal={i * 80}><span aria-hidden="true">{'0' + (i + 1)}</span>{doc}</li>)}
+      </ol>
+    </div>
+  </section>
+
+  <section class="container section grid-2" aria-labelledby="areas-title">
+    <div data-reveal="0">
+      <p class="eyebrow">{x.areasEy}</p>
+      <h2 class="h2 h2--sm" id="areas-title">{x.areasT}</h2>
+    </div>
+    <div data-reveal="80">
+      <p class="body">{x.areasP}</p>
+      <p class="ex-links"><a class="link-underline" href={path('aanbod', lang)}>{d.home.listAll}</a></p>
+    </div>
+  </section>
+
+  <Faq items={x.faq} eyebrow={d.common.faqEy} />
+
+  <section class="container section ex-cta">
+    <div class="cta-band" data-reveal="0">
+      <div><p class="cta-band__t">{d.aanbod.abMiss}</p><p class="cta-band__p">{d.aanbod.abMissP}</p></div>
+      <a class="btn btn--white btn--lg" href={formHref}>{x.cta}</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .ex-hero { padding-top: clamp(40px, 6vw, 88px); padding-bottom: clamp(64px, 8vw, 112px); }
+  .ex-hero .eyebrow { margin-bottom: 24px; }
+  .ex-hero__t { max-width: 1000px; }
+  .ex-hero__alt { font-style: italic; color: var(--on-navy); margin: 14px 0 36px; font-size: 17px; }
+  .ex-how { margin-bottom: 32px; max-width: 640px; }
+  .ex-list { max-width: 820px; }
+  .ex-docs-p { margin-top: 20px; }
+  .ex-links { margin-top: 28px; }
+  .ex-cta { padding-top: 0; }
+</style>

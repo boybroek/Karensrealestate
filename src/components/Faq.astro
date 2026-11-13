@@ -1,0 +1,23 @@
+---
+interface Props { items: readonly (readonly string[])[]; eyebrow: string; title?: string; bg?: 'paper' | 'white' | 'mist' }
+const { items, eyebrow, title, bg = 'white' } = Astro.props;
+---
+<section class:list={['section', `bg-${bg}`]} aria-labelledby="faq-title">
+  <div class="container container--narrow grid-2">
+    <div data-reveal="0">
+      <p class="eyebrow">{eyebrow}</p>
+      <h2 class="h2 h2--sm" id="faq-title">{title ?? eyebrow}</h2>
+    </div>
+    <div class="faq" data-reveal="80">
+      {items.map(([q, a], i) => (
+        <details open={i === 0}>
+          <summary><h3 class="faq__q">{q}</h3></summary>
+          <p class="faq__a">{a}</p>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>
+<style>
+  .faq__q { font: inherit; color: inherit; }
+</style>
