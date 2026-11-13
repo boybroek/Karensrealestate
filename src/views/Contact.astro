@@ -2,7 +2,8 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ContactForm from '../components/forms/ContactForm.astro';
 import { type Lang, t } from '../i18n/index.ts';
-import { site, osmEmbed, mapsDirections, fullAddress } from '../content/site.ts';
+import { site, osmEmbed, osmLink, mapsDirections, fullAddress } from '../content/site.ts';
+import { CONCEPT } from '../content/listings.ts';
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
@@ -21,11 +22,18 @@ const contactPage = { '@type': 'ContactPage', '@id': `${Astro.url.href}#contact`
         <a href={`mailto:${site.email}`}><span class="co__lbl">{d.common.email}</span><span class="co__val co__val--break">{site.email}</span></a>
       </div>
       <div class="co__map" data-reveal="240" data-osm={osmEmbed(site.map.lat, site.map.lon, 0.008, 0.0045)} data-title={c.mapTitle}>
+        {CONCEPT ? (
+          <a class="co__mapbtn" href={osmLink(site.map.lat, site.map.lon)} target="_blank" rel="noopener">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
+          <span>{d.concept.mapOpen}</span>
+                    </a>
+        ) : (
         <button type="button" class="co__mapbtn" data-load-map>
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
           <span>{c.mapLoad}</span>
           <small>{c.mapNote}</small>
         </button>
+        )}
       </div>
       <address class="co__addr">
         <span>{site.address.street}, {site.address.postalCode} {d.common.city} · {d.common.byAppt}</span>
@@ -63,7 +71,7 @@ const contactPage = { '@type': 'ContactPage', '@id': `${Astro.url.href}#contact`
   .co__val--break { word-break: break-all; }
   .co__map { border-radius: var(--radius); overflow: hidden; position: relative; aspect-ratio: 16 / 10; background: var(--mist) repeating-linear-gradient(135deg, #e4eaf0 0 12px, #dbe3eb 12px 24px); }
   .co__map :global(iframe) { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
-  .co__mapbtn { position: absolute; inset: 0; width: 100%; border: 0; background: transparent; color: var(--navy); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; font-weight: 600; font-size: 16px; }
+  .co__mapbtn { text-decoration: none; position: absolute; inset: 0; width: 100%; border: 0; background: transparent; color: var(--navy); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; font-weight: 600; font-size: 16px; }
   .co__mapbtn span { background: #fff; padding: 10px 18px; border-radius: 999px; box-shadow: 0 6px 20px rgba(2, 31, 54, .12); transition: transform .25s var(--ease); }
   .co__mapbtn:hover span { transform: translateY(-2px); }
   .co__mapbtn small { font-weight: 400; font-size: 13px; color: var(--muted-2); }

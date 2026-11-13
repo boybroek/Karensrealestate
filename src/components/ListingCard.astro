@@ -1,7 +1,8 @@
 ---
 import Art from './Art.astro';
 import type { Listing } from '../content/listings.ts';
-import { mapsDirections, osmEmbed } from '../content/site.ts';
+import { mapsDirections, osmEmbed, osmLink } from '../content/site.ts';
+import { CONCEPT } from '../content/listings.ts';
 import { type Lang, t } from '../i18n/index.ts';
 
 interface Props { listing: Listing; lang: Lang; delay?: number; headingLevel?: 'h2' | 'h3'; showAvailability?: boolean }
@@ -24,7 +25,7 @@ const id = `listing-${l.id}`;
       {mapUrl && (
         <div class="lcard__toggle" role="group" aria-label={d.viewToggle}>
           <button type="button" aria-pressed="true" data-view="photo">{d.photo}</button>
-          <button type="button" aria-pressed="false" data-view="map">{d.map}</button>
+          {CONCEPT ? <a class="lcard__maplink" href={osmLink(l.lat!, l.lon!)} target="_blank" rel="noopener">{d.map} ↗</a> : <button type="button" aria-pressed="false" data-view="map">{d.map}</button>}
         </div>
       )}
     </div>
@@ -57,6 +58,7 @@ const id = `listing-${l.id}`;
   .lcard__toggle { position: absolute; top: 12px; right: 12px; display: none; background: rgba(255, 255, 255, .95); border-radius: 999px; padding: 3px; box-shadow: 0 4px 14px rgba(2, 31, 54, .15); }
   :global(.js) .lcard__toggle { display: flex; }
   .lcard__toggle button { border: 0; border-radius: 999px; padding: 6px 12px; font-size: 12px; font-weight: 600; background: transparent; color: var(--navy); transition: background .3s, color .3s; }
+  .lcard__maplink { border-radius: 999px; padding: 6px 12px; font-size: 12px; font-weight: 600; color: var(--navy); }
   .lcard__toggle button[aria-pressed='true'] { background: var(--navy); color: #fff; }
   .lcard__body { padding: 22px 22px 20px; display: flex; flex-direction: column; gap: 6px; }
   .lcard__t { font-family: var(--font-serif); font-weight: 500; font-size: 24px; color: var(--navy); line-height: 1.2; }

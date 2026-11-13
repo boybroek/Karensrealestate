@@ -220,6 +220,15 @@ const en: Dict = {
   },
   notFound: { ey: '404', t: 'This page does not exist (anymore).', p: 'The page may have moved. Go to the homepage or get in touch with us.', home: 'Go to the homepage', contact: 'Contact' },
   demo: 'DEMO CONTENT – sample listings and reviews, not for publication',
+  concept: {
+    banner: 'Concept presentation – this is not the official website of Karens Real Estate.',
+    bannerDetail: 'Listings and reviews are sample content. Forms do not send anything.',
+    badge: 'Concept',
+    formNote: 'Demonstration form: in this concept version no data is sent or stored.',
+    formDone: 'This was a demonstration. No data has been sent or stored.',
+    titleSuffix: ' (concept)',
+    mapOpen: 'View on OpenStreetMap ↗',
+  },
 };
 
 export default en;

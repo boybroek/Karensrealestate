@@ -50,4 +50,6 @@ export const mapsDirections = (query: string) =>
 export const osmEmbed = (lat: number, lon: number, dx = 0.006, dy = 0.0035) =>
   `https://www.openstreetmap.org/export/embed.html?bbox=${lon - dx}%2C${lat - dy}%2C${lon + dx}%2C${lat + dy}&layer=mapnik&marker=${lat}%2C${lon}`;
 
+export const osmLink = (lat: number, lon: number) => `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}#map=17/${lat}/${lon}`;
+
 export const fullAddress = `${site.address.street}, ${site.address.postalCode} ${site.address.city}`;

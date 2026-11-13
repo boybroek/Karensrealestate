@@ -47,7 +47,9 @@ const DEMO_LISTINGS: Listing[] = [
   { id: 'demo-6', address: 'Van Boetzelaerlaan 88', neighbourhood: 'Statenkwartier', city: 'Den Haag', rent: 2800, area: 120, bedrooms: 3, status: 'avail', available: '2027-03-01', lat: 52.0905, lon: 4.2905 },
 ];
 
-export const DEMO = process.env.KRE_DEMO_CONTENT === '1';
+/** Concept presentation build (KRE_CONCEPT=1): sample content, concept label, forms send nothing. */
+export const CONCEPT = process.env.KRE_CONCEPT === '1';
+export const DEMO = process.env.KRE_DEMO_CONTENT === '1' || CONCEPT;
 
 export function getListings(): Listing[] {
   return DEMO ? DEMO_LISTINGS : LISTINGS;

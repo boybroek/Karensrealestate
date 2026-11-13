@@ -7,6 +7,7 @@
 import '../../styles/forms.css';
 import { type Lang, t } from '../../i18n/index.ts';
 import type { FormId } from '../../lib/forms/schema.ts';
+import { CONCEPT } from '../../content/listings.ts';
 
 interface Props {
   id: FormId;
@@ -24,7 +25,7 @@ const f = t(lang).form;
 const messages = JSON.stringify({ errors: f.errors, sending: f.sending, errorTitle: f.errorTitle, sendError: f.sendError, rateError: f.rateError, stepOf: f.stepOf });
 ---
 <div class:list={['form-wrap', cls]} data-form-wrap>
-  <form class="form" data-form={id} data-steps={steps} data-messages={messages} action={`/api/forms/${id}/`} method="post" novalidate aria-describedby={`${id}-required`}>
+  <form class="form" data-form={id} data-steps={steps} data-messages={messages} action={`/api/forms/${id}/`} method="post" novalidate aria-describedby={`${id}-required`} data-concept={CONCEPT ? '1' : undefined}>
     <input type="hidden" name="lang" value={lang} />
     <div class="hp" aria-hidden="true">
       <label for={`${id}-website`}>Website</label>
@@ -41,6 +42,7 @@ const messages = JSON.stringify({ errors: f.errors, sending: f.sending, errorTit
       </ol>
     )}
 
+    {CONCEPT && <p class="form__concept" role="note">{t(lang).concept.formNote}</p>}
     <p class="form__req" id={`${id}-required`}>{f.required}</p>
     <div class="form__alert" role="alert" data-alert hidden></div>
 
@@ -52,6 +54,7 @@ const messages = JSON.stringify({ errors: f.errors, sending: f.sending, errorTit
   <div class:list={['form-success', `form-success--${successTheme}`]} data-success hidden tabindex="-1">
     <p class="form-success__t">{successTitle}</p>
     <p class="form-success__p">{successText}</p>
+    {CONCEPT && <p class="form-success__concept">{t(lang).concept.formDone}</p>}
     <slot name="success" />
   </div>
 </div>

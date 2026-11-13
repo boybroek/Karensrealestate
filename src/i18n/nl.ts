@@ -222,6 +222,15 @@ const nl = {
   },
   notFound: { ey: '404', t: 'Deze pagina bestaat niet (meer).', p: 'Misschien is de pagina verplaatst. Ga naar de homepage of neem contact met ons op.', home: 'Naar de homepage', contact: 'Contact' },
   demo: 'DEMO-INHOUD – voorbeeldwoningen en -ervaringen, niet voor publicatie',
+  concept: {
+    banner: 'Conceptpresentatie – dit is niet de officiële website van Karens Real Estate.',
+    bannerDetail: 'Woningen en ervaringen zijn voorbeeldinhoud. Formulieren versturen niets.',
+    badge: 'Concept',
+    formNote: 'Demonstratieformulier: in deze conceptversie worden geen gegevens verzonden of opgeslagen.',
+    formDone: 'Dit was een demonstratie. Er zijn geen gegevens verzonden of opgeslagen.',
+    titleSuffix: ' (concept)',
+    mapOpen: 'Bekijk op OpenStreetMap ↗',
+  },
 };
 
 export default nl;

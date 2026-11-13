@@ -72,7 +72,8 @@ function initForm(form: HTMLFormElement) {
   let busy = false;
 
   form.querySelectorAll<HTMLElement>('[data-wish]').forEach(initWish);
-  form.addEventListener('focusin', () => { getToken().catch(() => {}); }, { once: true });
+  const concept = form.dataset.concept === '1'; // concept presentation: never send anything
+  if (!concept) form.addEventListener('focusin', () => { getToken().catch(() => {}); }, { once: true });
 
   const data = (): Raw => {
     const fd = new FormData(form);
@@ -218,6 +219,14 @@ function initForm(form: HTMLFormElement) {
       return;
     }
     alert(null);
+    if (concept) {
+      form.hidden = true;
+      const success = wrap.querySelector<HTMLElement>('[data-success]')!;
+      success.hidden = false;
+      success.focus({ preventScroll: true });
+      success.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
     busy = true;
     const original = submitBtn.innerHTML;
     submitBtn.disabled = true;

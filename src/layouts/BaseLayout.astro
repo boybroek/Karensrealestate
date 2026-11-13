@@ -5,7 +5,7 @@ import Footer from '../components/Footer.astro';
 import Breadcrumb from '../components/Breadcrumb.astro';
 import { type Lang, type PageKey, LANGS, alternates, htmlLang, t } from '../i18n/index.ts';
 import { organization, website, webPage, crumbsFor, jsonLd, type Crumb } from '../lib/seo.ts';
-import { DEMO } from '../content/listings.ts';
+import { DEMO, CONCEPT } from '../content/listings.ts';
 import fontSans from '../assets/fonts/schibsted-grotesk-latin-wght-normal.woff2?url';
 import fontSerif from '../assets/fonts/newsreader-latin-wght-normal.woff2?url';
 
@@ -26,7 +26,7 @@ interface Props {
 const { lang, page, schema = [], showCrumbs = page !== null && page !== 'home', crumbsOnNavy = false } = Astro.props;
 const d = t(lang);
 const seo = page ? d.seo[page] : d.seo.notFound;
-const title = Astro.props.title ?? seo.title;
+const title = (Astro.props.title ?? seo.title) + (CONCEPT ? d.concept.titleSuffix : '');
 const description = Astro.props.description ?? seo.description;
 const noindex = Astro.props.noindex || DEMO || page === null;
 
@@ -79,11 +79,14 @@ const graph = {
     <meta name="twitter:image" content={ogImage} />
     <meta name="format-detection" content="telephone=no" />
 
-    <script type="application/ld+json" set:html={jsonLd(graph)} />
+    {!CONCEPT && <script type="application/ld+json" set:html={jsonLd(graph)} />}
   </head>
   <body>
     <a class="skip-link" href="#main">{d.common.skip}</a>
-    {DEMO && <div class="demo-banner" role="note">{d.demo}</div>}
+    {CONCEPT ? (
+      <div class="concept-banner" role="note"><strong>{d.concept.banner}</strong> <span>{d.concept.bannerDetail}</span></div>
+    ) : DEMO && <div class="demo-banner" role="note">{d.demo}</div>}
+    {CONCEPT && <div class="concept-badge" aria-hidden="true">{d.concept.badge}</div>}
     <Header lang={lang} page={page} />
     <main id="main" tabindex="-1">
       {showCrumbs && crumbs.length > 1 && <Breadcrumb crumbs={crumbs} label={d.common.breadcrumb} onNavy={crumbsOnNavy} />}
