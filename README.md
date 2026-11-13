@@ -6,6 +6,20 @@ Tweetalige (NL/EN) website voor Karens Real Estate, huur-, aanhuur- en verhuurma
 - **Eisen:** Node.js ≥ 22.12, een SMTP-mailbox en HTTPS via een reverse proxy (bijvoorbeeld Caddy) of een hostingplatform.
 - **Documentatie:** [`docs/01-analyse-en-technisch-plan.md`](docs/01-analyse-en-technisch-plan.md) bevat de analyse en de architectuur. [`docs/02-oplevering-en-testrapport.md`](docs/02-oplevering-en-testrapport.md) bevat de testresultaten en de openstaande punten.
 
+## Previews
+
+| Homepage | Aanhuur met stappenformulier | Mobiel |
+|---|---|---|
+| ![Homepage](docs/preview-home.png) | ![Aanhuur](docs/preview-aanhuur.png) | ![Mobiel](docs/preview-mobiel.png) |
+
+Demoversie met voorbeeldwoningen en -ervaringen:
+
+| Homepage (demo) | Woningaanbod (demo) |
+|---|---|
+| ![Homepage demo](docs/preview-demo-home.png) | ![Woningaanbod demo](docs/preview-demo-aanbod.png) |
+
+Zelf bekijken: `npm install` en dan `npm run demo` → http://localhost:4321. Een conceptpresentatie maken (gelabeld als concept, formulieren versturen niets): `npm run concept` → map `concept-dist/`.
+
 ---
 
 ## 1. Snel starten (ontwikkeling)
@@ -32,6 +46,8 @@ MAIL_TRANSPORT=file MAIL_TO=test@example.nl SITE_URL=http://localhost:4321 node 
 | `npm run check` | TypeScript- en Astro-typecheck |
 | `npm test` | Unit-tests: validatie, tokens, rate limiting, e-mail en outbox |
 | `npm run test:e2e` | End-to-end-tests met Playwright tegen de build: alle pagina's, links, SEO, formulieren, beveiliging en mobiel |
+| `npm run demo` | Lokale demo met voorbeeldwoningen en -ervaringen; formulieren schrijven naar `data/dev-mail/` |
+| `npm run concept` | Conceptpresentatie als statisch pakket in `concept-dist/` |
 | `npm run launch-check` | Checklist voor de livegang: wat ontbreekt nog? (exitcode 1 = blokkerend) |
 | `node scripts/generate-brand-assets.mjs` | Maakt favicons en de OG-afbeelding opnieuw vanuit het logo |
 
