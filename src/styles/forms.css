@@ -32,7 +32,8 @@
 .field.has-error input:focus, .field.has-error textarea:focus { box-shadow: 0 0 0 4px rgba(180, 35, 24, .12); }
 
 /* Chips (radio pills) */
-fieldset.field { border: 0; margin: 0; padding: 0; min-inline-size: 0; }
+/* :where() keeps this reset at zero specificity, so .chipset / .segment can still set their own margins. */
+:where(fieldset.field) { border: 0; margin: 0; padding: 0; min-inline-size: 0; }
 .field__legend { padding: 0; margin: 0 0 10px; }
 .chipset { margin-top: 22px; }
 .chipset__opts { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -44,14 +45,14 @@ fieldset.field { border: 0; margin: 0; padding: 0; min-inline-size: 0; }
 .chipopt input:focus-visible + span { outline: 3px solid var(--blue); outline-offset: 2px; }
 
 /* Segmented profile switch (student / werkende) with sliding pill */
-.segment { border: 0; padding: 0; margin: 0 0 40px; min-inline-size: 0; }
-.segment legend { font-size: 14px; font-weight: 600; color: var(--navy); margin-bottom: 12px; padding: 0; }
-.segment__track { position: relative; display: grid; grid-template-columns: 1fr 1fr; background: var(--chip); border-radius: 999px; padding: 5px; max-width: 520px; }
-.segment__pill { position: absolute; top: 5px; bottom: 5px; left: 5px; width: calc(50% - 5px); background: var(--navy); border-radius: 999px; box-shadow: 0 6px 16px rgba(4, 58, 99, .3); transition: transform .55s var(--ease-io); }
+.segment { border: 0; padding: 0; margin: 0 0 32px; min-inline-size: 0; }
+.segment legend { font-size: 14px; font-weight: 600; color: var(--navy); margin-bottom: 10px; padding: 0; }
+.segment__track { position: relative; display: grid; grid-template-columns: 1fr 1fr; width: min(100%, 300px); background: var(--chip); border: 1px solid var(--border); border-radius: 999px; padding: 3px; }
+.segment__pill { position: absolute; top: 3px; bottom: 3px; left: 3px; width: calc(50% - 3px); background: var(--navy); border-radius: 999px; box-shadow: 0 1px 3px rgba(4, 58, 99, .2); transition: transform .45s var(--ease-io); }
 .segment__track:has(label:nth-of-type(2) input:checked) .segment__pill { transform: translateX(100%); }
 .segment label { position: relative; z-index: 1; text-align: center; }
 .segment input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
-.segment span { display: block; padding: 14px 10px; border-radius: 999px; font-size: 16px; font-weight: 600; color: var(--navy); transition: color .4s ease; cursor: pointer; }
+.segment span { display: block; padding: 8px 14px; border-radius: 999px; font-size: 14px; font-weight: 500; color: var(--navy); transition: color .3s ease; cursor: pointer; }
 .segment input:checked + span { color: #fff; }
 .segment input:focus-visible + span { outline: 3px solid var(--blue); outline-offset: 3px; }
 

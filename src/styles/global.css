@@ -156,9 +156,11 @@ ul[role='list'], ol[role='list'] { list-style: none; padding: 0; }
 .menu-toggle[aria-expanded='true'] span::before { transform: translateY(6px) rotate(45deg); }
 .menu-toggle[aria-expanded='true'] span::after { transform: translateY(-6px) rotate(-45deg); }
 .header-call { display: none; }
+.btn.header-ctas { white-space: nowrap; flex: 0 0 auto; }
 .mobile-menu { display: none; }
 
-@media (max-width: 1180px) {
+/* Below 1280px the menu plus both CTA buttons no longer fit on one line. */
+@media (max-width: 1279px) {
   .header-ctas { display: none; }
 }
 @media (max-width: 960px) {
@@ -195,6 +197,11 @@ ul[role='list'], ol[role='list'] { list-style: none; padding: 0; }
 .site-footer__bottom { max-width: 1320px; margin: 0 auto; padding: 20px var(--gutter) 32px; border-top: 1px solid rgba(255, 255, 255, .1); display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; font-size: 13px; color: #8fa7bd; }
 .site-footer__bottom a { color: #8fa7bd; }
 .site-footer__bottom ul { display: flex; gap: 18px; flex-wrap: wrap; list-style: none; margin: 0; padding: 0; }
+/* Touch screens: links at least 24px tall (WCAG 2.5.8) without changing the layout much. */
+@media (max-width: 960px) {
+  .site-footer__col a, .site-footer__bottom a { display: inline-block; padding-block: 4px; }
+  .site-footer__col { gap: 4px; }
+}
 
 /* ---------- Reveal-on-scroll (progressive enhancement) ---------- */
 .js [data-reveal]:not(.is-in) { opacity: 0; transform: translateY(32px); }

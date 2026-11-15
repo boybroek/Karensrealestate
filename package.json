@@ -24,6 +24,7 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.12",
     "@types/nodemailer": "^8.0.2",
+    "playwright": "^1.65.1",
     "typescript": "^6.0.3"
   },
   "dependencies": {

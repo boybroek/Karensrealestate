@@ -5,6 +5,7 @@ import { mkdtemp, readdir, readFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { createRequire } from 'node:module';
+import { fileURLToPath } from 'node:url';
 import { run } from 'node:test';
 import { spec } from 'node:test/reporters';
 
@@ -35,7 +36,7 @@ process.env.E2E_BASE = `http://localhost:${PORT}`;
 process.env.E2E_DATA = dataDir;
 globalThis.__pw = playwright;
 
-const stream = run({ files: [new URL('./site.test.mjs', import.meta.url).pathname], concurrency: false, timeout: 180_000 });
+const stream = run({ files: [fileURLToPath(new URL('./site.test.mjs', import.meta.url))], concurrency: false, timeout: 180_000 });
 stream.compose(spec).pipe(process.stdout);
 let failed = 0;
 stream.on('test:fail', () => failed++);
