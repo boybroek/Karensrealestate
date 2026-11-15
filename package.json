@@ -19,7 +19,8 @@
     "concept": "node scripts/build-concept.mjs",
     "build:cf": "node scripts/build-cf.mjs",
     "cf:dev": "npm run build:cf && wrangler dev",
-    "cf:deploy": "npm run build:cf && wrangler deploy"
+    "cf:deploy": "npm run build:cf && wrangler deploy",
+    "cf:demo": "node scripts/build-cf.mjs --demo && wrangler deploy --name karensrealestate-demo --var NODE_ENV:development --var MAIL_TRANSPORT:kv"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.12",
