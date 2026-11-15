@@ -148,7 +148,7 @@ const nl = {
       ['Voorburg & Rijswijk', 'Rustig wonen net buiten Den Haag, met eigen voorzieningen en snelle verbindingen.'],
     ],
     status: { avail: 'TE HUUR', new: 'NIEUW', option: 'ONDER OPTIE' },
-    photo: 'Foto', map: 'Kaart', pm: 'p/m', bed: 'slpk', mapOf: 'Kaart van', viewToggle: 'Weergave',
+    photo: 'Foto', map: 'Kaart', pm: 'p/m', bed: 'slpk', mapOf: 'Kaart van', onMaps: 'Bekijk op Google Maps ↗', viewToggle: 'Weergave',
     available: { now: 'Per direct', option: 'In optie', from: 'Per' },
   },
   over: {

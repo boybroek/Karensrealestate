@@ -126,7 +126,7 @@ De website zelf bevat geen database. De bron is deze Git-repository. Alleen `DAT
 | Alle teksten NL / EN | `src/i18n/nl.ts` en `src/i18n/en.ts`. Dezelfde sleutels; de typecheck bewaakt dat. |
 | URL's per taal | `src/i18n/routes.ts` |
 | Foto's | Zet `hero.jpg`, `over-ons.jpg` en `verhuren.jpg` in `src/assets/photos/`. Ze worden automatisch omgezet naar AVIF/WebP in meerdere formaten. Zonder foto toont de site een illustratie in huisstijl. |
-| Woningaanbod | `src/content/listings.ts` (zie §6) |
+| Woningaanbod | `src/content/listings.ts` (zie §6). Adres en plaats zijn genoeg: postcode en coördinaten voor de kaart met pin worden bij de build opgezocht via PDOK (de gratis adresdienst van de overheid) en bewaard in `src/content/geocode-cache.json`. |
 | Klantervaringen | `src/content/reviews.ts`. De sectie verschijnt automatisch zodra er echte reviews in staan. |
 | Juridische teksten | `src/views/Privacy.astro` en `src/views/Cookies.astro` |
 

@@ -13,7 +13,6 @@ for (const root of document.querySelectorAll<HTMLElement>('[data-listings]')) {
         const f = document.createElement('iframe');
         f.src = map.dataset.mapSrc!;
         f.title = map.dataset.mapTitle ?? '';
-        f.loading = 'lazy';
         f.referrerPolicy = 'no-referrer';
         map.append(f);
       }

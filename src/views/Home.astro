@@ -12,7 +12,7 @@ interface Props { lang: Lang }
 const { lang } = Astro.props;
 const d = t(lang);
 const h = d.home;
-const featured = getListings().slice(0, 3);
+const featured = (await getListings()).slice(0, 3);
 ---
 <BaseLayout lang={lang} page="home">
   <section class="container hero">

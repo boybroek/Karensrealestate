@@ -22,11 +22,14 @@ export const site = {
     country: 'NL',
   },
   /** Used for the OpenStreetMap embed on the contact page. */
-  map: { lat: 52.0989, lon: 4.2662 },
+  // Exact position of Westduinweg 90 (PDOK/BAG). Also used as geo in the structured data.
+  map: { lat: 52.095048, lon: 4.268594 },
   /** Chamber of Commerce number. REQUIRED before launch (legal requirement). */
   kvk: '',
   /** VAT number, optional. */
   vat: '',
+  /** Google Search Console → "HTML-tag" verification: paste only the content="…" code here. Optional. */
+  googleSiteVerification: '',
   /** Profiles that unambiguously belong to the business (Google Business Profile, LinkedIn …). */
   sameAs: [] as string[],
   /** Listing portals shown in the footer. */

@@ -1,8 +1,8 @@
 ---
 import Art from './Art.astro';
 import type { Listing } from '../content/listings.ts';
-import { mapsDirections, osmEmbed, osmLink } from '../content/site.ts';
-import { CONCEPT } from '../content/listings.ts';
+import { osmEmbed, osmLink } from '../content/site.ts';
+import { CONCEPT, googleMapsUrl } from '../content/listings.ts';
 import { type Lang, t } from '../i18n/index.ts';
 
 interface Props { listing: Listing; lang: Lang; delay?: number; headingLevel?: 'h2' | 'h3'; showAvailability?: boolean }
@@ -16,7 +16,7 @@ const avail = l.available === 'now' ? d.available.now : l.available === 'option'
 const mapUrl = l.lat && l.lon ? osmEmbed(l.lat, l.lon) : null;
 const id = `listing-${l.id}`;
 ---
-<div data-reveal={delay} data-listing data-wijk={l.neighbourhood}>
+<div id={id} data-reveal={delay} data-listing data-wijk={l.neighbourhood}>
   <article class="lcard" aria-labelledby={`${id}-t`}>
     <div class="lcard__media">
       <Art alt={`${l.address}, ${l.neighbourhood}`} ratio="4-3" sizes="(min-width: 1100px) 420px, 100vw" />
@@ -31,13 +31,13 @@ const id = `listing-${l.id}`;
     </div>
     <div class="lcard__body">
       <H class="lcard__t" id={`${id}-t`}>{l.url ? <a href={l.url} target="_blank" rel="noopener">{l.address}</a> : l.address}</H>
-      <p class="lcard__loc">{l.neighbourhood}, {city}</p>
+      <p class="lcard__loc">{l.postalCode ? `${l.postalCode} ${city}` : city} · {l.neighbourhood}</p>
       <div class="lcard__row">
         <span class="lcard__price">€ {nf.format(l.rent)} <span>{d.pm}</span></span>
         <span class="lcard__meta">{l.area} m² · {l.bedrooms} {d.bed}</span>
       </div>
       <div class="lcard__foot">
-        <a href={mapsDirections(`${l.address}, ${l.city}`)} target="_blank" rel="noopener">{t(lang).common.route}</a>
+        <a href={googleMapsUrl(l)} target="_blank" rel="noopener">{d.onMaps}<span class="visually-hidden"> {t(lang).common.newWindow}</span></a>
         {showAvailability && <span class="lcard__avail">{avail}</span>}
       </div>
     </div>

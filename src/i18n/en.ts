@@ -146,7 +146,7 @@ const en: Dict = {
       ['Voorburg & Rijswijk', 'Quiet living just outside The Hague, with their own amenities and fast connections.'],
     ],
     status: { avail: 'FOR RENT', new: 'NEW', option: 'UNDER OPTION' },
-    photo: 'Photo', map: 'Map', pm: '/month', bed: 'bed', mapOf: 'Map of', viewToggle: 'View',
+    photo: 'Photo', map: 'Map', pm: '/month', bed: 'bed', mapOf: 'Map of', onMaps: 'View on Google Maps ↗', viewToggle: 'View',
     available: { now: 'Available now', option: 'Under option', from: 'From' },
   },
   over: {

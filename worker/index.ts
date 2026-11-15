@@ -119,7 +119,12 @@ export default {
     }
     const out = new Response(res.body, res);
     for (const [k, v] of Object.entries(securityHeaders())) out.headers.set(k, v);
-    if (new URL(request.url).pathname.startsWith('/api/')) out.headers.set('Cache-Control', 'no-store');
+    const url = new URL(request.url);
+    if (url.pathname.startsWith('/api/')) out.headers.set('Cache-Control', 'no-store');
+    // SEO: only the real domain may be indexed. Previews (*.workers.dev, localhost …) get noindex,
+    // so Google never sees them as duplicate content of www.karensrealestate.nl.
+    const canonical = env('CANONICAL_HOST').toLowerCase();
+    if (!canonical || url.hostname !== canonical) out.headers.set('X-Robots-Tag', 'noindex, nofollow');
     return out;
   },
 

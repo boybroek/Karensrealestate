@@ -6,6 +6,7 @@ import Breadcrumb from '../components/Breadcrumb.astro';
 import { type Lang, type PageKey, LANGS, alternates, htmlLang, t } from '../i18n/index.ts';
 import { organization, website, webPage, crumbsFor, jsonLd, type Crumb } from '../lib/seo.ts';
 import { DEMO, CONCEPT } from '../content/listings.ts';
+import { site } from '../content/site.ts';
 import fontSans from '../assets/fonts/schibsted-grotesk-latin-wght-normal.woff2?url';
 import fontSerif from '../assets/fonts/newsreader-latin-wght-normal.woff2?url';
 
@@ -29,6 +30,8 @@ const seo = page ? d.seo[page] : d.seo.notFound;
 const title = (Astro.props.title ?? seo.title) + (CONCEPT ? d.concept.titleSuffix : '');
 const description = Astro.props.description ?? seo.description;
 const noindex = Astro.props.noindex || DEMO || page === null;
+// Google Search Console "HTML tag" verification (optional; DNS verification via Cloudflare works too).
+const googleVerification = site.googleSiteVerification;
 
 const origin = Astro.site!.origin;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
@@ -50,6 +53,7 @@ const graph = {
     <meta name="description" content={description} />
     {noindex ? <meta name="robots" content="noindex, follow" /> : <meta name="robots" content="index, follow, max-image-preview:large" />}
     {!noindex && <link rel="canonical" href={canonical} />}
+    {googleVerification && <meta name="google-site-verification" content={googleVerification} />}
     {alts && !noindex && LANGS.map((l) => <link rel="alternate" hreflang={htmlLang(l)} href={new URL(alts[l], Astro.site).href} />)}
     {alts && !noindex && <link rel="alternate" hreflang="x-default" href={new URL(alts.nl, Astro.site).href} />}
 

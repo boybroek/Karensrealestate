@@ -4,8 +4,9 @@ import { SITEMAP_PRIORITY } from '../i18n/routes.ts';
 import { DEMO } from '../content/listings.ts';
 
 /** XML sitemap with hreflang alternates for every page in both languages. */
+// No <lastmod>: a date that changes on every build is not a real modification date,
+// and Google stops trusting lastmod for sites that send unreliable values.
 export const GET: APIRoute = ({ site }) => {
-  const lastmod = new Date().toISOString().slice(0, 10);
   const abs = (p: string) => new URL(p, site).href;
   const urls = (Object.keys(ROUTES) as PageKey[]).flatMap((key) =>
     LANGS.map((lang) => {
@@ -14,7 +15,6 @@ export const GET: APIRoute = ({ site }) => {
     <loc>${abs(ROUTES[key][lang])}</loc>
 ${alts}
     <xhtml:link rel="alternate" hreflang="x-default" href="${abs(ROUTES[key].nl)}"/>
-    <lastmod>${lastmod}</lastmod>
     <priority>${(SITEMAP_PRIORITY[key] ?? 0.5).toFixed(1)}</priority>
   </url>`;
     }),

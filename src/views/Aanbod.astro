@@ -5,14 +5,17 @@ import CtaBand from '../components/CtaBand.astro';
 import { type Lang, path, t } from '../i18n/index.ts';
 import { getListings } from '../content/listings.ts';
 import { site } from '../content/site.ts';
+import { listingsSchema } from '../lib/seo.ts';
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const d = t(lang);
 const a = d.aanbod;
-const listings = getListings();
+const listings = await getListings();
+const pageUrl = new URL(path('aanbod', lang), Astro.site).href;
+const schema = listings.length ? [listingsSchema(pageUrl, listings)] : [];
 ---
-<BaseLayout lang={lang} page="aanbod">
+<BaseLayout lang={lang} page="aanbod" schema={schema}>
   <section class="container ab">
     <p class="eyebrow rise">{d.home.listEy}</p>
     <h1 class="display ab__t rise rise-1">{a.abT}</h1>

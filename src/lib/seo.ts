@@ -1,3 +1,4 @@
+import type { Listing } from '../content/listings.ts';
 import { site } from '../content/site.ts';
 import { type Lang, type PageKey, path, t } from '../i18n/index.ts';
 
@@ -24,9 +25,20 @@ export function organization(origin: string) {
       addressRegion: site.address.region,
       addressCountry: site.address.country,
     },
+    // Exact position + map: strengthens the local signal (Google Maps / local pack).
+    geo: { '@type': 'GeoCoordinates', latitude: site.map.lat, longitude: site.map.lon },
+    hasMap: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${site.name}, ${site.address.street}, ${site.address.postalCode} ${site.address.city}`)}`,
     areaServed: site.areaServed.map((name) => ({ '@type': 'City', name })),
     founder: { '@type': 'Person', name: site.owner },
     knowsLanguage: ['nl', 'en'],
+    contactPoint: {
+      '@type': 'ContactPoint',
+      contactType: 'customer service',
+      telephone: site.phone.e164,
+      email: site.email,
+      availableLanguage: ['Dutch', 'English'],
+      areaServed: 'NL',
+    },
   };
   if (site.kvk) org.identifier = { '@type': 'PropertyValue', propertyID: 'KvK', value: site.kvk };
   if (site.vat) org.vatID = site.vat;
@@ -93,6 +105,36 @@ export function crumbsFor(lang: Lang, key: PageKey): Crumb[] {
   const d = t(lang);
   const home = { name: d.nav.home, href: path('home', lang) };
   return key === 'home' ? [home] : [home, { name: d.nav[key], href: path(key, lang) }];
+}
+
+/** Rental listings as an ItemList of Accommodation (address, exact geo, size), each pointing at its card on the page. */
+export function listingsSchema(url: string, listings: Listing[]) {
+  return {
+    '@type': 'ItemList',
+    '@id': `${url}#listings`,
+    numberOfItems: listings.length,
+    itemListElement: listings.map((l, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      item: {
+        '@type': 'Accommodation',
+        '@id': `${url}#listing-${l.id}`,
+        name: `${l.address}, ${l.city}`,
+        url: l.url ?? `${url}#listing-${l.id}`,
+        address: {
+          '@type': 'PostalAddress',
+          streetAddress: l.address,
+          ...(l.postalCode ? { postalCode: l.postalCode } : {}),
+          addressLocality: l.city,
+          addressCountry: 'NL',
+        },
+        ...(l.lat && l.lon ? { geo: { '@type': 'GeoCoordinates', latitude: l.lat, longitude: l.lon } } : {}),
+        floorSize: { '@type': 'QuantitativeValue', value: l.area, unitCode: 'MTK' },
+        numberOfBedrooms: l.bedrooms,
+        containedInPlace: { '@type': 'Place', name: `${l.neighbourhood}, ${l.city}` },
+      },
+    })),
+  };
 }
 
 /** Serialise JSON-LD safely for embedding in a <script> element. */
