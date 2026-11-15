@@ -1,21 +1,36 @@
-import type { APIRoute } from 'astro';
-import { isFormId } from '../../../lib/forms/schema.ts';
-import { validateForm } from '../../../lib/forms/validate.ts';
-import { consumeToken, verifyToken } from '../../../lib/server/token.ts';
-import { hashIp, hit } from '../../../lib/server/ratelimit.ts';
-import { deliver, newSubmission, startOutboxWorker } from '../../../lib/server/deliver.ts';
-import { clientIp, json, originAllowed } from '../../../lib/server/http.ts';
-import { log } from '../../../lib/server/log.ts';
-import { config } from '../../../lib/server/config.ts';
+import { isFormId } from '../forms/schema.ts';
+import { validateForm } from '../forms/validate.ts';
+import { config } from './config.ts';
+import { json, originAllowed } from './http.ts';
+import { log } from './log.ts';
+import { hashIp, hit } from './ratelimit.ts';
+import { newSubmission, type Submission } from './submission.ts';
+import { consumeToken, issueToken, verifyToken } from './token.ts';
 
-export const prerender = false;
+/**
+ * Request handling for the form API, shared by the Node routes (src/routes/api)
+ * and the Cloudflare Worker (worker/index.ts). Only delivery and the optional
+ * shared replay store differ per platform.
+ */
+export interface SubmitDeps {
+  deliver: (s: Submission) => Promise<'sent' | 'queued'>;
+  /** Replay protection shared between instances (e.g. Cloudflare KV). The in-memory check always runs as well. */
+  nonceStore?: { used(nonce: string): Promise<boolean>; consume(nonce: string): Promise<void> };
+}
 
 const MAX_BODY = 32 * 1024;
 const URL_RE = /(https?:\/\/|www\.)/gi;
 
-export const POST: APIRoute = async ({ params, request, clientAddress }) => {
-  startOutboxWorker();
-  const form = params.form ?? '';
+/** GET /api/forms/token/ */
+export function handleTokenGet(request: Request, ip: string): Response {
+  if (request.headers.get('sec-fetch-site') === 'cross-site') return json({ error: 'forbidden' }, 403);
+  const wait = hit({ key: `tok:${hashIp(ip)}`, max: 30, windowMs: 10 * 60_000 });
+  if (wait) return json({ error: 'rate_limited' }, 429, { 'Retry-After': String(wait) });
+  return json({ token: issueToken() });
+}
+
+/** POST /api/forms/:form/ */
+export async function handleFormPost(form: string, request: Request, ipAddress: string, deps: SubmitDeps): Promise<Response> {
   if (!isFormId(form)) return json({ error: 'not_found' }, 404);
 
   // 1. Same-origin JSON only (CSRF: cross-site pages cannot send this without a CORS preflight, which we never grant).
@@ -25,7 +40,7 @@ export const POST: APIRoute = async ({ params, request, clientAddress }) => {
   if (len > MAX_BODY) return json({ error: 'too_large' }, 413);
 
   // 2. Rate limits per (hashed) IP.
-  const ip = hashIp(clientIp(request, clientAddress));
+  const ip = hashIp(ipAddress);
   const wait = hit({ key: `f:${ip}`, max: config.formRateMax, windowMs: 10 * 60_000 }) || hit({ key: `fd:${ip}`, max: 30, windowMs: 24 * 3600_000 });
   if (wait) { log('warn', 'rate limited', { form }); return json({ error: 'rate_limited' }, 429, { 'Retry-After': String(wait) }); }
 
@@ -52,6 +67,9 @@ export const POST: APIRoute = async ({ params, request, clientAddress }) => {
     return tok === 'too_fast' ? json({ ok: true }) : json({ error: 'invalid_token' }, 409);
   }
   if (tok !== 'ok') return json({ error: 'invalid_token' }, 409);
+  const token = body._token as string;
+  const nonce = token.split('.')[1];
+  if (deps.nonceStore && (await deps.nonceStore.used(nonce))) return json({ error: 'invalid_token' }, 409);
 
   // 5. Authoritative validation (same rules as the browser).
   const result = validateForm(form, body);
@@ -62,16 +80,15 @@ export const POST: APIRoute = async ({ params, request, clientAddress }) => {
   const suspicious = (freeText.match(URL_RE)?.length ?? 0) > 2 || /<a\s|\[url=/i.test(freeText);
 
   // 7. Deliver.
-  consumeToken(body._token as string);
+  consumeToken(token);
+  await deps.nonceStore?.consume(nonce);
   const submission = newSubmission(form, result.values, suspicious);
   try {
-    const outcome = await deliver(submission);
+    const outcome = await deps.deliver(submission);
     log('info', 'form submitted', { form, ref: submission.id, outcome });
     return json({ ok: true, ref: submission.id });
   } catch (e) {
     log('error', 'delivery and outbox both failed', { form, ref: submission.id, error: (e as Error).message.slice(0, 200) });
     return json({ error: 'delivery_failed' }, 503);
   }
-};
-
-export const ALL: APIRoute = () => json({ error: 'method_not_allowed' }, 405, { Allow: 'POST' });
+}

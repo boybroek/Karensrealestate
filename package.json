@@ -16,7 +16,10 @@
     "test:e2e": "node tests/e2e/run.mjs",
     "launch-check": "node scripts/launch-check.mjs",
     "demo": "node scripts/demo.mjs",
-    "concept": "node scripts/build-concept.mjs"
+    "concept": "node scripts/build-concept.mjs",
+    "build:cf": "node scripts/build-cf.mjs",
+    "cf:dev": "npm run build:cf && wrangler dev",
+    "cf:deploy": "npm run build:cf && wrangler deploy"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.12",

@@ -1,0 +1,10 @@
+# Local settings for `npm run cf:dev` (wrangler dev). Copy to .dev.vars (never commit it).
+# Overrides the "vars" in wrangler.jsonc.
+NODE_ENV=development
+SITE_URL=http://localhost:8787
+CANONICAL_HOST=
+FORM_SECRET=local-dev-secret-local-dev-secret-000001
+# kv = store e-mails in local KV (key devmail:...) instead of sending them
+MAIL_TRANSPORT=kv
+# To really send via Resend locally: remove MAIL_TRANSPORT and set
+# RESEND_API_KEY=re_...

@@ -86,6 +86,24 @@ npm ci --omit=dev
 NODE_ENV=production node server.mjs     # via systemd/pm2, achter Caddy/nginx
 ```
 
+### Optie C — Cloudflare Worker
+Eén Worker serveert de statische site (`dist/`) en de formulier-API. De code staat in [`worker/`](worker/), de instellingen in [`wrangler.jsonc`](wrangler.jsonc). Er is geen server of Docker nodig, en Cloudflare regelt HTTPS.
+
+Verschillen met de Node-versie:
+- **E-mail** gaat via de HTTP-API van [Resend](https://resend.com), omdat Workers geen SMTP kunnen gebruiken. Verifieer het afzenderdomein van `MAIL_FROM` in Resend (SPF/DKIM).
+- **Outbox en eenmalige tokens** staan in Workers KV (`KRE_KV`). Een cron-trigger probeert mislukte aanvragen elke 5 minuten opnieuw.
+- **Rate limiting** gebeurt per Worker-instantie in het geheugen. Zet voor extra bescherming een WAF-rate-limitregel op `/api/forms/*` in het Cloudflare-dashboard.
+
+```bash
+wrangler login
+wrangler secret put FORM_SECRET        # openssl rand -hex 32
+wrangler secret put RESEND_API_KEY
+npm run cf:deploy                      # bouwt met DEPLOY_TARGET=cloudflare en deployt
+```
+Pas eerst `MAIL_TO`, `MAIL_FROM` en het domein aan in `vars` in `wrangler.jsonc`. Zet het eigen domein aan via `routes`; dat staat als voorbeeld in hetzelfde bestand. Tot dan draait de site op `karensrealestate.<account>.workers.dev`.
+
+Lokaal testen: kopieer `.dev.vars.example` naar `.dev.vars` en voer `npm run cf:dev` uit → http://localhost:8787. De e-mails komen dan in lokale KV (`devmail:…`) in plaats van verstuurd te worden.
+
 ### DNS en e-mail
 - `A`/`AAAA`-records voor `karensrealestate.nl` en `www` wijzen naar de server.
 - Voeg voor de afzender van `MAIL_FROM` een **SPF**- en **DKIM**-record toe. Zonder deze records komen de notificaties mogelijk in de spam.

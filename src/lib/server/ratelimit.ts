@@ -26,4 +26,8 @@ export function hit({ key, max, windowMs }: Limit, now = Date.now()): number {
 
 export function resetRateLimits() { buckets.clear(); }
 
-setInterval(() => { const now = Date.now(); for (const [k, b] of buckets) if (b.reset < now) buckets.delete(k); }, 10 * 60 * 1000).unref();
+// Periodic cleanup, only in Node: Cloudflare Workers forbid timers in the global scope
+// (there an isolate is short-lived and the size check in hit() is enough).
+if (globalThis.navigator?.userAgent !== 'Cloudflare-Workers') {
+  setInterval(() => { const now = Date.now(); for (const [k, b] of buckets) if (b.reset < now) buckets.delete(k); }, 10 * 60 * 1000).unref();
+}

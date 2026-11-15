@@ -1,0 +1,45 @@
+// Cloudflare Worker: static site + form API. See README §4, option C.
+// Secrets (never in this file):  wrangler secret put FORM_SECRET
+//                                wrangler secret put RESEND_API_KEY
+//                                wrangler secret put FORMS_WEBHOOK_SECRET   (optional)
+{
+  "name": "karensrealestate",
+  "main": "worker/index.ts",
+  "compatibility_date": "2025-09-15",
+  // node:crypto + process.env (vars and secrets are exposed as process.env)
+  "compatibility_flags": ["nodejs_compat"],
+
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    // The Worker runs first for every request, so it can add security headers and redirects.
+    "run_worker_first": true,
+    "not_found_handling": "404-page"
+  },
+
+  // Outbox for undeliverable submissions + used form tokens.
+  // Wrangler creates this namespace automatically on the first deploy.
+  "kv_namespaces": [{ "binding": "KRE_KV" }],
+
+  // Retry the outbox every 5 minutes.
+  "triggers": { "crons": ["*/5 * * * *"] },
+
+  "observability": { "enabled": true },
+
+  "vars": {
+    "NODE_ENV": "production",
+    "SITE_URL": "https://www.karensrealestate.nl",
+    "CANONICAL_HOST": "www.karensrealestate.nl",
+    "ALLOWED_ORIGINS": "https://karensrealestate.nl",
+    "MAIL_FROM": "Website Karens Real Estate <website@karensrealestate.nl>",
+    "MAIL_TO": "info@karensrealestate.nl",
+    "FORM_RATE_LIMIT": "5",
+    "OUTBOX_RETENTION_DAYS": "14"
+  }
+
+  // Custom domain (once the domain is on Cloudflare), e.g.:
+  // "routes": [
+  //   { "pattern": "www.karensrealestate.nl", "custom_domain": true },
+  //   { "pattern": "karensrealestate.nl", "custom_domain": true }
+  // ]
+}

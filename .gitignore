@@ -5,6 +5,8 @@ data/
 .env
 .env.*
 !.env.example
+.dev.vars
+.wrangler/
 test-results/
 *.log
 concept-dist/

@@ -1,12 +1,13 @@
-import { createHmac, randomUUID } from 'node:crypto';
+import { createHmac } from 'node:crypto';
 import { mkdir, readdir, readFile, rename, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import nodemailer, { type Transporter } from 'nodemailer';
-import type { FormId } from '../forms/schema.ts';
-import type { Value } from '../forms/validate.ts';
 import { config } from './config.ts';
 import { buildEmail } from './email.ts';
 import { log } from './log.ts';
+import type { OutboxRecord, SinkName, Submission } from './submission.ts';
+
+export { newSubmission, type Submission } from './submission.ts';
 
 /**
  * Delivery pipeline. A submission is handed to every configured "sink":
@@ -15,17 +16,8 @@ import { log } from './log.ts';
  * If a sink fails, the submission is written to an outbox on disk (permissions 0600)
  * and retried every 5 minutes. Outbox files are deleted as soon as delivery succeeds,
  * and after OUTBOX_RETENTION_DAYS at the latest. Nothing is stored when delivery works.
+ * (The Cloudflare Worker has its own variant of this in worker/deliver.ts.)
  */
-export interface Submission {
-  id: string;
-  form: FormId;
-  receivedAt: string;
-  values: Record<string, Value>;
-  suspicious: boolean;
-}
-
-type SinkName = 'email' | 'webhook';
-interface OutboxRecord { submission: Submission; pending: SinkName[]; attempts: number }
 
 let transporter: Transporter | null = null;
 function getTransport(): Transporter {
@@ -99,10 +91,6 @@ async function writeOutbox(rec: OutboxRecord) {
   const file = join(dir, `${rec.submission.id}.json`);
   await writeFile(file + '.tmp', JSON.stringify(rec), { mode: 0o600 });
   await rename(file + '.tmp', file);
-}
-
-export function newSubmission(form: FormId, values: Record<string, Value>, suspicious: boolean): Submission {
-  return { id: randomUUID().slice(0, 8), form, receivedAt: new Date().toISOString(), values, suspicious };
 }
 
 /** Delivers a submission. Resolves to 'sent' or 'queued'; throws only if it could neither be sent nor queued. */
