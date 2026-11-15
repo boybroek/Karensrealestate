@@ -55,7 +55,7 @@ test('failed SMTP delivery is queued in the outbox (0600) and retried', async ()
   const files = await readdir(join(dir, 'outbox'));
   assert.deepEqual(files, [`${s.id}.json`]);
   const st = await stat(join(dir, 'outbox', files[0]));
-  assert.equal(st.mode & 0o777, 0o600);
+  if (process.platform !== 'win32') assert.equal(st.mode & 0o777, 0o600); // Windows kent geen POSIX-rechten
   const rec = JSON.parse(await readFile(join(dir, 'outbox', files[0]), 'utf8'));
   assert.deepEqual(rec.pending, ['email']);
 
