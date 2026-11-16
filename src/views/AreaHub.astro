@@ -1,0 +1,72 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { type Lang, path, t } from '../i18n/index.ts';
+import { AREAS, areaPath, type Area } from '../content/areas.ts';
+import { getListings } from '../content/listings.ts';
+import { matchesArea } from '../content/areas.ts';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const d = t(lang);
+const a = d.area;
+const listings = await getListings();
+const count = (area: Area) => listings.filter((l) => matchesArea(area, l)).length;
+const groups = [
+  { title: lang === 'nl' ? 'Wijken in Den Haag' : 'Neighbourhoods in The Hague', items: AREAS.filter((x) => x.kind === 'wijk') },
+  { title: lang === 'nl' ? 'In de omgeving' : 'Around The Hague', items: AREAS.filter((x) => x.kind === 'plaats') },
+];
+const url = new URL(path('werkgebied', lang), Astro.site).href;
+const schema = [{
+  '@type': 'ItemList',
+  '@id': `${url}#areas`,
+  itemListElement: AREAS.map((x, i) => ({ '@type': 'ListItem', position: i + 1, name: x.name[lang], url: new URL(areaPath(x.slug, lang), Astro.site).href })),
+}];
+---
+<BaseLayout lang={lang} page="werkgebied" schema={schema}>
+  <section class="bg-mist">
+    <div class="container page-hero">
+      <p class="eyebrow rise">{a.hubEy}</p>
+      <h1 class="display rise rise-1">{a.hubT}</h1>
+      <p class="lead page-hero__p rise rise-2">{a.hubP}</p>
+    </div>
+  </section>
+
+  {groups.map((g, gi) => (
+    <section class="container section hub" aria-labelledby={`hub-${gi}`}>
+      <h2 class="h2 h2--sm" id={`hub-${gi}`} data-reveal="0">{g.title}</h2>
+      <ul class="hub__list" role="list">
+        {g.items.map((x, i) => (
+          <li data-reveal={(i % 3) * 80}>
+            <a href={areaPath(x.slug, lang)}>
+              <span class="hub__name">{x.name[lang]}</span>
+              <span class="hub__tag">{x.tagline[lang]}</span>
+              <span class="hub__more">
+                {count(x) > 0 && <span class="hub__count">{count(x)} {count(x) === 1 ? d.aanbod.home1 : d.aanbod.homeN}</span>}
+                <span>{a.more} {x.name[lang]} →</span>
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  ))}
+
+  <section class="container section">
+    <CtaBand title={d.aanbod.abMiss} text={d.aanbod.abMissP} href={`${path('aanhuur', lang)}#zoekopdracht`} label={d.home.startSearch} />
+  </section>
+</BaseLayout>
+
+<style>
+  .page-hero { padding-top: clamp(40px, 6vw, 88px); padding-bottom: clamp(56px, 7vw, 96px); }
+  .page-hero .eyebrow { margin-bottom: 24px; }
+  .page-hero__p { color: var(--muted-2); max-width: 720px; }
+  .hub + .hub { padding-top: 0; }
+  .hub__list { list-style: none; margin: 32px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 20px; }
+  .hub__list a { display: flex; flex-direction: column; gap: 8px; height: 100%; padding: 26px 26px 22px; border: 1px solid var(--border); border-radius: var(--radius); background: #fff; color: inherit; transition: border-color .25s, transform .3s var(--ease), box-shadow .3s var(--ease); }
+  .hub__list a:hover { border-color: var(--navy); transform: translateY(-4px); box-shadow: 0 20px 40px rgba(2, 31, 54, .08); }
+  .hub__name { font-family: var(--font-serif); font-size: 26px; color: var(--navy); line-height: 1.15; }
+  .hub__tag { font-size: 15px; color: var(--muted); line-height: 1.55; flex: 1; }
+  .hub__more { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 10px; font-size: 14px; font-weight: 600; color: var(--navy); }
+  .hub__count { color: var(--muted-2); font-weight: 500; }
+</style>

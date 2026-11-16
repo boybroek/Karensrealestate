@@ -6,6 +6,7 @@ import { type Lang, path, t } from '../i18n/index.ts';
 import { getListings } from '../content/listings.ts';
 import { site } from '../content/site.ts';
 import { listingsSchema } from '../lib/seo.ts';
+import { AREAS, areaPath } from '../content/areas.ts';
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
@@ -44,10 +45,11 @@ const schema = listings.length ? [listingsSchema(pageUrl, listings)] : [];
         <p class="body">{a.areasP}</p>
       </div>
       <ul class="ab-areas" role="list">
-        {a.areas.map(([name, text], i) => (
-          <li data-reveal={(i % 3) * 80}><h3>{name}</h3><p>{text}</p></li>
+        {AREAS.map((area, i) => (
+          <li data-reveal={(i % 3) * 80}><h3><a href={areaPath(area.slug, lang)}>{area.name[lang]} →</a></h3><p>{area.tagline[lang]}</p></li>
         ))}
       </ul>
+      <p class="ab-areas__all"><a class="link-underline" href={path('werkgebied', lang)}>{d.area.allAreas} →</a></p>
     </div>
   </section>
 </BaseLayout>
@@ -62,6 +64,9 @@ const schema = listings.length ? [listingsSchema(pageUrl, listings)] : [];
   .ab-empty__p { font-size: 17px; line-height: 1.65; color: var(--muted); max-width: 640px; margin-bottom: 28px; }
   .ab-empty__ctas { display: flex; gap: 12px; flex-wrap: wrap; }
   .ab-areas__head { max-width: 720px; margin-bottom: 44px; }
+  .ab-areas h3 a { color: inherit; }
+  .ab-areas h3 a:hover { color: var(--blue); }
+  .ab-areas__all { margin-top: 36px; }
   .ab-areas__head .h2 { margin-bottom: 16px; }
   .ab-areas { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 28px 32px; list-style: none; margin: 0; padding: 0; }
   .ab-areas li { border-top: 2px solid var(--navy); padding-top: 18px; }

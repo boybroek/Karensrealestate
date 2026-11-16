@@ -14,6 +14,7 @@ export const ROUTES = {
   contact: { nl: '/contact/', en: '/en/contact/' },
   privacy: { nl: '/privacyverklaring/', en: '/en/privacy-statement/' },
   cookies: { nl: '/cookiebeleid/', en: '/en/cookie-policy/' },
+  werkgebied: { nl: '/werkgebied/', en: '/en/areas/' },
 } as const satisfies Record<string, Record<Lang, string>>;
 
 export type PageKey = keyof typeof ROUTES;
@@ -26,5 +27,5 @@ export const NAV: PageKey[] = ['home', 'aanhuur', 'verhuren', 'aanbod', 'over', 
 /** Pages that should not appear in the sitemap. */
 export const SITEMAP_PRIORITY: Partial<Record<PageKey, number>> = {
   home: 1.0, aanhuur: 0.9, verhuren: 0.9, beheer: 0.8, expats: 0.8, aanbod: 0.8, over: 0.6, contact: 0.7,
-  privacy: 0.2, cookies: 0.2,
+  privacy: 0.2, cookies: 0.2, werkgebied: 0.7,
 };

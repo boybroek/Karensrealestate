@@ -163,6 +163,12 @@ function initForm(form: HTMLFormElement) {
     const abroad = form.querySelector<HTMLSelectElement>('select[name="abroad"]');
     if (abroad) abroad.value = 'yes';
   }
+  // From an area page: ?wijk=Statenkwartier fills in the preferred neighbourhood(s).
+  const wijk = qs.get('wijk');
+  if (id === 'zoekopdracht' && wijk) {
+    const field = form.querySelector<HTMLInputElement>('input[name="neighbourhoods"]');
+    if (field && !field.value) field.value = wijk.slice(0, 100);
+  }
   if (id === 'contact') {
     const topic = qs.get('onderwerp');
     const sel = form.querySelector<HTMLSelectElement>('select[name="topic"]');

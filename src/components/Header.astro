@@ -5,10 +5,15 @@ import Flag from './Flag.astro';
 import { type Lang, type PageKey, LANGS, NAV, alternates, path, t } from '../i18n/index.ts';
 import { site } from '../content/site.ts';
 
-interface Props { lang: Lang; page: PageKey | null }
+interface Props {
+  lang: Lang;
+  page: PageKey | null;
+  /** URL of this page per language, for the language switch (defaults to the page key's routes). */
+  alts?: Record<Lang, string>;
+}
 const { lang, page } = Astro.props;
 const d = t(lang);
-const alts = page ? alternates(page) : { nl: '/', en: '/en/' };
+const alts = Astro.props.alts ?? (page ? alternates(page) : { nl: '/', en: '/en/' });
 const current = (k: PageKey) => (k === page ? 'page' : undefined);
 ---
 <header class="site-header">

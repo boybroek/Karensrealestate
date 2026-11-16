@@ -22,22 +22,32 @@ interface Props {
   /** Show the visible breadcrumb under the header (default: all pages except home). */
   showCrumbs?: boolean;
   crumbsOnNavy?: boolean;
+  /**
+   * For pages outside ROUTES (e.g. the area pages): URL per language for hreflang and the
+   * language switch, and the breadcrumb trail. With `alternates` set, a page without a
+   * page key is indexable.
+   */
+  alternates?: Record<Lang, string>;
+  crumbs?: Crumb[];
+  /** Highlight this item in the navigation (e.g. 'werkgebied' for area pages). */
+  navKey?: PageKey;
 }
 
-const { lang, page, schema = [], showCrumbs = page !== null && page !== 'home', crumbsOnNavy = false } = Astro.props;
+const { lang, page, schema = [], crumbsOnNavy = false } = Astro.props;
 const d = t(lang);
 const seo = page ? d.seo[page] : d.seo.notFound;
 const title = (Astro.props.title ?? seo.title) + (CONCEPT ? d.concept.titleSuffix : '');
 const description = Astro.props.description ?? seo.description;
-const noindex = Astro.props.noindex || DEMO || page === null;
+const noindex = Astro.props.noindex || DEMO || (page === null && !Astro.props.alternates);
 // Google Search Console "HTML tag" verification (optional; DNS verification via Cloudflare works too).
 const googleVerification = site.googleSiteVerification;
 
 const origin = Astro.site!.origin;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
-const alts = page ? alternates(page) : null;
+const alts = Astro.props.alternates ?? (page ? alternates(page) : null);
 const ogImage = `${origin}/og/og-default.jpg`;
-const crumbs: Crumb[] = page ? crumbsFor(lang, page) : [];
+const crumbs: Crumb[] = Astro.props.crumbs ?? (page ? crumbsFor(lang, page) : []);
+const showCrumbs = Astro.props.showCrumbs ?? (crumbs.length > 1);
 
 const graph = {
   '@context': 'https://schema.org',
@@ -91,7 +101,7 @@ const graph = {
       <div class="concept-banner" role="note"><strong>{d.concept.banner}</strong> <span>{d.concept.bannerDetail}</span></div>
     ) : DEMO && <div class="demo-banner" role="note">{d.demo}</div>}
     {CONCEPT && <div class="concept-badge" aria-hidden="true">{d.concept.badge}</div>}
-    <Header lang={lang} page={page} />
+    <Header lang={lang} page={Astro.props.navKey ?? page} alts={alts ?? undefined} />
     <main id="main" tabindex="-1">
       {showCrumbs && crumbs.length > 1 && <Breadcrumb crumbs={crumbs} label={d.common.breadcrumb} onNavy={crumbsOnNavy} />}
       <slot />

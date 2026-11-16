@@ -23,6 +23,7 @@ const year = new Date().getFullYear();
     <nav class="site-footer__col site-footer__col--menu" aria-labelledby="ft-services">
       <p class="site-footer__title" id="ft-services">{d.footer.services}</p>
       {services.map((k) => <a href={path(k, lang)}>{d.home.services.find((s) => s.key === k)?.t}</a>)}
+      <a href={path('werkgebied', lang)}>{d.nav.werkgebied}</a>
     </nav>
     <div class="site-footer__col">
       <p class="site-footer__title">{d.footer.contact}</p>

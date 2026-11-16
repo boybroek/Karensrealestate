@@ -5,7 +5,7 @@ const en: Dict = {
   langName: 'English',
   nav: {
     home: 'Home', aanhuur: 'Find a home', verhuren: 'Let your home', beheer: 'Property management', expats: 'Expats',
-    aanbod: 'Listings', over: 'About us', contact: 'Contact', privacy: 'Privacy statement', cookies: 'Cookie policy',
+    aanbod: 'Listings', over: 'About us', contact: 'Contact', privacy: 'Privacy statement', cookies: 'Cookie policy', werkgebied: 'Areas',
   },
   common: {
     ctaLet: 'Let my home', ctaFind: 'I’m looking for a home',
@@ -28,6 +28,7 @@ const en: Dict = {
     contact: { title: 'Contact Karens Real Estate – The Hague', description: 'Get in touch with Karens Real Estate in The Hague. Call +31 6 24 50 61 05, e-mail info@karensrealestate.nl or send a message. Visits by appointment at Westduinweg 90.' },
     privacy: { title: 'Privacy Statement | Karens Real Estate', description: 'How Karens Real Estate handles your personal data: what we process, why, how long we keep it and what rights you have.' },
     cookies: { title: 'Cookie Policy | Karens Real Estate', description: 'Karens Real Estate does not use tracking or marketing cookies. Read which external services the website uses and what this means for your privacy.' },
+    werkgebied: { title: 'Areas: renting in The Hague and surroundings | Karens Real Estate', description: 'Rental agent in The Hague and surroundings: Statenkwartier, City Centre, Scheveningen, Benoordenhout, Voorburg, Rijswijk and more. What living in each area is like.' },
     notFound: { title: 'Page not found | Karens Real Estate', description: 'This page does not exist (anymore).' },
   },
   home: {
@@ -217,6 +218,18 @@ const en: Dict = {
   footer: {
     ftTag: 'Personal guidance in finding, renting and letting a home in The Hague.',
     menu: 'MENU', services: 'SERVICES', contact: 'CONTACT', partners: 'PARTNERS', kvk: 'CoC', vat: 'VAT',
+  },
+  area: {
+    hubEy: 'Areas', hubT: 'Renting in The Hague and surroundings',
+    hubP: 'We work throughout The Hague and the surrounding municipalities. Every neighbourhood has its own character, from monumental townhouses to apartments by the sea. Read what living in each area is like, or let us search for you.',
+    ey: 'Area', inCity: 'in', more: 'Read more about',
+    charT: 'Character of the area', housingT: 'Homes', livingT: 'Living and amenities', accessT: 'Getting around', forT: 'A good fit for',
+    listT: 'Current listings in {name}', listNone: 'We currently have no home in {name} online. Many homes are let before they are advertised: with a search request you are first in line.',
+    searchCta: 'Find a home in {name}', searchCtaP: 'Tell us what you are looking for. We actively search in {name}, including homes that are not advertised.',
+    letT: 'Letting your home in {name}?', letP: 'We advise on the rent, present your home and find a reliable tenant.', letCta: 'Register your home',
+    mapT: 'Map of {name}', mapLoad: 'Load map', mapNote: 'The map is loaded from OpenStreetMap.',
+    nearT: 'Nearby areas', allAreas: 'All areas',
+    note: 'This page gives a general impression of the area. Feel free to ask us about the current situation and rents.',
   },
   notFound: { ey: '404', t: 'This page does not exist (anymore).', p: 'The page may have moved. Go to the homepage or get in touch with us.', home: 'Go to the homepage', contact: 'Contact' },
   demo: 'DEMO CONTENT – sample listings and reviews, not for publication',

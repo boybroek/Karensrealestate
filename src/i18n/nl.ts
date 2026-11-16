@@ -7,7 +7,7 @@ const nl = {
   langName: 'Nederlands',
   nav: {
     home: 'Home', aanhuur: 'Aanhuur', verhuren: 'Verhuren', beheer: 'Vastgoedbeheer', expats: 'Expats',
-    aanbod: 'Woningaanbod', over: 'Over ons', contact: 'Contact', privacy: 'Privacyverklaring', cookies: 'Cookiebeleid',
+    aanbod: 'Woningaanbod', over: 'Over ons', contact: 'Contact', privacy: 'Privacyverklaring', cookies: 'Cookiebeleid', werkgebied: 'Werkgebied',
   },
   common: {
     ctaLet: 'Woning verhuren', ctaFind: 'Ik zoek een woning',
@@ -30,6 +30,7 @@ const nl = {
     contact: { title: 'Contact – Karens Real Estate, makelaar Den Haag', description: 'Neem contact op met Karens Real Estate in Den Haag. Bel 06 - 24 50 61 05, mail info@karensrealestate.nl of stuur een bericht. Bezoek op afspraak aan de Westduinweg 90.' },
     privacy: { title: 'Privacyverklaring | Karens Real Estate', description: 'Lees hoe Karens Real Estate omgaat met je persoonsgegevens: welke gegevens we verwerken, waarom, hoe lang we ze bewaren en welke rechten je hebt.' },
     cookies: { title: 'Cookiebeleid | Karens Real Estate', description: 'Karens Real Estate plaatst geen tracking- of marketingcookies. Lees welke externe diensten de website gebruikt en wat dat voor je privacy betekent.' },
+    werkgebied: { title: 'Werkgebied: huren in Den Haag en omgeving | Karens Real Estate', description: 'Huurmakelaar in Den Haag en omgeving: Statenkwartier, Centrum, Scheveningen, Benoordenhout, Voorburg, Rijswijk en meer. Lees per wijk hoe het is om er te wonen.' },
     notFound: { title: 'Pagina niet gevonden | Karens Real Estate', description: 'Deze pagina bestaat niet (meer).' },
   },
   home: {
@@ -219,6 +220,18 @@ const nl = {
   footer: {
     ftTag: 'Persoonlijke begeleiding bij het vinden, huren en verhuren van een woning in Den Haag.',
     menu: 'MENU', services: 'DIENSTEN', contact: 'CONTACT', partners: 'PARTNERS', kvk: 'KvK', vat: 'btw',
+  },
+  area: {
+    hubEy: 'Werkgebied', hubT: 'Huren in Den Haag en omgeving',
+    hubP: 'We zijn actief in heel Den Haag en de gemeenten eromheen. Elke wijk heeft een eigen karakter: van monumentale herenhuizen tot appartementen aan zee. Lees per wijk hoe het is om er te wonen, of laat ons gericht voor je zoeken.',
+    ey: 'Werkgebied', inCity: 'in', more: 'Lees meer over',
+    charT: 'Karakter van de wijk', housingT: 'Woningen', livingT: 'Wonen en voorzieningen', accessT: 'Bereikbaarheid', forT: 'Past goed bij',
+    listT: 'Actueel aanbod in {name}', listNone: 'Op dit moment hebben we geen woning in {name} online staan. Veel woningen verhuren we voordat ze online komen: met een zoekopdracht ben je als eerste aan de beurt.',
+    searchCta: 'Zoek een woning in {name}', searchCtaP: 'Vertel ons wat je zoekt. We zoeken actief in {name}, ook buiten het openbare aanbod.',
+    letT: 'Woning verhuren in {name}?', letP: 'We adviseren over de huurprijs, presenteren je woning en zoeken een betrouwbare huurder.', letCta: 'Woning aanmelden',
+    mapT: 'Kaart van {name}', mapLoad: 'Kaart laden', mapNote: 'De kaart wordt geladen van OpenStreetMap.',
+    nearT: 'Wijken in de buurt', allAreas: 'Alle wijken',
+    note: 'De informatie op deze pagina is een algemene schets van de wijk. Vraag ons gerust naar de actuele situatie en huurprijzen.',
   },
   notFound: { ey: '404', t: 'Deze pagina bestaat niet (meer).', p: 'Misschien is de pagina verplaatst. Ga naar de homepage of neem contact met ons op.', home: 'Naar de homepage', contact: 'Contact' },
   demo: 'DEMO-INHOUD – voorbeeldwoningen en -ervaringen, niet voor publicatie',

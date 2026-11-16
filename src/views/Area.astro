@@ -1,0 +1,168 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Faq from '../components/Faq.astro';
+import CtaBand from '../components/CtaBand.astro';
+import ListingsGrid from '../components/ListingsGrid.astro';
+import { type Lang, fill, path, t } from '../i18n/index.ts';
+import { AREA_BY_SLUG, areaPath, areaPlace, areaRef, matchesArea, type Area } from '../content/areas.ts';
+import { getListings, CONCEPT } from '../content/listings.ts';
+import { osmEmbed, osmLink, site } from '../content/site.ts';
+import { faqPage, type Crumb } from '../lib/seo.ts';
+
+interface Props { lang: Lang; area: Area }
+const { lang, area } = Astro.props;
+const d = t(lang);
+const a = d.area;
+const name = area.name[lang];
+const ref = areaRef(area, lang);
+const url = new URL(areaPath(area.slug, lang), Astro.site).href;
+const alternates = { nl: areaPath(area.slug, 'nl'), en: areaPath(area.slug, 'en') };
+const crumbs: Crumb[] = [
+  { name: d.nav.home, href: path('home', lang) },
+  { name: d.nav.werkgebied, href: path('werkgebied', lang) },
+  { name, href: areaPath(area.slug, lang) },
+];
+const listings = (await getListings()).filter((l) => matchesArea(area, l));
+const searchHref = `${path('aanhuur', lang)}?wijk=${encodeURIComponent(name)}#zoekopdracht`;
+const near = area.near.map((s) => AREA_BY_SLUG.get(s)).filter((x): x is Area => !!x);
+const h1 = lang === 'nl' ? `Huurwoning in ${ref}` : `Renting in ${ref}`;
+const dy = area.zoom * 0.6;
+const schema = [areaPlace(area, url, lang), faqPage(url, area.faq[lang])];
+---
+<BaseLayout lang={lang} page={null} navKey="werkgebied" title={area.seo.title[lang]} description={area.seo.description[lang]} alternates={alternates} crumbs={crumbs} schema={schema}>
+  <section class="bg-mist">
+    <div class="container page-hero">
+      <p class="eyebrow rise">{a.ey} · {area.kind === 'wijk' ? d.common.city : area.municipality}</p>
+      <h1 class="display rise rise-1">{h1}</h1>
+      <p class="lead page-hero__p rise rise-2">{area.intro[lang]}</p>
+      <div class="page-hero__ctas rise rise-3">
+        <a class="btn btn--primary btn--lg" href={searchHref}>{fill(a.searchCta, { name: ref })}</a>
+        <a class="page-hero__call" href={`tel:${site.phone.e164}`}>{d.common.orCall}</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="container section grid-2 area-main">
+    <div class="prose area-text" data-reveal="0">
+      <h2>{a.charT}</h2>
+      <p>{area.character[lang]}</p>
+      <h2>{a.housingT}</h2>
+      <p>{area.housing[lang]}</p>
+      <h2>{a.livingT}</h2>
+      <p>{area.living[lang]}</p>
+      <h2>{a.accessT}</h2>
+      <p>{area.access[lang]}</p>
+    </div>
+    <aside class="area-side" data-reveal="80">
+      <div class="area-map" data-osm={osmEmbed(area.center.lat, area.center.lon, area.zoom, dy)} data-title={fill(a.mapT, { name: ref })}>
+        {CONCEPT ? (
+          <a class="area-map__btn" href={osmLink(area.center.lat, area.center.lon)} target="_blank" rel="noopener"><span>{d.concept.mapOpen}</span></a>
+        ) : (
+          <button type="button" class="area-map__btn" data-load-map>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
+            <span>{a.mapLoad}</span>
+            <small>{a.mapNote}</small>
+          </button>
+        )}
+      </div>
+      <div class="area-fit">
+        <p class="eyebrow">{a.forT}</p>
+        <ul role="list">
+          {area.goodFor[lang].map((g) => <li>{g}</li>)}
+        </ul>
+      </div>
+    </aside>
+  </section>
+
+  <section class="bg-paper" aria-labelledby="area-list-title">
+    <div class="container section">
+      <h2 class="h2 h2--sm area-list__t" id="area-list-title" data-reveal="0">{fill(a.listT, { name: ref })}</h2>
+      {listings.length > 0
+        ? <ListingsGrid listings={listings} lang={lang} showAvailability headingLevel="h3" />
+        : <p class="body area-list__none" data-reveal="40">{fill(a.listNone, { name: ref })}</p>}
+      <div class="area-cta">
+        <CtaBand title={fill(a.searchCta, { name: ref })} text={fill(a.searchCtaP, { name: ref })} href={searchHref} label={d.home.startSearch} />
+      </div>
+    </div>
+  </section>
+
+  <section class="container section grid-2" aria-labelledby="area-let-title">
+    <div data-reveal="0">
+      <p class="eyebrow">{d.nav.verhuren}</p>
+      <h2 class="h2 h2--sm" id="area-let-title">{fill(a.letT, { name: ref })}</h2>
+    </div>
+    <div data-reveal="80">
+      <p class="body">{a.letP}</p>
+      <p class="area-link"><a class="link-underline" href={`${path('verhuren', lang)}#aanmelden`}>{a.letCta} →</a></p>
+    </div>
+  </section>
+
+  <Faq items={area.faq[lang]} eyebrow={d.common.faqEy} bg="mist" />
+
+  <nav class="container section area-near" aria-labelledby="area-near-title">
+    <h2 class="h2 h2--sm" id="area-near-title">{a.nearT}</h2>
+    <ul class="area-near__list" role="list">
+      {near.map((n) => (
+        <li>
+          <a href={areaPath(n.slug, lang)}>
+            <span class="area-near__name">{n.name[lang]}</span>
+            <span class="area-near__tag">{n.tagline[lang]}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+    <p class="area-link"><a class="link-underline" href={path('werkgebied', lang)}>{a.allAreas} →</a></p>
+    <p class="area-note">{a.note}</p>
+  </nav>
+</BaseLayout>
+
+<script>
+  // Load the OpenStreetMap embed only on request (privacy + performance).
+  const box = document.querySelector<HTMLElement>('[data-osm]');
+  box?.querySelector('[data-load-map]')?.addEventListener('click', () => {
+    const f = document.createElement('iframe');
+    f.src = box.dataset.osm!;
+    f.title = box.dataset.title ?? '';
+    f.referrerPolicy = 'no-referrer';
+    box.replaceChildren(f);
+  });
+</script>
+
+<style>
+  .page-hero { padding-top: clamp(40px, 6vw, 88px); padding-bottom: clamp(56px, 7vw, 96px); }
+  .page-hero .eyebrow { margin-bottom: 24px; }
+  .page-hero .display { max-width: 980px; }
+  .page-hero__p { color: var(--muted-2); max-width: 680px; margin-bottom: 32px; }
+  .page-hero__ctas { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; }
+  .page-hero__call { font-size: 15px; font-weight: 600; }
+
+  .area-main { align-items: start; }
+  .area-text h2 { margin-top: 0; }
+  .area-text h2 + p { margin-bottom: 36px; }
+  .area-side { display: flex; flex-direction: column; gap: 28px; position: sticky; top: 110px; }
+  .area-map { border-radius: var(--radius); overflow: hidden; position: relative; aspect-ratio: 4 / 3; background: var(--mist) repeating-linear-gradient(135deg, #e4eaf0 0 12px, #dbe3eb 12px 24px); }
+  .area-map :global(iframe) { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .area-map__btn { text-decoration: none; position: absolute; inset: 0; width: 100%; border: 0; background: transparent; color: var(--navy); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; font-weight: 600; font-size: 16px; }
+  .area-map__btn span { background: #fff; padding: 10px 18px; border-radius: 999px; box-shadow: 0 6px 20px rgba(2, 31, 54, .12); transition: transform .25s var(--ease); }
+  .area-map__btn:hover span { transform: translateY(-2px); }
+  .area-map__btn small { font-weight: 400; font-size: 13px; color: var(--muted-2); }
+  .area-fit { background: var(--mist); border-radius: var(--radius); padding: 24px 26px; }
+  .area-fit .eyebrow { margin-bottom: 12px; }
+  .area-fit ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+  .area-fit li { position: relative; padding-left: 22px; color: var(--navy); font-weight: 500; }
+  .area-fit li::before { content: ''; position: absolute; left: 2px; top: .55em; width: 8px; height: 8px; transform: rotate(45deg); background: var(--navy); }
+
+  .area-list__t { margin-bottom: 32px; }
+  .area-list__none { max-width: 720px; }
+  .area-cta { margin-top: 48px; }
+  .area-link { margin-top: 24px; }
+
+  .area-near__list { list-style: none; margin: 28px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 20px; }
+  .area-near__list a { display: flex; flex-direction: column; gap: 6px; height: 100%; padding: 22px 24px; border: 1px solid var(--border); border-radius: var(--radius); background: #fff; color: inherit; transition: border-color .25s, transform .3s var(--ease); }
+  .area-near__list a:hover { border-color: var(--navy); transform: translateY(-3px); }
+  .area-near__name { font-family: var(--font-serif); font-size: 22px; color: var(--navy); }
+  .area-near__tag { font-size: 15px; color: var(--muted); line-height: 1.5; }
+  .area-note { margin-top: 36px; font-size: 14px; color: var(--muted-2); max-width: 720px; }
+
+  @media (max-width: 900px) { .area-side { position: static; } }
+</style>

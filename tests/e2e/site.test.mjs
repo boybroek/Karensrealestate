@@ -14,6 +14,10 @@ const PAGES = {
   nl: ['/', '/aanhuurmakelaar-den-haag/', '/verhuurmakelaar-den-haag/', '/vastgoedbeheer-den-haag/', '/expats/', '/woningaanbod/', '/over-ons/', '/contact/', '/privacyverklaring/', '/cookiebeleid/'],
   en: ['/en/', '/en/rental-agent-the-hague/', '/en/letting-agent-the-hague/', '/en/property-management-the-hague/', '/en/expat-housing-the-hague/', '/en/rental-listings/', '/en/about-us/', '/en/contact/', '/en/privacy-statement/', '/en/cookie-policy/'],
 };
+// Area pages (src/content/areas.ts): hub + one page per neighbourhood/town, both languages.
+const AREA_SLUGS = ['statenkwartier', 'centrum', 'scheveningen', 'duinoord', 'regentessekwartier', 'archipelbuurt', 'zeeheldenkwartier', 'benoordenhout', 'bezuidenhout', 'voorburg', 'rijswijk'];
+PAGES.nl.push('/werkgebied/', ...AREA_SLUGS.map((s) => `/werkgebied/${s}/`));
+PAGES.en.push('/en/areas/', ...AREA_SLUGS.map((s) => `/en/areas/${s}/`));
 const ALL = [...PAGES.nl, ...PAGES.en];
 
 let browser;
@@ -99,7 +103,8 @@ test('no broken internal links, every page reachable', async () => {
 
 test('sitemap, robots, 404, redirects, security headers, no cookies', async () => {
   const sm = await (await fetch(BASE + '/sitemap.xml')).text();
-  assert.equal((sm.match(/<loc>/g) ?? []).length, 20);
+  assert.equal((sm.match(/<loc>/g) ?? []).length, ALL.length);
+  for (const p of ALL) assert.ok(sm.includes(`${p}</loc>`), `missing from sitemap: ${p}`);
   assert.match(sm, /hreflang="x-default"/);
   const robots = await (await fetch(BASE + '/robots.txt')).text();
   assert.match(robots, /Sitemap: .*\/sitemap\.xml/);
