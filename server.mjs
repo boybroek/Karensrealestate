@@ -64,6 +64,10 @@ const REDIRECTS = new Map(Object.entries({
   '/beheer': '/vastgoedbeheer-den-haag/', '/vastgoedbeheer': '/vastgoedbeheer-den-haag/',
   '/aanbod': '/woningaanbod/', '/over': '/over-ons/', '/over-diana': '/over-ons/', '/privacy': '/privacyverklaring/', '/cookies': '/cookiebeleid/',
   '/en/find-a-home': '/en/rental-agent-the-hague/', '/en/let-your-home': '/en/letting-agent-the-hague/', '/en/listings': '/en/rental-listings/',
+  // URLs of the previous website (eazlee), so old links and Google results keep working.
+  '/privacy-verklaring': '/privacyverklaring/', '/cookies-policy': '/cookiebeleid/',
+  '/woning-huren': '/aanhuurmakelaar-den-haag/', '/woning-verhuren': '/verhuurmakelaar-den-haag/',
+  '/woning-kopen': '/', '/woning-verkopen': '/',
   '/en/about': '/en/about-us/', '/en/expats': '/en/expat-housing-the-hague/', '/en/privacy': '/en/privacy-statement/', '/en/cookies': '/en/cookie-policy/',
 }));
 

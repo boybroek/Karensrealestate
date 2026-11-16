@@ -21,6 +21,11 @@ export const site = {
     region: 'Zuid-Holland',
     country: 'NL',
   },
+  /**
+   * Postal address, from the privacy statement on the previous website. Only shown in the
+   * privacy statement (contact for data requests). Empty string = not shown.
+   */
+  postAddress: 'Jacob Gillesstraat 26, 2582 XZ Den Haag',
   /** Used for the OpenStreetMap embed on the contact page. */
   // Exact position of Westduinweg 90 (PDOK/BAG). Also used as geo in the structured data.
   map: { lat: 52.095048, lon: 4.268594 },
