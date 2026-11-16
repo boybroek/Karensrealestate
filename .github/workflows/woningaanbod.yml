@@ -1,0 +1,89 @@
+# Keeps the listings on the website in sync with Pararius Office.
+#
+# Every 30 minutes (daytime) it reads the feed, compares it with the live site
+# (/aanbod-versie.txt) and only rebuilds + deploys to Cloudflare when something
+# changed. Does nothing until the secrets below are set, so it is safe to have now.
+#
+# Settings → Secrets and variables → Actions:
+#   Secrets:   PARARIUS_OFFICE_TOKEN   API token from Pararius Office
+#              CLOUDFLARE_API_TOKEN    Cloudflare token with "Edit Cloudflare Workers"
+#              CLOUDFLARE_ACCOUNT_ID   Cloudflare account id
+#   Variables: PARARIUS_OFFICE_URL     endpoint from the Pararius Office documentation
+#              PARARIUS_OFFICE_AUTH    optional: bearer (default) | header:<Name> | query:<param>
+#              LIVE_URL                optional: where the site runs now (default https://www.karensrealestate.nl)
+#
+# Run it by hand: Actions → "Woningaanbod bijwerken" → Run workflow (tick "force" to always deploy).
+# Instant updates: if Pararius Office can call a webhook, let it POST to
+#   https://api.github.com/repos/<owner>/<repo>/dispatches  with {"event_type":"pararius-office-update"}
+name: Woningaanbod bijwerken
+
+on:
+  schedule:
+    - cron: '*/30 5-21 * * *'   # every 30 min, 06:00–23:00 Dutch time
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'Altijd opnieuw bouwen en deployen'
+        type: boolean
+        default: false
+  repository_dispatch:
+    types: [pararius-office-update]
+
+concurrency:
+  group: woningaanbod
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PARARIUS_OFFICE_TOKEN: ${{ secrets.PARARIUS_OFFICE_TOKEN }}
+      PARARIUS_OFFICE_URL: ${{ vars.PARARIUS_OFFICE_URL }}
+      PARARIUS_OFFICE_AUTH: ${{ vars.PARARIUS_OFFICE_AUTH }}
+      LIVE_URL: ${{ vars.LIVE_URL }}
+      HAS_CLOUDFLARE: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
+    steps:
+      - name: Is de koppeling ingesteld?
+        id: gate
+        run: |
+          if [ -z "$PARARIUS_OFFICE_TOKEN" ] || [ -z "$PARARIUS_OFFICE_URL" ] || [ "$HAS_CLOUDFLARE" != "true" ]; then
+            echo "::notice::Pararius Office-koppeling nog niet actief (secrets/variables ontbreken). Niets te doen."
+            echo "active=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "active=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.gate.outputs.active == 'true'
+
+      - uses: actions/setup-node@v4
+        if: steps.gate.outputs.active == 'true'
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Afhankelijkheden installeren
+        if: steps.gate.outputs.active == 'true'
+        run: npm ci
+
+      - name: Is het aanbod gewijzigd?
+        id: check
+        if: steps.gate.outputs.active == 'true'
+        run: npm run feed:check
+
+      - name: Site bouwen
+        if: steps.gate.outputs.active == 'true' && (steps.check.outputs.changed == 'true' || inputs.force || github.event_name == 'repository_dispatch')
+        run: npm run build:cf
+
+      - name: Deployen naar Cloudflare
+        if: steps.gate.outputs.active == 'true' && (steps.check.outputs.changed == 'true' || inputs.force || github.event_name == 'repository_dispatch')
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: '4'
+          command: deploy

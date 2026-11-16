@@ -17,9 +17,9 @@
     "not_found_handling": "404-page"
   },
 
-  // Outbox for undeliverable submissions + used form tokens.
-  // Wrangler creates this namespace automatically on the first deploy.
-  "kv_namespaces": [{ "binding": "KRE_KV" }],
+  // Outbox for undeliverable submissions + used form tokens (fixed id, so deploys from
+  // GitHub Actions reuse the same namespace).
+  "kv_namespaces": [{ "binding": "KRE_KV", "id": "11b1bf2a55994fa0ab8df7622ede40d4" }],
 
   // Retry the outbox every 5 minutes.
   "triggers": { "crons": ["*/5 * * * *"] },
@@ -35,6 +35,24 @@
     "MAIL_TO": "info@karensrealestate.nl",
     "FORM_RATE_LIMIT": "5",
     "OUTBOX_RETENTION_DAYS": "14"
+  },
+
+  // Demo preview with sample listings (npm run cf:demo). Separate Worker and KV,
+  // forms are stored in KV instead of e-mailed. Vars/KV are not inherited, hence repeated.
+  "env": {
+    "demo": {
+      "name": "karensrealestate-demo",
+      "kv_namespaces": [{ "binding": "KRE_KV", "id": "e032aa76e9bd47508a07c7587eb24fd5" }],
+      "vars": {
+        "NODE_ENV": "development",
+        "MAIL_TRANSPORT": "kv",
+        "SITE_URL": "https://www.karensrealestate.nl",
+        "CANONICAL_HOST": "www.karensrealestate.nl",
+        "MAIL_TO": "demo@example.test",
+        "FORM_RATE_LIMIT": "5",
+        "OUTBOX_RETENTION_DAYS": "14"
+      }
+    }
   }
 
   // Custom domain (once the domain is on Cloudflare), e.g.:

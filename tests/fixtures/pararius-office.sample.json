@@ -1,0 +1,44 @@
+{
+  "_comment": "Voorbeeldexport om de koppeling te testen zonder token. De echte veldnamen van Pararius Office kunnen afwijken: pas dan FIELDS in src/content/sources/pararius-office.ts aan.",
+  "data": [
+    {
+      "id": "PO-1001",
+      "status": "Beschikbaar",
+      "address": { "street": "Frederik Hendriklaan", "houseNumber": "120", "postalCode": "2582BG", "city": "'s-Gravenhage" },
+      "rentPrice": "€ 1.950,-",
+      "livingArea": "78 m²",
+      "bedrooms": 2,
+      "availableFrom": "2027-01-01",
+      "publishedAt": "2026-11-14T10:00:00Z",
+      "url": "https://www.pararius.nl/appartement-te-huur/den-haag/po-1001/frederik-hendriklaan"
+    },
+    {
+      "id": "PO-1002",
+      "status": "Onder optie",
+      "address": { "street": "Prinsessegracht", "houseNumber": "18", "postalCode": "2514 AP", "city": "Den Haag" },
+      "rentPrice": 2450,
+      "livingArea": 96,
+      "bedrooms": "2",
+      "publishedAt": "2026-10-01T09:00:00Z"
+    },
+    {
+      "id": "PO-1003",
+      "status": "Verhuurd",
+      "address": { "street": "Javastraat", "houseNumber": "5", "city": "Den Haag" },
+      "rentPrice": 3100,
+      "livingArea": 140,
+      "bedrooms": 4
+    },
+    {
+      "id": "PO-1004",
+      "status": "beschikbaar",
+      "address": { "street": "Weimarstraat", "houseNumber": "210", "city": "Den Haag" },
+      "rentPrice": "1475.00",
+      "livingArea": "62",
+      "bedrooms": 1,
+      "availableFrom": "01-12-2026",
+      "publishedAt": "2026-09-20"
+    }
+  ],
+  "links": { "next": null }
+}

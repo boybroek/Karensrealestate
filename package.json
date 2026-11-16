@@ -17,14 +17,17 @@
     "launch-check": "node scripts/launch-check.mjs",
     "demo": "node scripts/demo.mjs",
     "concept": "node scripts/build-concept.mjs",
+    "feed:test": "node --experimental-strip-types scripts/feed-test.mjs",
+    "feed:check": "node --experimental-strip-types scripts/feed-check.mjs",
     "build:cf": "node scripts/build-cf.mjs",
     "cf:dev": "npm run build:cf && wrangler dev",
     "cf:deploy": "npm run build:cf && wrangler deploy",
-    "cf:demo": "node scripts/build-cf.mjs --demo && wrangler deploy --name karensrealestate-demo --var NODE_ENV:development --var MAIL_TRANSPORT:kv"
+    "cf:demo": "node scripts/build-cf.mjs --demo && wrangler deploy --env demo"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.12",
     "@types/nodemailer": "^8.0.2",
+    "fast-xml-parser": "^5.12.1",
     "playwright": "^1.65.1",
     "typescript": "^6.0.3"
   },

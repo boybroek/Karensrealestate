@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Voorbeeld van een XML-export, om te controleren dat ook XML wordt begrepen. -->
+<objects>
+  <object>
+    <id>PO-2001</id>
+    <status>Beschikbaar</status>
+    <adres>
+      <straat>Gevers Deynootweg</straat>
+      <huisnummer>50</huisnummer>
+      <postcode>2586BM</postcode>
+      <plaats>'s-Gravenhage</plaats>
+    </adres>
+    <huurprijs>2100</huurprijs>
+    <woonoppervlakte>85</woonoppervlakte>
+    <slaapkamers>2</slaapkamers>
+    <fotos>
+      <foto><url>https://example.com/fotos/2001-1.jpg</url></foto>
+      <foto><url>https://example.com/fotos/2001-2.jpg</url></foto>
+    </fotos>
+  </object>
+</objects>

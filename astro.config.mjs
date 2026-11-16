@@ -40,8 +40,10 @@ export default defineConfig({
   prefetch: false,
   devToolbar: { enabled: false },
   image: {
-    // Only local images are processed; no remote image domains are allowed.
-    domains: [],
+    // Listing photos from Pararius Office are https URLs. They are downloaded and converted
+    // at BUILD time and served from our own domain, so the strict CSP (img-src 'self') still holds.
+    // Narrow this down to the exact photo host once it is known, e.g. { protocol: 'https', hostname: '**.pararius.nl' }.
+    remotePatterns: [{ protocol: 'https' }],
   },
   vite: {
     build: { assetsInlineLimit: 0 },

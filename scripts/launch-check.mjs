@@ -15,7 +15,8 @@ for (const key of ['hero', 'over-ons', 'verhuren']) {
   (photos.some((f) => f.replace(/\.[^.]+$/, '') === key) ? ok : todo).push(`Foto "${key}" in src/assets/photos/ (nu: illustratie)`);
 }
 const listings = await read('src/content/listings.ts');
-(/const LISTINGS: Listing\[\] = \[\];/.test(listings) ? todo : ok).push('Woningaanbod (handmatig of via Pararius Office-feed)');
+if (process.env.PARARIUS_OFFICE_TOKEN && process.env.PARARIUS_OFFICE_URL) ok.push('Woningaanbod via Pararius Office (test de koppeling met `npm run feed:test`)');
+else (/const LISTINGS: Listing\[\] = \[\];/.test(listings) ? todo : ok).push('Woningaanbod: Pararius Office-token + endpoint (zie README §6) of handmatig in src/content/listings.ts');
 const reviews = await read('src/content/reviews.ts');
 (/const REVIEWS: Review\[\] = \[\];/.test(reviews) ? todo : ok).push('Echte klantervaringen in src/content/reviews.ts (sectie is nu verborgen)');
 

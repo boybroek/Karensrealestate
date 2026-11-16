@@ -136,11 +136,30 @@ Na elke wijziging opnieuw bouwen en deployen.
 
 ## 6. Koppelingen
 
-**Woningaanbod / Pararius Office.** Volgens het ontwerp moet het aanbod uit de Pararius Office-export komen. Het formaat en de toegang van die feed zijn nog niet bekend, dus daar zijn bewust geen aannames over gedaan. Er zijn twee manieren om de feed aan te sluiten:
-1. Implementeer een loader in `src/content/listings.ts` die de feed tijdens de build ophaalt en omzet naar het type `Listing`.
-2. Laat de site automatisch opnieuw bouwen bij wijzigingen, bijvoorbeeld met een cronjob of een webhook die `npm run build` en een herstart uitvoert.
+**Woningaanbod / Pararius Office.** De koppeling is voorbereid. Hij staat uit tot er een token is; tot dan verwijst de pagina *Woningaanbod* naar het kantoorprofiel op Pararius.
 
-Worden de foto's extern gehost, voeg dan dat domein toe aan `img-src` in de CSP in `server.mjs`. Tot het aanbod gekoppeld is, verwijst de pagina *Woningaanbod* naar het kantoorprofiel op Pararius.
+Hoe het werkt:
+- Tijdens de build haalt [`src/content/sources/pararius-office.ts`](src/content/sources/pararius-office.ts) het aanbod op. De token komt dus nooit in de browser.
+- JSON en XML worden allebei begrepen, en de lijst met woningen wordt automatisch gevonden. Pagina's volgen (paginering) gaat ook vanzelf.
+- Verhuurde en ingetrokken woningen worden weggelaten. De labels *Nieuw* en *Onder optie* worden automatisch gezet.
+- Postcode, wijk en kaartpin komen uit het adres (PDOK). Foto's worden bij de build gedownload en omgezet naar AVIF/WebP.
+- Is de feed onbereikbaar, dan **stopt de build**. De live site houdt dan het laatste goede aanbod in plaats van leeg te raken. Met `PARARIUS_OFFICE_OPTIONAL=1` bouwt hij toch, met de handmatige lijst.
+- De GitHub Action [`woningaanbod.yml`](.github/workflows/woningaanbod.yml) controleert elke 30 minuten of het aanbod is veranderd. Alleen dan bouwt en deployt hij opnieuw; hij vergelijkt daarvoor met `/aanbod-versie.txt` op de live site.
+
+**Stappenplan zodra de token er is:**
+1. Vraag bij Pararius Office de technische documentatie van de "koppeling eigen website" op: het endpoint en hoe de token meegestuurd wordt.
+2. Lokaal testen, zonder iets te publiceren:
+   ```bash
+   PARARIUS_OFFICE_TOKEN=… PARARIUS_OFFICE_URL=https://… npm run feed:test
+   ```
+   Je ziet dan een tabel met de woningen zoals ze op de site komen, plus waarschuwingen voor velden die niet gevonden zijn. Wijkt de veldnaam af, voeg hem dan toe aan `FIELDS` bovenin `pararius-office.ts`. Wordt de token anders meegestuurd dan als `Bearer`, zet dan `PARARIUS_OFFICE_AUTH` op `header:<Naam>` of `query:<param>`.
+3. Zet in GitHub → *Settings → Secrets and variables → Actions*:
+   - Secrets: `PARARIUS_OFFICE_TOKEN`, `CLOUDFLARE_API_TOKEN` (rechten *Edit Cloudflare Workers*) en `CLOUDFLARE_ACCOUNT_ID`.
+   - Variables: `PARARIUS_OFFICE_URL`, en eventueel `PARARIUS_OFFICE_AUTH` en `LIVE_URL`.
+4. Start in GitHub *Actions → Woningaanbod bijwerken → Run workflow*. Vanaf dan loopt hij vanzelf.
+5. Optioneel: beperk in `astro.config.mjs` (`image.remotePatterns`) de foto's tot de host van Pararius Office.
+
+Zonder token kun je de koppeling ook testen met de voorbeeldexports in `tests/fixtures/` (`npm run feed:test`), of met een opgeslagen export (`npm run feed:test -- export.json`).
 
 **CRM.** Elke inzending kan naast de e-mail ook als ondertekende JSON naar `FORMS_WEBHOOK_URL` gestuurd worden. Controleer de handtekening (`X-KRE-Signature: sha256=<hmac>`) met `FORMS_WEBHOOK_SECRET`. Zo is een CRM, Zapier of Make te koppelen zonder codewijziging. Een extra kanaal toevoegen kan in `src/lib/server/deliver.ts` (`SINKS`).
 

@@ -9,8 +9,11 @@ import { getPhoto, type PhotoKey } from '../content/photos.ts';
 
 interface Props {
   photo?: PhotoKey;
-  /** Explicit image (e.g. a listing photo) instead of a named site photo. */
-  image?: ImageMetadata;
+  /**
+   * Explicit image instead of a named site photo: a local import, or an https URL
+   * (e.g. a Pararius Office listing photo), which is downloaded and optimised at build time.
+   */
+  image?: ImageMetadata | string;
   alt: string;
   ratio: '4-5' | '5-4' | '1-1' | '4-3';
   variant?: 'day' | 'dusk';
@@ -58,7 +61,9 @@ const pal = dusk
 ---
 <div class:list={['art', `ratio-${ratio}`, cls]}>
   {img ? (
-    <Picture src={img} alt={alt} widths={widths} sizes={sizes} formats={['avif', 'webp']} fallbackFormat="jpg" loading={eager ? 'eager' : 'lazy'} fetchpriority={eager ? 'high' : 'auto'} />
+    typeof img === 'string'
+      ? <Picture src={img} inferSize alt={alt} widths={widths} sizes={sizes} formats={['avif', 'webp']} fallbackFormat="jpg" loading={eager ? 'eager' : 'lazy'} fetchpriority={eager ? 'high' : 'auto'} />
+      : <Picture src={img} alt={alt} widths={widths} sizes={sizes} formats={['avif', 'webp']} fallbackFormat="jpg" loading={eager ? 'eager' : 'lazy'} fetchpriority={eager ? 'high' : 'auto'} />
   ) : (
     <svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMax slice" role="img" aria-label={alt}>
       <rect width="400" height="500" fill={pal.bg} />

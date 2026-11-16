@@ -2,31 +2,49 @@
   "frederik hendriklaan 120||den haag": {
     "lat": 52.093451,
     "lon": 4.276641,
-    "postalCode": "2582 BG"
+    "postalCode": "2582 BG",
+    "wijk": "Geuzen- en Statenkwartier"
   },
   "prinsessegracht 18||den haag": {
     "lat": 52.083969,
     "lon": 4.316734,
-    "postalCode": "2514 AP"
+    "postalCode": "2514 AP",
+    "wijk": "Centrum"
   },
   "weimarstraat 210||den haag": {
     "lat": 52.0748,
     "lon": 4.279384,
-    "postalCode": "2562 HP"
+    "postalCode": "2562 HP",
+    "wijk": "Valkenboskwartier"
   },
   "gevers deynootweg 50||den haag": {
     "lat": 52.109731,
     "lon": 4.278304,
-    "postalCode": "2586 BM"
+    "postalCode": "2586 BM",
+    "wijk": "Scheveningen"
   },
   "laan van meerdervoort 412||den haag": {
     "lat": 52.077012,
     "lon": 4.272861,
-    "postalCode": "2563 BD"
+    "postalCode": "2563 BD",
+    "wijk": "Valkenboskwartier"
   },
   "van boetzelaerlaan 88||den haag": {
     "lat": 52.089964,
     "lon": 4.271146,
-    "postalCode": "2581 AM"
+    "postalCode": "2581 AM",
+    "wijk": "Geuzen- en Statenkwartier"
+  },
+  "frederik hendriklaan 120|2582 bg|den haag": {
+    "lat": 52.093451,
+    "lon": 4.276641,
+    "postalCode": "2582 BG",
+    "wijk": "Geuzen- en Statenkwartier"
+  },
+  "prinsessegracht 18|2514 ap|den haag": {
+    "lat": 52.083969,
+    "lon": 4.316734,
+    "postalCode": "2514 AP",
+    "wijk": "Centrum"
   }
 }
