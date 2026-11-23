@@ -11,7 +11,7 @@ const { lang } = Astro.props;
 const d = t(lang);
 const a = d.area;
 const listings = await getListings();
-const count = (area: Area) => listings.filter((l) => matchesArea(area, l)).length;
+const count = (area: Area) => listings.filter((l) => l.status !== 'rented' && matchesArea(area, l)).length;
 const groups = [
   { title: lang === 'nl' ? 'Wijken in Den Haag' : 'Neighbourhoods in The Hague', items: AREAS.filter((x) => x.kind === 'wijk') },
   { title: lang === 'nl' ? 'In de omgeving' : 'Around The Hague', items: AREAS.filter((x) => x.kind === 'plaats') },

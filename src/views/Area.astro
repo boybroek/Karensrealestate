@@ -77,9 +77,9 @@ const schema = [areaPlace(area, url, lang), faqPage(url, area.faq[lang])];
   <section class="bg-paper" aria-labelledby="area-list-title">
     <div class="container section">
       <h2 class="h2 h2--sm area-list__t" id="area-list-title" data-reveal="0">{fill(a.listT, { name: ref })}</h2>
-      {listings.length > 0
-        ? <ListingsGrid listings={listings} lang={lang} showAvailability headingLevel="h3" />
-        : <p class="body area-list__none" data-reveal="40">{fill(a.listNone, { name: ref })}</p>}
+      <ListingsGrid listings={listings} lang={lang} showAvailability headingLevel="h3" select="area" match={area.match}>
+        <p class="body area-list__none" slot="empty">{fill(a.listNone, { name: ref })}</p>
+      </ListingsGrid>
       <div class="area-cta">
         <CtaBand title={fill(a.searchCta, { name: ref })} text={fill(a.searchCtaP, { name: ref })} href={searchHref} label={d.home.startSearch} />
       </div>

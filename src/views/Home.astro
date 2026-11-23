@@ -12,7 +12,7 @@ interface Props { lang: Lang }
 const { lang } = Astro.props;
 const d = t(lang);
 const h = d.home;
-const featured = (await getListings()).slice(0, 3);
+const featured = (await getListings()).filter((l) => l.status !== 'rented').slice(0, 3);
 ---
 <BaseLayout lang={lang} page="home">
   <section class="container hero">
@@ -63,7 +63,7 @@ const featured = (await getListings()).slice(0, 3);
             </div>
             <a class="btn btn--ghost-light" href={path('aanbod', lang)}>{h.listAll}</a>
           </div>
-          <ListingsGrid listings={featured} lang={lang} />
+          <ListingsGrid listings={featured} lang={lang} select="featured" limit={3} />
         </>
       ) : (
         <>

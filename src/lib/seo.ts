@@ -129,7 +129,7 @@ export function listingsSchema(url: string, listings: Listing[]) {
           addressCountry: 'NL',
         },
         ...(l.lat && l.lon ? { geo: { '@type': 'GeoCoordinates', latitude: l.lat, longitude: l.lon } } : {}),
-        floorSize: { '@type': 'QuantitativeValue', value: l.area, unitCode: 'MTK' },
+        ...(l.area ? { floorSize: { '@type': 'QuantitativeValue', value: l.area, unitCode: 'MTK' } } : {}),
         numberOfBedrooms: l.bedrooms,
         containedInPlace: { '@type': 'Place', name: `${l.neighbourhood}, ${l.city}` },
       },

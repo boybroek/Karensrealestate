@@ -146,9 +146,10 @@ const en: Dict = {
       ['Benoordenhout & Bezuidenhout', 'Green and spacious near the Haagse Bos, with good connections via The Hague Central station.'],
       ['Voorburg & Rijswijk', 'Quiet living just outside The Hague, with their own amenities and fast connections.'],
     ],
-    status: { avail: 'FOR RENT', new: 'NEW', option: 'UNDER OPTION' },
+    status: { avail: 'FOR RENT', new: 'NEW', option: 'UNDER OPTION', rented: 'LET' },
+    onRequest: 'Price on request', studio: 'studio',
     photo: 'Photo', map: 'Map', pm: '/month', bed: 'bed', mapOf: 'Map of', onMaps: 'View on Google Maps ↗', viewToggle: 'View',
-    available: { now: 'Available now', option: 'Under option', from: 'From' },
+    available: { now: 'Available now', option: 'Under option', from: 'From', consult: 'By arrangement', rented: 'Let' },
   },
   over: {
     aboutEy: 'About us', ovT: 'Personal contact makes the difference.',
@@ -232,7 +233,7 @@ const en: Dict = {
     note: 'This page gives a general impression of the area. Feel free to ask us about the current situation and rents.',
   },
   notFound: { ey: '404', t: 'This page does not exist (anymore).', p: 'The page may have moved. Go to the homepage or get in touch with us.', home: 'Go to the homepage', contact: 'Contact' },
-  demo: 'DEMO CONTENT – sample listings and reviews, not for publication',
+  demo: 'DEMO – listings are live from Pararius Office, reviews are samples',
   concept: {
     banner: 'Concept presentation – this is not the official website of Karens Real Estate.',
     bannerDetail: 'Listings and reviews are sample content. Forms do not send anything.',

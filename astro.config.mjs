@@ -43,7 +43,7 @@ export default defineConfig({
     // Listing photos from Pararius Office are https URLs. They are downloaded and converted
     // at BUILD time and served from our own domain, so the strict CSP (img-src 'self') still holds.
     // Narrow this down to the exact photo host once it is known, e.g. { protocol: 'https', hostname: '**.pararius.nl' }.
-    remotePatterns: [{ protocol: 'https' }],
+    remotePatterns: [{ protocol: 'https', hostname: 'pararius-office-prod.global.ssl.fastly.net' }],
   },
   vite: {
     build: { assetsInlineLimit: 0 },

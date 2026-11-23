@@ -34,7 +34,9 @@
     "MAIL_FROM": "Website Karens Real Estate <website@karensrealestate.nl>",
     "MAIL_TO": "info@karensrealestate.nl",
     "FORM_RATE_LIMIT": "5",
-    "OUTBOX_RETENTION_DAYS": "14"
+    "OUTBOX_RETENTION_DAYS": "14",
+    // Listings API worker (api-worker/): allowed in the CSP connect-src.
+    "LISTINGS_API_URL": "https://karensrealestate-api.boy-grabacio.workers.dev"
   },
 
   // Demo preview with sample listings (npm run cf:demo). Separate Worker and KV,
@@ -50,7 +52,8 @@
         "CANONICAL_HOST": "www.karensrealestate.nl",
         "MAIL_TO": "demo@example.test",
         "FORM_RATE_LIMIT": "5",
-        "OUTBOX_RETENTION_DAYS": "14"
+        "OUTBOX_RETENTION_DAYS": "14",
+        "LISTINGS_API_URL": "https://karensrealestate-api.boy-grabacio.workers.dev"
       }
     }
   }

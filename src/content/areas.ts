@@ -9,6 +9,7 @@
  * (from the feed or PDOK) contains one of `wijken`, or its city is one of `cities`.
  */
 import type { Lang } from '../i18n/index.ts';
+import { matchListing } from '../lib/listing-view.ts';
 import type { Listing } from './listings.ts';
 
 type T = { nl: string; en: string };
@@ -595,15 +596,8 @@ export const areaRef = (a: Area, lang: Lang) => REF[a.slug]?.[lang] ?? a.name[la
 
 export const areaPath = (slug: string, lang: Lang) => (lang === 'nl' ? `/werkgebied/${slug}/` : `/en/areas/${slug}/`);
 
-const norm = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
-
 /** Listings that belong to this area (by wijk from the feed/PDOK, or by city). */
-export function matchesArea(area: Area, l: Pick<Listing, 'neighbourhood' | 'city'>): boolean {
-  const wijk = norm(l.neighbourhood ?? ''), city = norm(l.city ?? '');
-  if (area.match.cities.some((c) => city === c)) return true;
-  const inDenHaag = city === 'den haag' || city === "'s-gravenhage";
-  return inDenHaag && area.match.wijken.some((w) => new RegExp(`\\b${w}`).test(wijk));
-}
+export const matchesArea = (area: Area, l: Pick<Listing, 'neighbourhood' | 'city'>): boolean => matchListing(area.match, l);
 
 /** Structured data for an area page: the Place itself. */
 export function areaPlace(area: Area, url: string, lang: Lang) {

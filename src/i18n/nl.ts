@@ -148,9 +148,10 @@ const nl = {
       ['Benoordenhout & Bezuidenhout', 'Groen en ruim opgezet bij het Haagse Bos, met goede verbindingen via station Den Haag Centraal.'],
       ['Voorburg & Rijswijk', 'Rustig wonen net buiten Den Haag, met eigen voorzieningen en snelle verbindingen.'],
     ],
-    status: { avail: 'TE HUUR', new: 'NIEUW', option: 'ONDER OPTIE' },
+    status: { avail: 'TE HUUR', new: 'NIEUW', option: 'ONDER OPTIE', rented: 'VERHUURD' },
+    onRequest: 'Prijs op aanvraag', studio: 'studio',
     photo: 'Foto', map: 'Kaart', pm: 'p/m', bed: 'slpk', mapOf: 'Kaart van', onMaps: 'Bekijk op Google Maps ↗', viewToggle: 'Weergave',
-    available: { now: 'Per direct', option: 'In optie', from: 'Per' },
+    available: { now: 'Per direct', option: 'In optie', from: 'Per', consult: 'In overleg', rented: 'Verhuurd' },
   },
   over: {
     aboutEy: 'Over ons', ovT: 'Persoonlijk contact maakt het verschil.',
@@ -234,7 +235,7 @@ const nl = {
     note: 'De informatie op deze pagina is een algemene schets van de wijk. Vraag ons gerust naar de actuele situatie en huurprijzen.',
   },
   notFound: { ey: '404', t: 'Deze pagina bestaat niet (meer).', p: 'Misschien is de pagina verplaatst. Ga naar de homepage of neem contact met ons op.', home: 'Naar de homepage', contact: 'Contact' },
-  demo: 'DEMO-INHOUD – voorbeeldwoningen en -ervaringen, niet voor publicatie',
+  demo: 'DEMO – woningaanbod is live uit Pararius Office, ervaringen zijn voorbeelden',
   concept: {
     banner: 'Conceptpresentatie – dit is niet de officiële website van Karens Real Estate.',
     bannerDetail: 'Woningen en ervaringen zijn voorbeeldinhoud. Formulieren versturen niets.',

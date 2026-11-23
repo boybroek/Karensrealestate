@@ -2,19 +2,20 @@
  * Rental listings.
  *
  * Source, in this order:
- *   1. Demo build (KRE_DEMO_CONTENT=1): the sample listings below, marked as demo + noindex.
- *   2. Pararius Office, as soon as PARARIUS_OFFICE_TOKEN is set (see sources/pararius-office.ts).
- *      The feed is read at build time; the GitHub Action "Woningaanbod bijwerken" rebuilds
- *      and deploys the site whenever the offer changes.
+ *   1. The listings API (api-worker/), as soon as LISTINGS_API_URL is set. That separate
+ *      Cloudflare Worker holds the Pararius Office API key, caches the offer and serves only
+ *      public fields. The build reads it for the static HTML (SEO, no-JS) and the browser
+ *      reads it again on every visit (src/scripts/listings-live.ts), so the site is always
+ *      current without a rebuild. The site itself never sees the Pararius key.
+ *   2. Demo build without API (KRE_DEMO_CONTENT=1): the sample listings below.
  *   3. Otherwise the hand-maintained LISTINGS below (may be empty: the page then
  *      links to the office profile on Pararius).
  *
  * The site never shows fictional listings in production.
  */
 import { geocode } from './geocode.ts';
-import { fetchParariusOffice, isConfigured as parariusConfigured } from './sources/pararius-office.ts';
 
-export type ListingStatus = 'avail' | 'new' | 'option';
+export type ListingStatus = 'avail' | 'new' | 'option' | 'rented';
 
 export interface Listing {
   id: string;
@@ -23,24 +24,23 @@ export interface Listing {
   neighbourhood: string;
   city: string;
   postalCode?: string;
-  /** Rent per month in euros. */
-  rent: number;
+  /** Rent per month in euros; null = price on request. */
+  rent: number | null;
   /** Living area in m². */
-  area: number;
+  area: number | null;
   bedrooms: number;
   status: ListingStatus;
-  /** 'now', 'option' or an ISO date (YYYY-MM-DD). */
+  /** 'now', 'consult', 'option' or an ISO date (YYYY-MM-DD). */
   available: string;
   /**
    * Position for the map pin. Optional: when left out, it is looked up from the
    * address at build time (PDOK, see geocode.ts) together with the postcode.
-   * Only set these to override the automatic position.
    */
   lat?: number;
   lon?: number;
-  /** Main photo (https URL, e.g. from Pararius Office). Downloaded and optimised at build time. */
+  /** Main photo (https URL on the Pararius Office CDN). Resized by the CDN (see photoSrc). */
   photoUrl?: string;
-  /** Link to the full listing (e.g. on Pararius), optional. */
+  /** Link to the full listing, optional. */
   url?: string;
 }
 
@@ -60,25 +60,50 @@ const DEMO_LISTINGS: Listing[] = [
 export const CONCEPT = process.env.KRE_CONCEPT === '1';
 export const DEMO = process.env.KRE_DEMO_CONTENT === '1' || CONCEPT;
 
+/** Base URL of the listings API worker (no trailing slash), or '' when not used. */
+export const LISTINGS_API = CONCEPT ? '' : (process.env.LISTINGS_API_URL ?? '').trim().replace(/\/+$/, '');
+
 /** Where this build's listings come from (also shown by `npm run launch-check`). */
-export const listingSource = (): 'demo' | 'pararius-office' | 'handmatig' =>
-  DEMO ? 'demo' : parariusConfigured() ? 'pararius-office' : 'handmatig';
+export const listingSource = (): 'api' | 'demo' | 'handmatig' =>
+  LISTINGS_API ? 'api' : DEMO ? 'demo' : 'handmatig';
+
+interface ApiListing {
+  id: string; address: string; postalCode: string; city: string; neighbourhood: string;
+  lat: number | null; lon: number | null; rent: number | null; area: number | null; bedrooms: number;
+  status: ListingStatus; available: string; photo: string | null;
+}
+
+/** API listing → site listing (same shape the browser script uses). */
+export const fromApi = (l: ApiListing): Listing => ({
+  id: l.id, address: l.address, postalCode: l.postalCode || undefined, city: l.city, neighbourhood: l.neighbourhood,
+  lat: l.lat ?? undefined, lon: l.lon ?? undefined, rent: l.rent, area: l.area, bedrooms: l.bedrooms,
+  status: l.status, available: l.available, photoUrl: l.photo ?? undefined,
+});
+
+let apiVersion = '';
+
+async function fromListingsApi(): Promise<Listing[]> {
+  const res = await fetch(`${LISTINGS_API}/v1/listings`, { signal: AbortSignal.timeout(20_000) });
+  if (!res.ok) throw new Error(`listings API HTTP ${res.status}`);
+  const body = await res.json() as { version: string; listings: ApiListing[] };
+  apiVersion = body.version;
+  return body.listings.map(fromApi);
+}
 
 async function rawListings(): Promise<Listing[]> {
-  if (DEMO) return DEMO_LISTINGS;
-  if (!parariusConfigured()) return LISTINGS;
+  if (!LISTINGS_API) return DEMO ? DEMO_LISTINGS : LISTINGS;
   try {
-    const list = await fetchParariusOffice();
-    console.log(`[aanbod] ${list.length} woning(en) uit Pararius Office`);
+    const list = await fromListingsApi();
+    console.log(`[aanbod] ${list.length} woning(en) uit de listings-API (${LISTINGS_API})`);
     return list;
   } catch (e) {
-    // Default: stop the build, so the live site keeps its last good offer instead of
-    // suddenly showing nothing. Set PARARIUS_OFFICE_OPTIONAL=1 to build anyway.
-    if (process.env.PARARIUS_OFFICE_OPTIONAL === '1') {
-      console.warn(`[aanbod] Pararius Office niet bereikbaar, handmatige lijst gebruikt: ${(e as Error).message}`);
-      return LISTINGS;
+    // Default: stop the build, so a deploy never replaces a good offer with an empty page.
+    // Set LISTINGS_API_OPTIONAL=1 to build anyway (the browser still loads the live offer).
+    if (process.env.LISTINGS_API_OPTIONAL === '1') {
+      console.warn(`[aanbod] listings-API niet bereikbaar, lege lijst gebruikt: ${(e as Error).message}`);
+      return [];
     }
-    throw new Error(`[aanbod] Pararius Office kon niet worden gelezen: ${(e as Error).message}`);
+    throw new Error(`[aanbod] listings-API kon niet worden gelezen (${LISTINGS_API}): ${(e as Error).message}`);
   }
 }
 
@@ -91,8 +116,10 @@ const raw = () => (rawCached ??= rawListings());
  * rebuilds when something changed (new listing, price, status, photo …).
  */
 export async function listingsFingerprint(): Promise<string> {
+  const list = await raw();
+  if (apiVersion) return apiVersion;
   const { createHash } = await import('node:crypto');
-  return createHash('sha256').update(JSON.stringify(await raw())).digest('hex').slice(0, 16);
+  return createHash('sha256').update(JSON.stringify(list)).digest('hex').slice(0, 16);
 }
 
 async function enrich(): Promise<Listing[]> {
@@ -123,6 +150,4 @@ export function getListings(): Promise<Listing[]> {
   return (cached ??= enrich());
 }
 
-/** Google Maps link that drops a pin on the exact address. */
-export const googleMapsUrl = (l: Pick<Listing, 'address' | 'city' | 'postalCode'>) =>
-  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([l.address, l.postalCode, l.city].filter(Boolean).join(', '))}`;
+export { googleMapsUrl } from '../lib/listing-view.ts';

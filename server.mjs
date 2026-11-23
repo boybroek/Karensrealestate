@@ -29,13 +29,17 @@ const CANONICAL_HOST = (process.env.CANONICAL_HOST || '').toLowerCase(); // e.g.
 const { handler } = await import('./dist/server/entry.mjs');
 
 // ---- Security headers ----
+// Listing photos come from the Pararius Office CDN; live listings from the listings API worker.
+const PHOTO_ORIGIN = 'https://pararius-office-prod.global.ssl.fastly.net';
+let API_ORIGIN = '';
+try { API_ORIGIN = new URL(process.env.LISTINGS_API_URL ?? '').origin; } catch { /* not configured */ }
 const CSP = [
   "default-src 'self'",
   "script-src 'self'",
   "style-src 'self'",
-  "img-src 'self' data:",
+  `img-src 'self' data: ${PHOTO_ORIGIN}`,
   "font-src 'self'",
-  "connect-src 'self'",
+  `connect-src 'self'${API_ORIGIN ? ` ${API_ORIGIN}` : ''}`,
   'frame-src https://www.openstreetmap.org',
   "frame-ancestors 'none'",
   "base-uri 'self'",

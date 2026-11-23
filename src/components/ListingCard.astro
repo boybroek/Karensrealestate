@@ -1,28 +1,33 @@
 ---
+/**
+ * One listing card. The same markup is built in the browser by src/scripts/listings-live.ts
+ * when the live offer differs from the build, so keep the two in step (both use cardView()).
+ * Styles are global for that reason: cards made in the browser carry no Astro scope attribute.
+ */
 import Art from './Art.astro';
 import type { Listing } from '../content/listings.ts';
-import { osmEmbed, osmLink } from '../content/site.ts';
-import { CONCEPT, googleMapsUrl } from '../content/listings.ts';
+import { osmLink } from '../content/site.ts';
+import { CONCEPT } from '../content/listings.ts';
+import { cardView, photoSrc, photoSrcset } from '../lib/listing-view.ts';
+import { cardStrings } from '../lib/listing-strings.ts';
 import { type Lang, t } from '../i18n/index.ts';
 
 interface Props { listing: Listing; lang: Lang; delay?: number; headingLevel?: 'h2' | 'h3'; showAvailability?: boolean }
 const { listing: l, lang, delay = 0, headingLevel = 'h3', showAvailability = false } = Astro.props;
 const d = t(lang).aanbod;
 const H = headingLevel;
-const nf = new Intl.NumberFormat(lang === 'nl' ? 'nl-NL' : 'en-GB');
-const city = lang === 'en' && l.city === 'Den Haag' ? 'The Hague' : l.city;
-const avail = l.available === 'now' ? d.available.now : l.available === 'option' ? d.available.option
-  : `${d.available.from} ${new Date(l.available + 'T12:00:00Z').toLocaleDateString(lang === 'nl' ? 'nl-NL' : 'en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}`;
-const mapUrl = l.lat && l.lon ? osmEmbed(l.lat, l.lon) : null;
-const id = `listing-${l.id}`;
+const v = cardView(l, cardStrings(lang));
+const sizes = '(min-width: 1100px) 420px, 100vw';
 ---
-<div id={id} data-reveal={delay} data-listing data-wijk={l.neighbourhood}>
-  <article class="lcard" aria-labelledby={`${id}-t`}>
+<div id={v.id} data-reveal={delay} data-listing data-wijk={l.neighbourhood}>
+  <article class:list={['lcard', l.status === 'rented' && 'lcard--rented']} aria-labelledby={`${v.id}-t`}>
     <div class="lcard__media">
-      <Art image={l.photoUrl} alt={`${l.address}, ${l.neighbourhood}`} ratio="4-3" sizes="(min-width: 1100px) 420px, 100vw" />
-      {mapUrl && <div class="lcard__map" data-map-src={mapUrl} data-map-title={`${d.mapOf} ${l.address}`}></div>}
-      <span class:list={['lcard__status', l.status === 'option' && 'lcard__status--option']}>{d.status[l.status]}</span>
-      {mapUrl && (
+      {l.photoUrl
+        ? <div class="art ratio-4-3"><img src={photoSrc(l.photoUrl, 720)} srcset={photoSrcset(l.photoUrl)} sizes={sizes} alt={v.alt} width="720" height="540" loading="lazy" decoding="async" /></div>
+        : <Art alt={v.alt} ratio="4-3" sizes={sizes} />}
+      {v.mapSrc && <div class="lcard__map" data-map-src={v.mapSrc} data-map-title={v.mapTitle}></div>}
+      <span class={`lcard__status lcard__status--${l.status}`}>{v.status}</span>
+      {v.mapSrc && (
         <div class="lcard__toggle" role="group" aria-label={d.viewToggle}>
           <button type="button" aria-pressed="true" data-view="photo">{d.photo}</button>
           {CONCEPT ? <a class="lcard__maplink" href={osmLink(l.lat!, l.lon!)} target="_blank" rel="noopener">{d.map} ↗</a> : <button type="button" aria-pressed="false" data-view="map">{d.map}</button>}
@@ -30,33 +35,35 @@ const id = `listing-${l.id}`;
       )}
     </div>
     <div class="lcard__body">
-      <H class="lcard__t" id={`${id}-t`}>{l.url ? <a href={l.url} target="_blank" rel="noopener">{l.address}</a> : l.address}</H>
-      <p class="lcard__loc">{l.postalCode ? `${l.postalCode} ${city}` : city} · {l.neighbourhood}</p>
+      <H class="lcard__t" id={`${v.id}-t`}>{l.url ? <a href={l.url} target="_blank" rel="noopener">{v.title}</a> : v.title}</H>
+      <p class="lcard__loc">{v.loc}</p>
       <div class="lcard__row">
-        <span class="lcard__price">€ {nf.format(l.rent)} <span>{d.pm}</span></span>
-        <span class="lcard__meta">{l.area} m² · {l.bedrooms} {d.bed}</span>
+        <span class="lcard__price">{v.price} {v.perMonth && <span>{v.perMonth}</span>}</span>
+        <span class="lcard__meta">{v.meta}</span>
       </div>
       <div class="lcard__foot">
-        <a href={googleMapsUrl(l)} target="_blank" rel="noopener">{d.onMaps}<span class="visually-hidden"> {t(lang).common.newWindow}</span></a>
-        {showAvailability && <span class="lcard__avail">{avail}</span>}
+        <a href={v.mapsUrl} target="_blank" rel="noopener">{d.onMaps}<span class="visually-hidden"> {t(lang).common.newWindow}</span></a>
+        {showAvailability && <span class="lcard__avail">{v.avail}</span>}
       </div>
     </div>
   </article>
 </div>
 
-<style>
+<style is:global>
   .lcard { background: #fff; color: var(--ink); border-radius: var(--radius); overflow: hidden; box-shadow: 0 1px 0 rgba(4, 58, 99, .08); transition: transform .45s var(--ease), box-shadow .45s var(--ease); height: 100%; }
   .lcard:hover { transform: translateY(-6px); box-shadow: 0 30px 60px rgba(2, 31, 54, .14); }
-  :global(.bg-navy) .lcard:hover { box-shadow: 0 30px 60px rgba(0, 0, 0, .25); }
+  .bg-navy .lcard:hover { box-shadow: 0 30px 60px rgba(0, 0, 0, .25); }
   .lcard__media { position: relative; }
-  .lcard__media :global(.art) { border-radius: 0; }
+  .lcard__media .art { border-radius: 0; }
+  .lcard--rented .lcard__media .art img { filter: saturate(.55); }
   .lcard__map { position: absolute; inset: 0; opacity: 0; transition: opacity .5s ease; pointer-events: none; background: var(--mist); }
   .lcard__map.is-on { opacity: 1; pointer-events: auto; }
-  .lcard__map :global(iframe) { width: 100%; height: 100%; border: 0; display: block; }
+  .lcard__map iframe { width: 100%; height: 100%; border: 0; display: block; }
   .lcard__status { position: absolute; top: 14px; left: 14px; background: var(--navy); color: #fff; font-size: 11px; letter-spacing: .12em; font-weight: 600; padding: 6px 10px; border-radius: 2px; }
   .lcard__status--option { background: #5d6d7a; }
+  .lcard__status--rented { background: #fff; color: var(--navy); }
   .lcard__toggle { position: absolute; top: 12px; right: 12px; display: none; background: rgba(255, 255, 255, .95); border-radius: 999px; padding: 3px; box-shadow: 0 4px 14px rgba(2, 31, 54, .15); }
-  :global(.js) .lcard__toggle { display: flex; }
+  .js .lcard__toggle { display: flex; }
   .lcard__toggle button { border: 0; border-radius: 999px; padding: 6px 12px; font-size: 12px; font-weight: 600; background: transparent; color: var(--navy); transition: background .3s, color .3s; }
   .lcard__maplink { border-radius: 999px; padding: 6px 12px; font-size: 12px; font-weight: 600; color: var(--navy); }
   .lcard__toggle button[aria-pressed='true'] { background: var(--navy); color: #fff; }
@@ -67,6 +74,7 @@ const id = `listing-${l.id}`;
   .lcard__row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-top: 12px; padding-top: 14px; border-top: 1px solid var(--line); flex-wrap: wrap; }
   .lcard__price { font-size: 20px; font-weight: 600; color: var(--navy); }
   .lcard__price span { font-size: 14px; font-weight: 400; color: var(--muted); }
+  .lcard--rented .lcard__price { color: var(--muted); }
   .lcard__meta { font-size: 14px; color: var(--muted); }
   .lcard__foot { display: flex; justify-content: space-between; gap: 12px; margin-top: 8px; flex-wrap: wrap; font-size: 14px; }
   .lcard__foot a { font-weight: 600; }

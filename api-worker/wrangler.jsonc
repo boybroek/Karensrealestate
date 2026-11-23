@@ -1,0 +1,27 @@
+// Listings API worker: the only place that holds the Pararius Office API key.
+// Deploy:  cd api-worker && npx wrangler deploy
+// Secret:  npx wrangler secret put PARARIUS_OFFICE_TOKEN   (never commit the key)
+// Local:   npx wrangler dev --port 8788 --test-scheduled   (key in api-worker/.dev.vars)
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "karensrealestate-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-09-15",
+  "workers_dev": true,
+  "kv_namespaces": [{ "binding": "LISTINGS_KV", "id": "a18e6bf958714edebf177bd5b7276a70" }],
+  // Pararius allows 1 call per 60 s; refreshing every 5 minutes stays far below that.
+  "triggers": { "crons": ["*/5 * * * *"] },
+  // Per-IP flood protection; normal visitors make 1 request per page.
+  "ratelimits": [{ "name": "RATE_LIMITER", "namespace_id": "1701", "simple": { "limit": 120, "period": 60 } }],
+  "observability": { "enabled": true },
+  "vars": {
+    // Browsers on these origins may read the API (CORS). Others get 403.
+    "ALLOWED_ORIGINS": "https://www.karensrealestate.nl,https://karensrealestate.nl,https://karensrealestate.boy-grabacio.workers.dev,https://karensrealestate-demo.boy-grabacio.workers.dev",
+    // "1" = show house number, full postcode and the exact pin. Default: street + ~100 m.
+    "EXACT_ADDRESS": "0",
+    // Object types shown on the site (Pararius: apartment, house, room, parking facility, …).
+    "INCLUDE_TYPES": "apartment,house,room"
+  }
+  // Custom domain later, e.g.:
+  // "routes": [{ "pattern": "api.karensrealestate.nl", "custom_domain": true }]
+}

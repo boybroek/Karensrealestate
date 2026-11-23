@@ -14,14 +14,18 @@ const env = (k: string) => (process.env[k] ?? '').trim();
 const production = () => env('NODE_ENV') === 'production';
 
 // ---- Security headers (kept identical to server.mjs) ----
+// Listing photos come from the Pararius Office CDN; live listings from the listings API worker.
+const PHOTO_ORIGIN = 'https://pararius-office-prod.global.ssl.fastly.net';
+const apiOrigin = () => { try { return new URL(env('LISTINGS_API_URL')).origin; } catch { return ''; } };
+
 function securityHeaders(): Record<string, string> {
   const csp = [
     "default-src 'self'",
     "script-src 'self'",
     "style-src 'self'",
-    "img-src 'self' data:",
+    `img-src 'self' data: ${PHOTO_ORIGIN}`,
     "font-src 'self'",
-    "connect-src 'self'",
+    `connect-src 'self'${apiOrigin() ? ` ${apiOrigin()}` : ''}`,
     'frame-src https://www.openstreetmap.org',
     "frame-ancestors 'none'",
     "base-uri 'self'",

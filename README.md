@@ -126,40 +126,40 @@ De website zelf bevat geen database. De bron is deze Git-repository. Alleen `DAT
 | Alle teksten NL / EN | `src/i18n/nl.ts` en `src/i18n/en.ts`. Dezelfde sleutels; de typecheck bewaakt dat. |
 | URL's per taal | `src/i18n/routes.ts` |
 | Foto's | Zet `hero.jpg`, `over-ons.jpg` en `verhuren.jpg` in `src/assets/photos/`. Ze worden automatisch omgezet naar AVIF/WebP in meerdere formaten. Zonder foto toont de site een illustratie in huisstijl. |
-| Woningaanbod | `src/content/listings.ts` (zie §6). Adres en plaats zijn genoeg: postcode en coördinaten voor de kaart met pin worden bij de build opgezocht via PDOK (de gratis adresdienst van de overheid) en bewaard in `src/content/geocode-cache.json`. |
+| Woningaanbod | Automatisch uit Pararius Office via de listings-API (zie §6). Zonder API: handmatig in `src/content/listings.ts`; postcode en kaartpin worden dan opgezocht via PDOK. |
 | Klantervaringen | `src/content/reviews.ts`. De sectie verschijnt automatisch zodra er echte reviews in staan. |
 | Juridische teksten | `src/views/Privacy.astro` en `src/views/Cookies.astro` |
 
 Na elke wijziging opnieuw bouwen en deployen.
 
-**Demo-modus:** `KRE_DEMO_CONTENT=1 npm run build` toont de voorbeeldwoningen en -reviews uit het ontwerp. Zo'n build is gemarkeerd als demo en staat op `noindex`, en `launch-check` blokkeert hem.
+**Demo-modus:** `KRE_DEMO_CONTENT=1 npm run build` toont de voorbeeldreviews uit het ontwerp (en voorbeeldwoningen als er geen listings-API is ingesteld). Zo'n build is gemarkeerd als demo en staat op `noindex`, en `launch-check` blokkeert hem.
 
 ## 6. Koppelingen
 
-**Woningaanbod / Pararius Office.** De koppeling is voorbereid. Hij staat uit tot er een token is; tot dan verwijst de pagina *Woningaanbod* naar het kantoorprofiel op Pararius.
+**Woningaanbod / Pararius Office (live).** Een aparte Cloudflare Worker, [`api-worker/`](api-worker/), is de enige plek die de Pararius Office-API-key kent en ooit met Pararius praat.
 
-Hoe het werkt:
-- Tijdens de build haalt [`src/content/sources/pararius-office.ts`](src/content/sources/pararius-office.ts) het aanbod op. De token komt dus nooit in de browser.
-- JSON en XML worden allebei begrepen, en de lijst met woningen wordt automatisch gevonden. Pagina's volgen (paginering) gaat ook vanzelf.
-- Verhuurde en ingetrokken woningen worden weggelaten. De labels *Nieuw* en *Onder optie* worden automatisch gezet.
-- Postcode, wijk en kaartpin komen uit het adres (PDOK). Foto's worden bij de build gedownload en omgezet naar AVIF/WebP.
-- Is de feed onbereikbaar, dan **stopt de build**. De live site houdt dan het laatste goede aanbod in plaats van leeg te raken. Met `PARARIUS_OFFICE_OPTIONAL=1` bouwt hij toch, met de handmatige lijst.
-- De GitHub Action [`woningaanbod.yml`](.github/workflows/woningaanbod.yml) controleert elke 30 minuten of het aanbod is veranderd. Alleen dan bouwt en deployt hij opnieuw; hij vergelijkt daarvoor met `/aanbod-versie.txt` op de live site.
+```
+Pararius Office ──(key, max 1×/min)──► api-worker (cron elke 5 min → KV)
+                                          │  GET /v1/listings  (publiek, gecachet, alleen veilige velden)
+                       ┌──────────────────┴──────────────────┐
+                 build van de site                 browser van de bezoeker
+            (statische HTML voor Google)        (actueel aanbod bij elk bezoek)
+```
 
-**Stappenplan zodra de token er is:**
-1. Vraag bij Pararius Office de technische documentatie van de "koppeling eigen website" op: het endpoint en hoe de token meegestuurd wordt.
-2. Lokaal testen, zonder iets te publiceren:
-   ```bash
-   PARARIUS_OFFICE_TOKEN=… PARARIUS_OFFICE_URL=https://… npm run feed:test
-   ```
-   Je ziet dan een tabel met de woningen zoals ze op de site komen, plus waarschuwingen voor velden die niet gevonden zijn. Wijkt de veldnaam af, voeg hem dan toe aan `FIELDS` bovenin `pararius-office.ts`. Wordt de token anders meegestuurd dan als `Bearer`, zet dan `PARARIUS_OFFICE_AUTH` op `header:<Naam>` of `query:<param>`.
-3. Zet in GitHub → *Settings → Secrets and variables → Actions*:
-   - Secrets: `PARARIUS_OFFICE_TOKEN`, `CLOUDFLARE_API_TOKEN` (rechten *Edit Cloudflare Workers*) en `CLOUDFLARE_ACCOUNT_ID`.
-   - Variables: `PARARIUS_OFFICE_URL`, en eventueel `PARARIUS_OFFICE_AUTH` en `LIVE_URL`.
-4. Start in GitHub *Actions → Woningaanbod bijwerken → Run workflow*. Vanaf dan loopt hij vanzelf.
-5. Optioneel: beperk in `astro.config.mjs` (`image.remotePatterns`) de foto's tot de host van Pararius Office.
+- **Endpoints:** `GET /v1/listings` (aanbod) en `GET /v1/health` (aantal, versie, leeftijd van de data). Alle andere paden geven 404, alle andere methodes 405.
+- **Pararius wordt nooit door bezoekers aangeroepen.** Pararius staat 1 verzoek per minuut toe. De cron ververst elke 5 minuten; bezoekers krijgen de edge-cache of KV. Alleen bij een lege KV (eerste start) haalt hij één keer direct op, achter een slot van 60 s. Geeft Pararius een fout of 429, dan blijft het laatste goede aanbod staan.
+- **Alleen veilige velden** ([`api-worker/src/pararius.ts`](api-worker/src/pararius.ts)): straat, postcode (4 cijfers), wijk, plaats, kaartpositie (~100 m), huur, m², slaapkamers, status, beschikbaarheid en de hoofdfoto. Geen huisnummer, kadaster, WOZ, eisen aan huurders of optieprijzen. Huisnummer en exacte pin aan: `EXACT_ADDRESS=1` in `api-worker/wrangler.jsonc`. Welke objecttypes: `INCLUDE_TYPES` (standaard geen parkeerplaatsen en bergingen).
+- **Afscherming:** CORS alleen voor de eigen domeinen (`ALLOWED_ORIGINS`, andere sites krijgen 403), geen invoer wordt gebruikt of teruggegeven, foto-URL's alleen van de Pararius-CDN, strikte headers (`nosniff`, CSP `default-src 'none'`), plus een rate limit per IP (best effort; Cloudflare telt per locatie). De site laat in zijn CSP alleen deze API (`connect-src`) en de Pararius-CDN (`img-src`) toe. De browser zet data uitsluitend via `textContent`/attributen in de pagina, nooit als HTML.
+- **Status:** verhuurde woningen blijven zichtbaar met het label *Verhuurd* (onderaan; niet op de homepage en niet in de structured data). *Nieuw* en *Onder optie* worden automatisch gezet.
+- **Site:** de build leest de API (`LISTINGS_API_URL`, standaard de productie-API) voor de statische HTML; [`src/scripts/listings-live.ts`](src/scripts/listings-live.ts) haalt in de browser het actuele aanbod op en tekent de kaarten opnieuw als het aanbod sindsdien veranderd is. De GitHub Action [`woningaanbod.yml`](.github/workflows/woningaanbod.yml) bouwt de statische pagina's opnieuw zodra de API-versie afwijkt van `/aanbod-versie.txt` (alleen nodig voor Google; heeft alleen de Cloudflare-secrets nodig).
 
-Zonder token kun je de koppeling ook testen met de voorbeeldexports in `tests/fixtures/` (`npm run feed:test`), of met een opgeslagen export (`npm run feed:test -- export.json`).
+**Beheer:**
+```bash
+npm run api:deploy                                    # API-worker deployen
+cd api-worker && npx wrangler secret put PARARIUS_OFFICE_TOKEN   # key instellen of vervangen
+npm run e2e:local                                     # alles lokaal: API op :8788, site op :8787
+```
+Voor lokaal werken staat de key in `api-worker/.dev.vars` (niet in git) samen met `ALLOWED_ORIGINS=http://localhost:8787`. Een nieuwe key maak je in Pararius Office onder *Tools → API keys*; daarna `wrangler secret put` en de oude key verwijderen.
 
 **CRM.** Elke inzending kan naast de e-mail ook als ondertekende JSON naar `FORMS_WEBHOOK_URL` gestuurd worden. Controleer de handtekening (`X-KRE-Signature: sha256=<hmac>`) met `FORMS_WEBHOOK_SECRET`. Zo is een CRM, Zapier of Make te koppelen zonder codewijziging. Een extra kanaal toevoegen kan in `src/lib/server/deliver.ts` (`SINKS`).
 

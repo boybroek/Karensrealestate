@@ -1,17 +1,51 @@
 ---
+/**
+ * Grid of listing cards. Rendered statically at build time (SEO, works without JS); when the
+ * listings API is configured, src/scripts/listings-live.ts fetches the current offer in the
+ * browser and re-renders the grid if it changed since the build.
+ */
+import Art from './Art.astro';
 import ListingCard from './ListingCard.astro';
-import type { Listing } from '../content/listings.ts';
+import { LISTINGS_API, listingsFingerprint, type Listing } from '../content/listings.ts';
+import { cardStrings } from '../lib/listing-strings.ts';
 import { type Lang, t } from '../i18n/index.ts';
 
-interface Props { listings: Listing[]; lang: Lang; filter?: boolean; showAvailability?: boolean; headingLevel?: 'h2' | 'h3' }
-const { listings, lang, filter = false, showAvailability = false, headingLevel } = Astro.props;
-const d = t(lang).aanbod;
+interface Props {
+  listings: Listing[];
+  lang: Lang;
+  filter?: boolean;
+  showAvailability?: boolean;
+  headingLevel?: 'h2' | 'h3';
+  /** Which live listings belong in this grid: all, the first N available ones, or one area. */
+  select?: 'all' | 'featured' | 'area';
+  limit?: number;
+  match?: { wijken: readonly string[]; cities: readonly string[] };
+}
+const { listings, lang, filter = false, showAvailability = false, headingLevel = 'h3', select = 'all', limit = 0, match } = Astro.props;
+const tt = t(lang);
+const d = tt.aanbod;
 const wijken = Array.from(new Set(listings.map((l) => l.neighbourhood)));
 const count = (n: number) => `${n} ${n === 1 ? d.home1 : d.homeN}`;
+const live = LISTINGS_API ? `${LISTINGS_API}/v1/listings` : undefined;
+const ui = { photo: d.photo, map: d.map, viewToggle: d.viewToggle, onMaps: d.onMaps, newWindow: tt.common.newWindow, all: d.all };
 ---
-<div class="listings" data-listings data-one={d.home1} data-many={d.homeN}>
-  {filter && wijken.length > 1 && (
-    <div class="listings__filter" data-reveal="160">
+<div
+  class="listings"
+  data-listings
+  data-one={d.home1}
+  data-many={d.homeN}
+  data-live={live}
+  data-version={live ? await listingsFingerprint() : undefined}
+  data-select={select}
+  data-limit={limit || undefined}
+  data-match={match ? JSON.stringify(match) : undefined}
+  data-heading={headingLevel}
+  data-availability={showAvailability ? '1' : undefined}
+  data-strings={live ? JSON.stringify(cardStrings(lang)) : undefined}
+  data-ui={live ? JSON.stringify(ui) : undefined}
+>
+  {filter && (
+    <div class="listings__filter" data-reveal="160" data-filterbar hidden={wijken.length < 2}>
       <div class="chips" role="group" aria-label={d.filterLabel}>
         <button type="button" class="chip" aria-pressed="true" data-filter="all">{d.all}</button>
         {wijken.map((w) => <button type="button" class="chip" aria-pressed="false" data-filter={w}>{w}</button>)}
@@ -19,24 +53,28 @@ const count = (n: number) => `${n} ${n === 1 ? d.home1 : d.homeN}`;
       <span class="listings__count" aria-live="polite" data-count>{count(listings.length)}</span>
     </div>
   )}
-  <div class="listings__grid">
+  <div class="listings__grid" data-grid hidden={listings.length === 0}>
     {listings.map((l, i) => <ListingCard listing={l} lang={lang} delay={(i % 3) * 90} showAvailability={showAvailability} headingLevel={headingLevel} />)}
   </div>
+  {Astro.slots.has('empty') && <div data-empty hidden={listings.length > 0}><slot name="empty" /></div>}
+  {live && <template data-art><Art alt="" ratio="4-3" /></template>}
 </div>
 
 <script>
   import '../scripts/listings.ts';
+  import '../scripts/listings-live.ts';
 </script>
 
-<style>
+<style is:global>
   .listings__filter { display: none; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
-  :global(.js) .listings__filter { display: flex; }
+  .js .listings__filter:not([hidden]) { display: flex; }
   .chips { display: flex; gap: 8px; flex-wrap: wrap; }
   .chip { border: 1.5px solid var(--border); background: #fff; color: var(--navy); padding: 9px 16px; border-radius: 999px; font-size: 14px; font-weight: 500; transition: all .3s var(--ease); }
   .chip:hover { border-color: var(--navy); }
   .chip[aria-pressed='true'] { background: var(--navy); color: #fff; border-color: var(--navy); }
   .listings__count { margin-left: auto; font-size: 14px; color: var(--muted); }
   .listings__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 24px; margin-top: 32px; }
-  :global(.bg-navy) .listings__grid { gap: 20px; margin-top: 0; }
-  .listings__grid > :global([hidden]) { display: none; }
+  .listings__grid[hidden] { display: none; }
+  .bg-navy .listings__grid { gap: 20px; margin-top: 0; }
+  .listings__grid > [hidden] { display: none; }
 </style>

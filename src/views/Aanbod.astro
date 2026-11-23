@@ -14,16 +14,15 @@ const d = t(lang);
 const a = d.aanbod;
 const listings = await getListings();
 const pageUrl = new URL(path('aanbod', lang), Astro.site).href;
-const schema = listings.length ? [listingsSchema(pageUrl, listings)] : [];
+const forRent = listings.filter((l) => l.status !== 'rented');
+const schema = forRent.length ? [listingsSchema(pageUrl, forRent)] : [];
 ---
 <BaseLayout lang={lang} page="aanbod" schema={schema}>
   <section class="container ab">
     <p class="eyebrow rise">{d.home.listEy}</p>
     <h1 class="display ab__t rise rise-1">{a.abT}</h1>
-    {listings.length > 0 ? (
-      <ListingsGrid listings={listings} lang={lang} filter showAvailability headingLevel="h2" />
-    ) : (
-      <div class="ab-empty rise rise-2">
+    <ListingsGrid listings={listings} lang={lang} filter showAvailability headingLevel="h2">
+      <div class="ab-empty rise rise-2" slot="empty">
         <h2 class="ab-empty__t">{a.emptyT}</h2>
         <p class="ab-empty__p">{a.emptyP}</p>
         <div class="ab-empty__ctas">
@@ -31,7 +30,7 @@ const schema = listings.length ? [listingsSchema(pageUrl, listings)] : [];
           <a class="btn btn--outline btn--lg" href={site.parariusProfile} target="_blank" rel="noopener">{a.emptyPararius}<span class="visually-hidden"> {d.common.newWindow}</span></a>
         </div>
       </div>
-    )}
+    </ListingsGrid>
     <div class="ab__cta">
       <CtaBand title={a.abMiss} text={a.abMissP} href={`${path('aanhuur', lang)}#zoekopdracht`} label={d.home.startSearch} />
     </div>
