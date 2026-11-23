@@ -30,7 +30,7 @@ export const site = {
   // Exact position of Westduinweg 90 (PDOK/BAG). Also used as geo in the structured data.
   map: { lat: 52.095048, lon: 4.268594 },
   /** Chamber of Commerce number. REQUIRED before launch (legal requirement). */
-  kvk: '',
+  kvk: '34242388',
   /** VAT number, optional. */
   vat: '',
   /** Google Search Console → "HTML-tag" verification: paste only the content="…" code here. Optional. */
